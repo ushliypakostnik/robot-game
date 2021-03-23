@@ -38,7 +38,7 @@ export const DESIGN = {
     black0x: 0x111111,
     purple0x: 0x615ebc,
   },
-  GROUND_SIZE: size(1),
+  WORLD_SIZE: size(1),
   VOLUME: {
     small: 0.35,
     normal: 0.5,
@@ -59,6 +59,11 @@ export const DESIGN = {
 };
 
 export const OBJECTS = {
+  LAMPS: {
+    position: [
+      [-5, 9, 2],
+    ],
+  },
 };
 
 export const LOCALES = {

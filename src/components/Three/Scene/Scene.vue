@@ -135,11 +135,11 @@ export default {
       this.scene.background = new Three.Color(DESIGN.COLORS.background0x);
 
       // Туман
-      this.scene.fog = new Three.Fog(DESIGN.COLORS.white0x, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
+      this.scene.fog = new Three.Fog(DESIGN.COLORS.white0x, DESIGN.WORLD_SIZE / 10, DESIGN.WORLD_SIZE * 2);
 
       // Cameras
 
-      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.GROUND_SIZE * 2);
+      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.WORLD_SIZE * 4);
 
       // Controls
 
