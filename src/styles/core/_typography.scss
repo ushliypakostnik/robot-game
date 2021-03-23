@@ -1,0 +1,91 @@
+// Typography
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Typographic Variables
+//////////////////////////////////////////////////////
+
+// Good line-height and letter-spacing
+$line-height--base: 1.428571429;
+$normal-letter-spacing: normal;
+
+// Guide
+
+$font-size--base: 1vw;
+$font-size__coefficient--large: 2.5;
+$font-size__coefficient--normal: 1.5;
+$font-size__coefficient--small: 1;
+$font-size__coefficient--xsmall: 0.85;
+
+$font-size--large: $font-size--base * $font-size__coefficient--large;
+$font-size--normal: $font-size--base * $font-size__coefficient--normal;
+$font-size--small: $font-size--base * $font-size__coefficient--small;
+$font-size--xsmall: $font-size--base * $font-size__coefficient--xsmall;
+
+$line-height--computed: $font-size--base * $line-height--base;
+$line-height--large: $line-height--computed * $font-size__coefficient--large;
+$line-height--normal: $line-height--computed * $font-size__coefficient--normal;
+$line-height--small: $line-height--computed * $font-size__coefficient--small;
+$line-height--xsmall: $line-height--computed * $font-size__coefficient--xsmall;
+
+// stylelint-disable value-keyword-case
+$font-family: 'Press Start 2P', cursive;
+// stylelint-enable value-keyword-case
+$font-weight__regular: 400;
+$font-weight__regular: 700;
+
+// Universal Typographic Mixin
+//////////////////////////////////////////////////////
+
+// We use one, only one, Karl, a universal admixture for all cases !!!!!!!!!!
+
+@mixin text($font-size) {
+  font-family: $font-family;
+  font-size: $font-size;
+  font-weight: $font-weight__regular;
+  letter-spacing: $normal-letter-spacing;
+
+  @if $font-size == $font-size--large {
+    line-height: $line-height--large;
+  } @else if $font-size == $font-size--normal {
+    line-height: $line-height--normal;
+  } @else if $font-size == $font-size--small {
+    line-height: $line-height--small;
+  } @else if $font-size == $font-size--xsmall {
+    line-height: $line-height--xsmall;
+  } @else {
+    line-height: floor($font-size * $line-height--base);
+  }
+}
+
+// Base Typographic
+//////////////////////////////////////////////////////
+
+p {
+  margin-bottom: $gutter / 2;
+  @include text($font-size--small);
+}
+
+h1 {
+  @include text($font-size--large);
+}
+
+h2 {
+  @include text($font-size--large);
+}
+
+h3 {
+  @include text($font-size--normal);
+}
+
+h4 {
+  @include text($font-size--small);
+}
+
+h5 {
+  @include text($font-size--xsmall);
+}
+
+h6 {
+  @include text($font-size--xsmall);
+}

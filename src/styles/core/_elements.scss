@@ -1,0 +1,46 @@
+// Project Elements
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+.button {
+  cursor: pointer;
+  background: transparent;
+  color: $colors__white;
+  padding: ($gutter / 4) ($gutter * 1.5);
+  border: $border-width solid $colors__border;
+  box-shadow: none;
+  text-transform: uppercase;
+  @include text($font-size--normal);
+}
+
+.switch {
+  max-width: auto;
+  display: flex;
+  flex-direction: row;
+  border: $border-width solid $colors__border;
+
+  &__item {
+    text-align: center;
+    text-transform: uppercase;
+    @include text($font-size--normal);
+
+    span,
+    a {
+      box-sizing: border-box;
+      display: block;
+      padding: ($gutter / 10) ($gutter / 4);
+      text-decoration: none;
+      @include size(100%, 100%);
+      @include link__color($colors__white, $colors__white);
+    }
+
+    &--active {
+      background: $colors__primary;
+    }
+  }
+
+  &__wrapper {
+    display: flex;
+    justify-content: center;
+  }
+}

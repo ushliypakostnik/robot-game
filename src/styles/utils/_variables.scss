@@ -1,0 +1,60 @@
+// Project variables
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Paths
+// $images__path--root: "assets/images/";
+
+
+// Sizes and rounding
+//////////////////////////////////////////////////////
+
+$gutter: 2vw;
+
+$border-width: 0.2vw;
+
+
+// Layouts
+//////////////////////////////////////////////////////
+
+$layouts__1: 1000;
+$layouts__2: 2500;
+
+
+// Colors
+//////////////////////////////////////////////////////
+
+// Palette
+
+$colors__white: #fff;
+$colors__black: #000;
+
+$colors__primary: #621211;
+$colors__primary--light: #b14343;
+
+
+// Borders and shadows
+
+$colors__shadows: $colors__black;
+
+$colors__border: $colors__white;
+
+$colors__white--transparent: rgba(255, 255, 255, 0.5);
+$colors__white--transparent2: rgba(255, 255, 255, 0.75);
+$colors__black--transparent: rgba(0, 0, 0, 0.5);
+
+$colors__gate: $colors__black--transparent;
+
+
+// Effects
+$transition-duration: 0.2s;
+$transition-timing-function: ease-in-out;
+$transition-delay: 0s;
+
+$animation-duration: $transition-duration * 3;
+
+
+// Breackpoints
+//////////////////////////////////////////////////////
+
+$breakpoints__desktop: 1025px;

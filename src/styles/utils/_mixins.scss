@@ -1,0 +1,140 @@
+// Project mixins
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Media
+//////////////////////////////////////////////////////
+// Breackpoins in styles/utils/_variables.scss
+
+@mixin desktop {
+  @media only screen and (min-width: $breakpoints__lg) {
+    @content;
+  }
+}
+
+@mixin not-desktop {
+  @media only screen and (max-width: $breakpoints__md_max) {
+    @content;
+  }
+}
+
+// Elements
+//////////////////////////////////////////////////////
+
+// Size )
+@mixin size($width, $height) {
+  width: $width;
+  height: $height;
+}
+
+// Long word in media !
+@mixin very-long-letters-protection() {
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word; // stylelint-disable declaration-block-no-duplicate-properties
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+
+// Buttons
+
+@mixin button--gradient() {
+  border: none;
+  box-shadow: 0 8px 30px rgba(255, 158, 106, 0.4);
+  will-change: background;
+  color: $colors--white;
+  @include transitions(all);
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $colors--white;
+    transform: translateY(-1 * $translate-size);
+    box-shadow: 0 8px 30px rgba(255, 158, 106, 0.5);
+
+    @include not-gadgets {
+      transform: translateY(-1 * $translate-size_number * $rubber-width_pixel);
+    }
+  }
+}
+
+@mixin button--transparent($colors) {
+  background-color: transparent;
+  color: $colors;
+  border: $border-width solid $colors;
+  will-change: border-color;
+  @include transitions(all);
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $colors;
+    transform: translateY(-1 * $translate-size);
+    background: $colors--white_lighten;
+
+    @include not-gadgets {
+      transform: translateY(-1 * $translate-size_number * $rubber-width_pixel);
+    }
+  }
+}
+
+
+// Links
+@mixin link__color($colors, $colors-hover) {
+  will-change: color;
+  @include transitions(color);
+
+  &,
+  &:focus {
+    color: $colors;
+  }
+
+  &:hover,
+  &:active {
+    color: $colors-hover;
+  }
+}
+
+
+// Effects
+//////////////////////////////////////////////////////
+
+// Multi-transition
+// Pass in any number of transitions
+@mixin transitions($transitions...) {
+  $unfoldedTransitions: ();
+
+  @each $transition in $transitions {
+    $unfoldedTransitions: append($unfoldedTransitions, unfoldTransition($transition), comma);
+  }
+
+  transition: $unfoldedTransitions;
+}
+
+@function unfoldTransition($transition) {
+  // Default values
+  $property: all;
+  $duration: $transition-duration;
+  $easing: $transition-timing-function;
+  $delay: $transition-delay;
+  $defaultProperties: ($property, $duration, $easing, $delay);
+
+  // Grab transition properties if they exist
+  $unfoldedTransition: ();
+
+  @for $i from 1 through length($defaultProperties) {
+    $p: null;
+
+    @if $i <= length($transition) {
+      $p: nth($transition, $i);
+    } @else {
+      $p: nth($defaultProperties, $i);
+    }
+    $unfoldedTransition: append($unfoldedTransition, $p);
+  }
+
+  @return $unfoldedTransition;
+}

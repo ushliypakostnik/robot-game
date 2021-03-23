@@ -1,0 +1,100 @@
+// Main Elements normalization
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// @media all {}
+
+html {
+  height: 100vh;
+  -webkit-text-size-adjust: none;
+}
+
+body {
+  height: 100vh;
+  color: $colors--black;
+  background: $colors--white;
+  margin: 0;
+  padding: 0;
+  quotes: "\00ab" "\00bb";
+
+  font-family: sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  overflow-x: hidden; // not scrolling horizontal body
+
+  backface-visibility: hidden;
+
+  user-select: none;
+
+  // Normal text
+  @include text($font-size--small);
+}
+
+// stylelint-disable declaration-no-important, no-descending-specificity, block-opening-brace-newline-after, block-closing-brace-newline-before, rule-empty-line-before, block-opening-brace-space-before
+
+// No outline on focus controls!!!
+button,
+input,
+textarea,
+a {
+  color: $colors__white;
+  outline: none !important;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $colors__white;
+    outline: none !important;
+  }
+}
+
+// Sections
+
+// All blocks to border-box!!!
+main,
+article,
+aside,
+figure,
+address,
+section,
+div,
+form,
+fieldset,
+input,
+select,
+button,
+a {
+  box-sizing: border-box;
+}
+
+main,
+article,
+aside,
+figure,
+address,
+div,
+form,
+fieldset,
+pre {
+  margin: 0;
+  padding: 0;
+}
+
+address {
+  font-style: normal;
+}
+
+
+// Others
+fieldset,
+iframe {
+  border-width: 0;
+}
+
+// Lists
+ul {
+  list-style-type: none;
+  padding: 0; // вот это становится проблемой
+  margin: 0;
+}

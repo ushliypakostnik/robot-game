@@ -1,0 +1,18 @@
+// Project Utilities
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Animation utility example
+//////////////////////////////////////////////////////
+
+// $animation-duration: $transition-duration * 3;
+
+// .fadeAndLeft {
+//  will-change: transform, opacity;
+//  @include animations("left #{$animation-duration}", "fade #{$animation-duration}");
+//}
+
+.spin {
+  will-change: transform;
+  animation: spin linear $animation-duration infinite;
+}
