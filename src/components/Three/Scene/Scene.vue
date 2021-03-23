@@ -135,11 +135,11 @@ export default {
       this.scene.background = new Three.Color(DESIGN.COLORS.background0x);
 
       // Туман
-      this.scene.fog = new Three.Fog(DESIGN.COLORS.fog0x, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 4);
+      this.scene.fog = new Three.Fog(DESIGN.COLORS.white0x, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
 
       // Cameras
 
-      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.GROUND_SIZE / 2);
+      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.GROUND_SIZE * 2);
 
       // Controls
 
@@ -237,6 +237,7 @@ export default {
       if (!this.isPause) {
         // Modules
         this.hero.animate(this);
+        this.world.animate(this);
       } else {
         // this.module.stop();
       }

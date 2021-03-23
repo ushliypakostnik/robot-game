@@ -11,6 +11,8 @@ import {
 function World() {
   const loader = new GLTFLoader();
 
+  let sky;
+
   this.init = (scope) => {
     // Lights
 
@@ -36,6 +38,21 @@ function World() {
     directionalLight.shadow.radius = 4;
     directionalLight.shadow.bias = - 0.00006;
     scope.scene.add(directionalLight);
+
+    // Sky
+    const geometry = new Three.SphereGeometry(DESIGN.GROUND_SIZE, 60, 40);
+    // invert the geometry on the x-axis so that all of the faces point inward
+    geometry.scale(- 1, 1, 1);
+
+    const texture = new Three.TextureLoader().load('./images/textures/sky.jpg');
+    const material = new Three.MeshBasicMaterial({map: texture});
+    sky = new Three.Mesh(geometry, material);
+
+    sky.rotateX(Math.PI / 4);
+    sky.rotateY(Math.PI / 4);
+    sky.rotateZ(Math.PI / 4);
+
+    scope.scene.add(sky);
 
     // World
 
@@ -81,6 +98,10 @@ function World() {
       loaderDispatchHelper(scope.$store, 'isWorldLoaded');
     });
   };
+
+  this.animate = (scope) => {
+    sky.rotateY(scope.delta / 25);
+  }
 }
 
 export default World;

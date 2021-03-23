@@ -21,21 +21,22 @@ export const AUTO_LANG = localStorage.getItem(LOCALSTORAGE.LANGUAGE) || null;
 
 // Тут главный размер, относительно которого все по ширине,
 // кроме того что должно быть адекватным росту по высоте
+const ground = 200;
 const size = (size) => {
-  return size * 2000;
+  return size * ground / 2 * Math.sqrt(2);
 };
 
 export const DESIGN = {
-  V: '0.1.0',
+  V: '2.1.0',
   BREAKPOINTS: {
     desktop: 1025,
   },
   COLORS: {
     primary0x: 0x621211,
-    fog0x: 0x615ebc,
     background0x: 0x88ccff,
     white0x: 0xffffff,
     black0x: 0x111111,
+    purple0x: 0x615ebc,
   },
   GROUND_SIZE: size(1),
   VOLUME: {
@@ -47,13 +48,13 @@ export const DESIGN = {
       max: 2000,
     },
   },
-  GRAVITY: 30,
+  GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
   ANIMATION_TIMEOUT: 300,
   HERO: {
     HEIGHT: 1.65, // средний рост челевеческой особи, мужики 1.7, бабы 1.6
-    SPEED: 25,
-    JUMP: 15,
+    SPEED: 40,
+    JUMP: 25,
   },
 };
 
@@ -63,7 +64,7 @@ export const OBJECTS = {
 export const LOCALES = {
   [LANGUAGES[0].name]: {
     layout: {
-      text0: 'Game name',
+      text0: 'Drinkin Robot',
       startbutton: 'Play',
       attention: 'Attention!!! It is recommended to play on computers with a powerful video card.',
       gadgetsgate: 'You need a PC keyboard to play',
@@ -78,7 +79,7 @@ export const LOCALES = {
   },
   [LANGUAGES[1].name]: {
     layout: {
-      text0: 'Название игры',
+      text0: 'Робот-собутыльник',
       startbutton: 'Играть',
       attention: 'Внимание!!! Рекомендуется играть на компьютерах с производительной видеокартой.',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
