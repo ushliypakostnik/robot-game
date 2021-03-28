@@ -1,9 +1,18 @@
+/* eslint-disable prefer-destructuring, operator-assignment */
+// eslint-disable-next-line import/no-cycle
 import storage from '@/utils/storage';
 
-import { DESIGN } from '@/utils/constants';
+// eslint-disable-next-line import/no-cycle
+import { LOCALSTORAGE } from '@/utils/constants';
+
+const AUTO_LEVEL = localStorage.getItem(LOCALSTORAGE.LEVEL) || null;
+if (!AUTO_LEVEL) {
+  storage.rememberLevel(1);
+}
 
 const initialState = {
   language: null,
+  level: localStorage.getItem(LOCALSTORAGE.LEVEL) || 1,
   isPause: true,
 
   messages: [],
@@ -14,6 +23,7 @@ const state = initialState;
 
 const getters = {
   language: state => state.language,
+  level: state => state.level,
   isPause: state => state.isPause,
   messages: state => state.messages,
   message: state => state.message,
@@ -26,6 +36,11 @@ const actions = {
   changeLanguage: ({ commit }, language) => {
     commit('changeLanguage', language);
     storage.rememberLanguage(language);
+  },
+
+  setLevel: ({ commit }, level) => {
+    commit('setLevel', level);
+    storage.rememberLevel(level);
   },
 
   togglePause: ({ commit }, isPause) => {
@@ -52,6 +67,10 @@ const actions = {
 const mutations = {
   changeLanguage: (state, language) => {
     state.language = language;
+  },
+
+  setLevel: (state, level) => {
+    state.level = level;
   },
 
   togglePause: (state, isPause) => {

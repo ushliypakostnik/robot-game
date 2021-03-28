@@ -13,7 +13,8 @@
         class="layout__blocker"
       >
         <div class="layout__instructions">
-          <h1>{{ $t('layout.text0') }} {{ version }}</h1>
+          <h1>{{ $t('layout.title') }} {{ version }}</h1>
+          <h3>{{ $t('layout.level') }}: {{ level }}</h3>
           <button
             class="button"
             type="button"
@@ -79,6 +80,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      level: 'layout/level',
       isPause: 'layout/isPause',
     }),
 

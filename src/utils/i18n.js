@@ -3,12 +3,16 @@ import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import VueI18Next from '@panter/vue-i18next';
 
+// eslint-disable-next-line import/no-cycle
 import {
   LANGUAGES,
   LOCALES,
-  AUTO_LANG,
+  LOCALSTORAGE,
 } from '@/utils/constants';
 import store from '../store'; // eslint-disable-line import/no-cycle
+
+// Auto
+const AUTO_LANG = localStorage.getItem(LOCALSTORAGE.LANGUAGE) || null;
 
 const detectorOptions = {
   order: ['navigator'],
