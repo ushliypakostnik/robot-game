@@ -65,7 +65,8 @@
       "no-param-reassign": 0,
       "no-multi-assign": 0,
       "no-plusplus": 0,
-      "no-shadow": 0
+      "no-shadow": 0,
+      "vue/valid-v-for": 0
     },
     "parserOptions": {
       "parser": "babel-eslint"

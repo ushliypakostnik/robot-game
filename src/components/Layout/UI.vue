@@ -2,9 +2,9 @@
   <div class="ui">
     <div class="ui__messages">
       <div
-        v-for="message, index in messages"
         :key="index"
         class="ui__message-wrapper"
+        v-for="message, index in messages"
       >
         <!-- "Постоянные" сообщения -->
         <div

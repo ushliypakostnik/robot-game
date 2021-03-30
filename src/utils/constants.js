@@ -42,6 +42,9 @@ export const DESIGN = {
     purpleDark: 0x413460,
     red: 0xcf3326,
     redDark: 0x681a13,
+    green: 0x4cbb17,
+    greenDark: 0x265e0b,
+    orange: 0xf9a602,
 
     sun: 0xffff99,
     lightnings: 0x8267bf,
@@ -74,44 +77,19 @@ export const DESIGN = {
 };
 
 export const OBJECTS = {
+  DOORS: {
+    name: 'door',
+    speed: 20,
+    pause: 3,
+    level1: {
+      data: [],
+    },
+  },
   LEADER: {
+    name: 'leader',
     size: 10,
     level1: {
-      position: [
-        [-18.9, 9, 8],
-      ],
-    },
-  },
-  DOORS: {
-    // x, y, z, direction, pass, rotate
-    level1: {
-      position: [],
-    },
-  },
-  LASERS: {
-    size: 1,
-    delay: 2,
-    // x, y, z, width
-    level1: {
-      position: [
-        [-35, 10, -19, 17], // корридор от старта
-        [-55, 10, -19, 17], // корридор от старта
-        [-75, 10, -19, 17], // корридор от старта
-        [-95, 10, -19, 17], // корридор от старта
-        [-115, 10, -19, 17], // корридор от старта
-        [-145, 10, -19, 17], // корридор от старта
-        [-165, 10, -19, 17], // корридор от старта
-      ],
-    },
-  },
-  LAMPS: {
-    level1: {
-      // x, y, z, intensity, distance
-      position: [
-        [-5, 10, 9, 1.5, 20], // стартовая позиция
-        [-5, 10, -6, 1.5, 20], // стартовая позиция
-        [-38, 10, -10, 1.5, 20], // корридор от старта
-      ],
+      data: [],
     },
   },
 };

@@ -9,12 +9,10 @@ const initialState = {
   isMetall2Loaded: false,
   isMetall3Loaded: false,
   isLeaderLoaded: false,
+  isSandLoaded: false,
 
-  isWorldBuild: false,
   isDoorsBuild: false,
   isLeadersBuild: false,
-  isLampsBuild: false,
-  isTrapsBuild: false,
 };
 
 const state = initialState;

@@ -3,7 +3,7 @@ import * as Three from 'three';
 
 import { Capsule } from '../Modules/Math/Capsule';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
 function Hero() {
   let playerCollider;
@@ -12,8 +12,16 @@ function Hero() {
 
   this.init = (scope) => {
     playerCollider = new Capsule(
-      new Three.Vector3(DESIGN.HERO.START.x, DESIGN.HERO.START.y + DESIGN.HERO.HEIGHT / 2, DESIGN.HERO.START.z),
-      new Three.Vector3(DESIGN.HERO.START.x, DESIGN.HERO.START.y + DESIGN.HERO.HEIGHT, DESIGN.HERO.START.z),
+      new Three.Vector3(
+        DESIGN.HERO.START.x,
+        DESIGN.HERO.START.y + DESIGN.HERO.HEIGHT / 2,
+        DESIGN.HERO.START.z,
+      ),
+      new Three.Vector3(
+        DESIGN.HERO.START.x,
+        DESIGN.HERO.START.y + DESIGN.HERO.HEIGHT,
+        DESIGN.HERO.START.z,
+      ),
       DESIGN.HERO.HEIGHT / 2,
     );
     playerDirection.copy(scope.playerStartDirection);
@@ -33,6 +41,12 @@ function Hero() {
       }
 
       playerCollider.translate(scope.result.normal.multiplyScalar(scope.result.depth));
+    }
+
+    scope.resultMutable = scope.octreeMutable.capsuleIntersect(playerCollider);
+
+    if (scope.resultMutable) {
+      playerCollider.translate(scope.resultMutable.normal.multiplyScalar(scope.resultMutable.depth));
     }
   };
 
@@ -54,40 +68,21 @@ function Hero() {
   };
 
   this.animate = (scope) => {
-    /*
-    scope.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 10);
-    scope.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 10);
-    scope.raycasterLeft = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
-    scope.raycasterRight = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
+    scope.raycaster = new Three.Raycaster(
+      new Three.Vector3(),
+      new Three.Vector3(0, 0, -1), 0, 3,
+    );
 
-    // Forward
-    scope.directionForward = scope.camera.getWorldDirection(scope.direction);
-    scope.raycasterForward.set(scope.camera.getWorldPosition(scope.position), scope.directionForward);
-    scope.intersections = scope.raycasterForward.intersectObjects(scope.objects);
-    scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
-    if (scope.onForward) scope.object = scope.intersections[0].object;
+    // Forward ray
+    scope.direction = scope.camera.getWorldDirection(scope.direction);
+    scope.raycaster.set(scope.camera.getWorldPosition(scope.position), scope.direction);
+    scope.intersections = scope.raycaster.intersectObjects(scope.objects);
+    scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < 3 : false;
 
-    // Backward
-    scope.directionBackward = scope.directionForward.negate();
-    scope.raycasterBackward.set(scope.camera.getWorldPosition(scope.position), scope.directionBackward);
-    scope.intersections = scope.raycasterBackward.intersectObjects(scope.objects);
-    scope.onBackward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
-    if (scope.onBackward) scope.object = scope.intersections[0].object;
-
-    // Left
-    scope.directionLeft = scope.directionRight.negate();
-    scope.raycasterLeft.set(scope.camera.getWorldPosition(scope.position), scope.directionLeft);
-    scope.intersections = scope.raycasterLeft.intersectObjects(scope.objects);
-    scope.onLeft = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
-    if (scope.onLeft) scope.object = scope.intersections[0].object;
-
-    // Right
-    scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.yNegate);
-    scope.raycasterRight.set(scope.camera.getWorldPosition(scope.position), scope.directionRight);
-    scope.intersections = scope.raycasterRight.intersectObjects(scope.objects);
-    scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
-    if (scope.onRight) scope.object = scope.intersections[0].object;
-    */
+    if (scope.onForward) {
+      scope.object = scope.intersections[0].object;
+      if (scope.object.name.includes(OBJECTS.DOORS.name) && scope.keyStates['KeyE']) scope.world.openDoor(scope.object.id);
+    }
 
     if (scope.playerOnFloor) {
       if (!scope.isPause) {
@@ -110,7 +105,7 @@ function Hero() {
         if (scope.keyStates['Space']) playerVelocity.y = DESIGN.HERO.JUMP;
       }
 
-      scope.damping = Math.exp(- 3 * scope.delta) - 1;
+      scope.damping = Math.exp(-3 * scope.delta) - 1;
       playerVelocity.addScaledVector(playerVelocity, scope.damping);
     } else playerVelocity.y -= DESIGN.GRAVITY * scope.delta;
 
@@ -119,6 +114,8 @@ function Hero() {
     playerCollitions(scope);
 
     scope.camera.position.copy(playerCollider.end);
+    if (scope.toruch && scope.isToruch) scope.toruch.position.copy(playerCollider.end);
+    // console.log(scope.camera.position);
   };
 }
 

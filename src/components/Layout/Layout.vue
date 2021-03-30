@@ -99,7 +99,7 @@ export default {
     },
 
     play() {
-      if (!this.isDrone) this.$eventHub.$emit('lock');
+      this.$eventHub.$emit('lock');
       this.togglePause(false);
     },
   },

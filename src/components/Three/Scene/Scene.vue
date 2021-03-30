@@ -49,9 +49,13 @@ export default {
       playerStartDirection: null,
       keyStates: {},
       isRun: false,
+      toruch: false,
+      isToruch: true, // TODO: перенести в стор персонажа когда будет
+
 
       // world
       octree: null,
+      octreeMutable: null,
 
       // modules
       hero: null,
@@ -62,44 +66,26 @@ export default {
       position: null,
       direction: null,
       result: null,
+      resultMutable: null,
       damping: null,
 
+      raycaster: null,
       intersections: null,
-
-      raycasterForward: null,
-      raycasterBackward: null,
-      raycasterRight: null,
-      raycasterLeft: null,
-
-      yNegate: null,
-
-      directionForward: null,
-      directionBackward: null,
-      directionLeft: null,
-      directionRight: null,
-
-      object: null,
-
       onForward: null,
-      onBackward: null,
-      onLeft: null,
-      onRight: null,
+      object: null,
 
       // store objects
       objects: [],
+      doors: [],
     };
   },
 
   mounted() {
     this.octree = new Octree();
+    this.octreeMutable = new Octree();
 
-    this.yNegate = new Three.Vector3(0, -1, 0);
     this.position = new Three.Vector3();
     this.direction = new Three.Vector3();
-    this.directionForward = new Three.Vector3();
-    this.directionBackward = new Three.Vector3();
-    this.directionLeft = new Three.Vector3();
-    this.directionRight = new Three.Vector3();
     this.playerStartDirection = new Three.Vector3(-0.7071067758832469, 0, 0.7071067864898483);
 
     this.clock = new Three.Clock();
@@ -224,6 +210,17 @@ export default {
 
       // eslint-disable-next-line default-case
       switch (event.keyCode) {
+        case 70: // F
+          if (this.isToruch) {
+            this.toruch.visible = false;
+            this.isToruch = false;
+          } else {
+            this.toruch.visible = true;
+            this.isToruch = true;
+          }
+          console.log('Отпустили F!!!');
+          break;
+
         case 80: // P
           if (this.isPause) {
             this.controls.lock();
