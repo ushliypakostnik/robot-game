@@ -17,6 +17,9 @@ const initialState = {
 
   messages: [],
   message: 0,
+
+  isGameOver: false,
+  isWin: false,
 };
 
 const state = initialState;
@@ -27,6 +30,8 @@ const getters = {
   isPause: state => state.isPause,
   messages: state => state.messages,
   message: state => state.message,
+  isGameOver: state => state.isGameOver,
+  isWin: state => state.isWin,
 };
 
 let messages;
@@ -61,6 +66,14 @@ const actions = {
 
   hideMessageById: ({ commit }, id) => {
     commit('hideMessageById', id);
+  },
+
+  setGameOver: ({ commit }) => {
+    commit('setGameOver');
+  },
+
+  setWin: ({ commit }) => {
+    commit('setWin');
   },
 };
 
@@ -99,6 +112,14 @@ const mutations = {
     index = messages.find(message => message[0] === id);
     if (index) messages.splice(messages.indexOf(index), 1);
     state.messages = messages;
+  },
+
+  setGameOver: (state) => {
+    state.isGameOver = true;
+  },
+
+  setWin: (state) => {
+    state.isWin = true;
   },
 };
 

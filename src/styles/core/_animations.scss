@@ -30,3 +30,75 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes hit {
+  from {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes upgrade {
+  from {
+    opacity: 0;
+  }
+
+  16% {
+    opacity: 0.9;
+  }
+
+  32% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  66% {
+    opacity: 0.0;
+  }
+
+  84% {
+    opacity: 0.3;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes scaleNot {
+  from {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.5;
+  }
+}
+
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

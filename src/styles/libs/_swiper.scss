@@ -1,0 +1,23 @@
+// Swiper Customization
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+.swiper {
+  height: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @include size(100vw, 100vh);
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: $colors__white;
+}
+
+.swiper-button-disabled {
+  display: none;
+}

@@ -45,6 +45,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: $layouts__2;
     @include size(100%, 100%);
   }
 }

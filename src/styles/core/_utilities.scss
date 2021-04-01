@@ -16,3 +16,24 @@
   will-change: transform;
   animation: spin linear $animation-duration infinite;
 }
+
+.damage {
+  will-change: opacity;
+  animation: hit $animation-duration infinite;
+}
+
+.not {
+  will-change: opacity;
+  animation: scaleNot $animation-duration infinite;
+}
+
+.blink {
+  will-change: opacity;
+  animation: blink $animation-duration infinite;
+}
+
+.upgrade {
+  will-change: opacity;
+  animation: upgrade $animation-duration infinite;
+}
+

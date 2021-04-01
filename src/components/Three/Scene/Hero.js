@@ -5,10 +5,31 @@ import { Capsule } from '../Modules/Math/Capsule';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
+import {
+  messagesByIdDispatchHelper,
+  messagesByViewDispatchHelper,
+  heroOnHitDispatchHelper,
+} from '@/utils/utilities';
+
 function Hero() {
   let playerCollider;
   let playerVelocity;
   const playerDirection = new Three.Vector3(0, 0, 0);
+
+  let speed;
+
+  let enduranceClock;
+  let enduranceTime = 0;
+  let isEnduranceRecoveryStart = false;
+
+  let playerOnFloor;
+  let jumpStart;
+  let jumpFinish;
+
+  let notTiredClock;
+  let notTiredTime = 0;
+
+  let object;
 
   this.init = (scope) => {
     playerCollider = new Capsule(
@@ -24,24 +45,68 @@ function Hero() {
       ),
       DESIGN.HERO.HEIGHT / 2,
     );
-    playerDirection.copy(scope.playerStartDirection);
+    playerDirection.copy(scope.startDirection);
     playerVelocity = new Three.Vector3();
+
+    enduranceClock = new Three.Clock(false);
+    notTiredClock = new Three.Clock(false);
 
     this.animate(scope);
   };
 
+  this.setHidden = (scope, isHidden) => {
+    if (isHidden) {
+      playerCollider = new Capsule(
+        new Three.Vector3(
+          scope.camera.position.x,
+          scope.camera.position.y - DESIGN.HERO.HEIGHT,
+          scope.camera.position.z,
+        ),
+        new Three.Vector3(
+          scope.camera.position.x,
+          scope.camera.position.y - DESIGN.HERO.HEIGHT,
+          scope.camera.position.z,
+        ),
+        DESIGN.HERO.HEIGHT / 2,
+      );
+    } else {
+      playerCollider = new Capsule(
+        new Three.Vector3(
+          scope.camera.position.x,
+          scope.camera.position.y - DESIGN.HERO.HEIGHT,
+          scope.camera.position.z,
+        ),
+        new Three.Vector3(
+          scope.camera.position.x,
+          scope.camera.position.y - DESIGN.HERO.HEIGHT / 2,
+          scope.camera.position.z,
+        ),
+        DESIGN.HERO.HEIGHT / 2,
+      );
+    }
+  };
+
   const playerCollitions = (scope) => {
     scope.result = scope.octree.capsuleIntersect(playerCollider);
-    scope.playerOnFloor = false;
+    playerOnFloor = false;
 
     if (scope.result) {
-      scope.playerOnFloor = scope.result.normal.y > 0;
-      if (!scope.playerOnFloor) {
+      playerOnFloor = scope.result.normal.y > 0;
+      if (!playerOnFloor) {
         playerVelocity.addScaledVector(scope.result.normal, -scope.result.normal.dot(playerVelocity));
       }
 
       playerCollider.translate(scope.result.normal.multiplyScalar(scope.result.depth));
     }
+    if (scope.playerOnFloor !== playerOnFloor) {
+      if (!playerOnFloor) jumpStart = playerCollider.end.y;
+      else {
+        // console.log('Пролетел: ', jumpStart - playerCollider.end.y);
+        jumpFinish = jumpStart - playerCollider.end.y;
+        if (jumpFinish > 15) heroOnHitDispatchHelper(scope, -2 * (jumpFinish - 15));
+      }
+    }
+    scope.playerOnFloor = playerOnFloor;
 
     scope.resultMutable = scope.octreeMutable.capsuleIntersect(playerCollider);
 
@@ -68,6 +133,8 @@ function Hero() {
   };
 
   this.animate = (scope) => {
+    // Raycasting
+
     scope.raycaster = new Three.Raycaster(
       new Three.Vector3(),
       new Three.Vector3(0, 0, -1), 0, 3,
@@ -77,29 +144,106 @@ function Hero() {
     scope.direction = scope.camera.getWorldDirection(scope.direction);
     scope.raycaster.set(scope.camera.getWorldPosition(scope.position), scope.direction);
     scope.intersections = scope.raycaster.intersectObjects(scope.objects);
-    scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < 3 : false;
+    scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < DESIGN.HERO.CAST : false;
 
     if (scope.onForward) {
       scope.object = scope.intersections[0].object;
-      if (scope.object.name.includes(OBJECTS.DOORS.name) && scope.keyStates['KeyE']) scope.world.openDoor(scope.object.id);
+
+      console.log('Объект: ', object);
+
+      // Кастим вещь
+      if (scope.object.name.includes(OBJECTS.PASSES.name)) {
+        object = scope.objects.find(object => object.id === scope.object.id);
+
+        // console.log('Пропуск: ', object.name);
+
+        // Это пропуск
+        //messagesByViewDispatchHelper(scope, 2, 'pick', object.data.pass);
+      }
+
+      // Кастим дверь
+      if (scope.object.name.includes(OBJECTS.DOORS.name)) {
+        object = scope.doors.find(door => door.data.id === scope.object.id);
+
+        if (!scope.passes.includes(object.data.pass)) {
+          messagesByViewDispatchHelper(scope, 2, 'closed', object.data.pass);
+        } else {
+          messagesByViewDispatchHelper(scope, 2, 'open');
+
+          if (scope.keyStates['KeyE']) {
+            scope.world.openDoor(scope, scope.object.id);
+
+            // Победа на уровне
+            if (scope.object.name.includes('Out')) {
+              setTimeout(() => {
+                scope.setWin();
+                scope.setGameOver();
+              }, 3000);
+            }
+          }
+        }
+      }
+    } else scope.hideMessageByView(2);
+
+    // Усталость и ее восстановление
+    if (!scope.isNotTired) {
+      if (scope.isRun
+          || scope.isHeroTired
+          || (!scope.isRun && !scope.isHeroTired && scope.endurance < 100)) {
+        if (scope.isRun && !enduranceClock.running) enduranceClock.start();
+
+        if (!isEnduranceRecoveryStart && scope.endurance < 100 && !scope.isRun) {
+          isEnduranceRecoveryStart = true;
+          enduranceClock.start();
+        } else if (isEnduranceRecoveryStart && scope.isRun) isEnduranceRecoveryStart = false;
+
+        enduranceTime += enduranceClock.getDelta();
+
+        if (enduranceTime > 0.025) {
+          scope.setScale({
+            field: DESIGN.HERO.scales.endurance.name,
+            value: !isEnduranceRecoveryStart ? -1 : 1,
+          });
+          enduranceTime = 0;
+        }
+      } else {
+        if (enduranceClock.running) enduranceClock.stop();
+        if (isEnduranceRecoveryStart) isEnduranceRecoveryStart = false;
+        enduranceTime = 0;
+      }
+    } else {
+      if (!notTiredClock.running) notTiredClock.start();
+
+      if (!scope.isPause) notTiredTime += notTiredClock.getDelta();
+
+      if (notTiredTime > DESIGN.EFFECTS.time.endurance) {
+        notTiredClock.stop();
+        notTiredTime = 0;
+        scope.setNotTired(false);
+        messagesByIdDispatchHelper(scope, 1, 'endNoTired');
+      }
     }
 
     if (scope.playerOnFloor) {
       if (!scope.isPause) {
         if (scope.keyStates['KeyW']) {
-          playerVelocity.add(getForwardVector(scope).multiplyScalar(DESIGN.HERO.SPEED * scope.delta));
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : scope.isRun ? DESIGN.HERO.SPEED * 2.5 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getForwardVector(scope).multiplyScalar(speed * scope.delta));
         }
 
         if (scope.keyStates['KeyS']) {
-          playerVelocity.add(getForwardVector(scope).multiplyScalar(-DESIGN.HERO.SPEED * scope.delta));
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getForwardVector(scope).multiplyScalar(-speed * scope.delta));
         }
 
         if (scope.keyStates['KeyA']) {
-          playerVelocity.add(getSideVector(scope).multiplyScalar(-DESIGN.HERO.SPEED * scope.delta));
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getSideVector(scope).multiplyScalar(-speed * scope.delta));
         }
 
         if (scope.keyStates['KeyD']) {
-          playerVelocity.add(getSideVector(scope).multiplyScalar(DESIGN.HERO.SPEED * scope.delta));
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getSideVector(scope).multiplyScalar(speed * scope.delta));
         }
 
         if (scope.keyStates['Space']) playerVelocity.y = DESIGN.HERO.JUMP;

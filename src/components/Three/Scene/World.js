@@ -7,18 +7,28 @@ import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import {
   loaderDispatchHelper,
+  degreesToRadians,
+  randomInteger,
 } from '@/utils/utilities';
 
 function World() {
   let sky;
 
-  const doors = [];
   let doorsGroup;
   let door;
   let direction;
   let box;
+  let place;
+  const places = [];
 
   this.init = (scope) => {
+    // Level objects
+    // eslint-disable-next-line guard-for-in,no-restricted-syntax
+    for (const object in OBJECTS) {
+      OBJECTS[object][scope.l] = {};
+      OBJECTS[object][scope.l].data = [];
+    }
+
     // Lights
 
     // Hemisphere
@@ -174,6 +184,27 @@ function World() {
                 rotate,
               });
 
+              places.push(child);
+
+              child.visible = false;
+            } else if (child.name.includes(OBJECTS.PASSES.name)) {
+              let pass;
+              if (child.name.includes('Red')) pass = DESIGN.PASSES.red;
+              else if (child.name.includes('Orange')) pass = DESIGN.PASSES.orange;
+              else if (child.name.includes('Green')) pass = DESIGN.PASSES.green;
+              else if (child.name.includes('Purple')) pass = DESIGN.PASSES.purple;
+              else if (child.name.includes('Blue')) pass = DESIGN.PASSES.blue;
+
+
+              OBJECTS.PASSES[scope.l].data.push({
+                x: child.position.x,
+                y: child.position.y,
+                z: child.position.z,
+                pass,
+              });
+
+              scope.objects.push(child);
+
               child.visible = false;
             } else if (child.name.includes(OBJECTS.DOORS.name)) {
               let direction;
@@ -181,11 +212,11 @@ function World() {
               else if (child.name.includes('Down')) direction = 'down';
 
               let pass;
-              if (child.name.includes('Purple')) pass = 'purple';
-              else if (child.name.includes('Red')) pass = 'red';
-              else if (child.name.includes('Green')) pass = 'green';
-              else if (child.name.includes('Blue')) pass = 'blue';
-              else if (child.name.includes('Orange')) pass = 'orange';
+              if (child.name.includes('Red')) pass = DESIGN.PASSES.red;
+              else if (child.name.includes('Orange')) pass = DESIGN.PASSES.orange;
+              else if (child.name.includes('Green')) pass = DESIGN.PASSES.green;
+              else if (child.name.includes('Purple')) pass = DESIGN.PASSES.purple;
+              else if (child.name.includes('Blue')) pass = DESIGN.PASSES.blue;
 
               let rotate;
               if (child.name.includes('Z')) rotate = Math.PI / 2;
@@ -225,12 +256,17 @@ function World() {
               child.material.map.repeat.set(0.25, 0.5);
             }
 
-            if (!child.name.includes(OBJECTS.LEADER.name)) {
+            // На "местах-пустышках" - не ставим текстуру
+            if (!child.name.includes(OBJECTS.LEADER.name)
+                && !child.name.includes(OBJECTS.PASSES.name)) {
               child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
               child.material.map.encoding = Three.sRGBEncoding;
             }
           }
         });
+
+        // Переносим двери в отдельное октодерево
+        // и удаляем "места"-пустышки для элементов оформления и предметов
 
         doorsGroup = new Three.Group();
         doorsGroup.name = 'Doors';
@@ -239,6 +275,15 @@ function World() {
           doorsGroup.add(door);
         });
 
+        scope.objects.forEach((object) => {
+          glb.scene.remove(object);
+        });
+
+        places.forEach((place) => {
+          glb.scene.remove(place);
+        });
+
+        // Создаем октодеревья
         scope.octree.fromGraphNode(glb.scene);
         scope.octreeMutable.fromGraphNode(doorsGroup);
 
@@ -278,6 +323,7 @@ function World() {
 
         box = new Three.Box3();
 
+        scope.doors = [];
         for (let i = 0; i < OBJECTS.DOORS[scope.l].data.length; i++) {
           if (OBJECTS.DOORS[scope.l].data[i].height < 10) {
             doorsMarkerClone1 = doorMarkerSmallMesh.clone();
@@ -288,25 +334,25 @@ function World() {
           }
 
           switch (OBJECTS.DOORS[scope.l].data[i].pass) {
-            case 'purple':
-              doorsMarkerClone1.material = doorsMarkerPurpleMaterial;
-              doorsMarkerClone2.material = doorsMarkerPurpleMaterial;
-              break;
-            case 'red':
+            case DESIGN.PASSES.red:
               doorsMarkerClone1.material = doorsMarkerRedMaterial;
               doorsMarkerClone2.material = doorsMarkerRedMaterial;
               break;
-            case 'green':
+            case DESIGN.PASSES.orange:
+              doorsMarkerClone1.material = doorsMarkerOrangeMaterial;
+              doorsMarkerClone2.material = doorsMarkerOrangeMaterial;
+              break;
+            case DESIGN.PASSES.green:
               doorsMarkerClone1.material = doorsMarkerGreenMaterial;
               doorsMarkerClone2.material = doorsMarkerGreenMaterial;
               break;
-            case 'blue':
+            case DESIGN.PASSES.purple:
+              doorsMarkerClone1.material = doorsMarkerPurpleMaterial;
+              doorsMarkerClone2.material = doorsMarkerPurpleMaterial;
+              break;
+            case DESIGN.PASSES.blue:
               doorsMarkerClone1.material = doorsMarkerBlueMaterial;
               doorsMarkerClone2.material = doorsMarkerBlueMaterial;
-              break;
-            case 'orange':
-              doorsMarkerClone1.material = doorsMarkerOrangeMaterial;
-              doorsMarkerClone2.material = doorsMarkerOrangeMaterial;
               break;
             default:
               break;
@@ -332,7 +378,7 @@ function World() {
           doorPseudoMesh.updateMatrix();
           doorPseudoMesh.matrixAutoUpdate = false;
 
-          const door = new Three.Group();
+          door = new Three.Group();
           door.add(doorsMarkerClone1);
           door.add(doorsMarkerClone2);
           door.add(doorPseudoMesh);
@@ -344,9 +390,9 @@ function World() {
           );
           door.rotateY(OBJECTS.DOORS[scope.l].data[i].rotate);
 
-          doors.push({
+          scope.doors.push({
             data: OBJECTS.DOORS[scope.l].data[i],
-            mesh: scope.doors.find(object => object.id === OBJECTS.DOORS[scope.l].data[i].id),
+            mesh: scope.objects.find(object => object.id === OBJECTS.DOORS[scope.l].data[i].id),
             marker1: doorsMarkerClone1,
             marker2: doorsMarkerClone2,
             pseudo: doorPseudoMesh,
@@ -361,6 +407,113 @@ function World() {
           scope.scene.add(door);
         }
         loaderDispatchHelper(scope.$store, 'isDoorsBuild');
+
+
+        // Things
+
+        const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.HEIGHT, 32, 32);
+        const pseudoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white });
+
+        // Passes
+
+        const passGeometry = new Three.BoxBufferGeometry(
+          OBJECTS.PASSES.size,
+          OBJECTS.PASSES.size,
+          OBJECTS.PASSES.size / 5,
+        );
+        const passMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark, map: metallTexture });
+        const passMesh = new Three.Mesh(passGeometry, passMaterial);
+        let passMeshClone;
+
+        const passMarkerGeometry = new Three.CircleBufferGeometry(OBJECTS.PASSES.size / 4, 32);
+        const passMarkerDefaultMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white, map: metallTexture });
+        const passMarkerRedMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.red, map: metallTexture });
+        const passMarkerOrangeMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.orange, map: metallTexture });
+        const passMarkerGreenMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.green, map: metallTexture });
+        const passMarkerPurpleMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.purple, map: metallTexture });
+        const passMarkerBlueMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.blue, map: metallTexture });
+        const passMarkerMesh = new Three.Mesh(passMarkerGeometry, passMarkerDefaultMaterial);
+        let passMarkerMeshClone;
+
+        const passPseudoMesh = new Three.Mesh(pseudoGeometry, pseudoMaterial);
+        let passPseudoMeshClone;
+
+        let passGroup;
+
+        console.log(scope.objects);
+
+        scope.things = [];
+        for (let i = 0; i < OBJECTS.PASSES[scope.l].data.length; i++) {
+          passMeshClone = passMesh.clone();
+          passMarkerMeshClone = passMarkerMesh.clone();
+          passPseudoMeshClone = passPseudoMesh.clone();
+
+          switch (OBJECTS.PASSES[scope.l].data[i].pass) {
+            case DESIGN.PASSES.red:
+              passMarkerMeshClone.material = passMarkerRedMaterial;
+              break;
+            case DESIGN.PASSES.orange:
+              passMarkerMeshClone.material = passMarkerOrangeMaterial;
+              break;
+            case DESIGN.PASSES.green:
+              passMarkerMeshClone.material = passMarkerGreenMaterial;
+              break;
+            case DESIGN.PASSES.purple:
+              passMarkerMeshClone.material = passMarkerPurpleMaterial;
+              break;
+            case DESIGN.PASSES.blue:
+              passMarkerMeshClone.material = passMarkerBlueMaterial;
+              break;
+            default:
+              break;
+          }
+
+          passMeshClone.rotateX(Math.PI / 2);
+
+          passMarkerMeshClone.rotateX(Math.PI / -2);
+          passMarkerMeshClone.position.y += OBJECTS.PASSES.size / 10 + 0.01;
+
+          passPseudoMeshClone.name = `${OBJECTS.PASSES.name}${OBJECTS.PASSES[scope.l].data[i].pass}`;
+          passPseudoMeshClone.visible = false;
+
+          passGroup = new Three.Group();
+
+          passGroup.add(passMeshClone);
+          passGroup.add(passMarkerMeshClone);
+          passGroup.add(passPseudoMeshClone);
+          passGroup.position.set(
+            OBJECTS.PASSES[scope.l].data[i].x,
+            OBJECTS.PASSES[scope.l].data[i].y + OBJECTS.PASSES.size / 10,
+            OBJECTS.PASSES[scope.l].data[i].z,
+          );
+          passGroup.rotateY(degreesToRadians(randomInteger(0, 359)));
+
+          place = scope.objects.find(object => object.id === OBJECTS.DOORS[scope.l].data[i].id);
+          scope.things.push({
+            id: passPseudoMeshClone.id,
+            data: OBJECTS.PASSES[scope.l].data[i],
+            mesh: passMeshClone,
+            marker: passMarkerMeshClone,
+            pseudo: passPseudoMeshClone,
+          });
+
+          scope.scene.remove(place);
+          scope.objects.push(passPseudoMeshClone);
+          scope.scene.add(passGroup);
+        }
+
+
+        console.log(scope.objects);
+
+        // Toruch
+
+        scope.toruch = new Three.PointLight(
+          DESIGN.COLORS.sun,
+          1.5,
+          50,
+        );
+        scope.scene.add(scope.toruch);
+
 
         // Leader
 
@@ -400,28 +553,18 @@ function World() {
           scope.scene.add(leaderMeshClone);
           loaderDispatchHelper(scope.$store, 'isLeadersBuild');
         }
-
-
-        // Toruch
-
-        scope.toruch = new Three.PointLight(
-          DESIGN.COLORS.sun,
-          1.5,
-          50,
-        );
-        scope.scene.add(scope.toruch);
       },
     );
   };
 
-  this.openDoor = (id) => {
-    door = doors.find(door => door.data.id === id && !door.isStart && !door.isPause && !door.isEnd);
+  this.openDoor = (scope, id) => {
+    door = scope.doors.find(door => door.data.id === id && !door.isStart && !door.isPause && !door.isEnd);
     if (door) door.isStart = true;
   };
 
   const updateDoors = (scope) => {
     doorsGroup = new Three.Group();
-    scope.doors.forEach(door => doorsGroup.add(door));
+    scope.doors.forEach(door => doorsGroup.add(door.mesh));
     scope.octreeMutable = new Octree();
     scope.octreeMutable.fromGraphNode(doorsGroup);
     scope.scene.add(doorsGroup);
@@ -430,7 +573,7 @@ function World() {
   this.animate = (scope) => {
     sky.rotateY(scope.delta / 25);
 
-    doors.filter(door => door.isStart || door.isPause || door.isEnd).forEach((door) => {
+    scope.doors.filter(door => door.isStart || door.isPause || door.isEnd).forEach((door) => {
       door.time += scope.delta;
 
       if (door.isStart) {

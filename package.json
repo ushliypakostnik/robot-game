@@ -24,9 +24,11 @@
     "i18next-browser-languagedetector": "^4.0.1",
     "js-cookie": "^2.2.1",
     "register-service-worker": "^1.6.2",
+    "swiper": "^5.4.5",
     "three": "^0.124.0",
     "three-mtl-loader": "^1.0.2",
     "vue": "^2.6.10",
+    "vue-awesome-swiper": "^4.1.1",
     "vue-router": "^3.0.3",
     "vuex": "^3.0.1"
   },
@@ -66,6 +68,8 @@
       "no-multi-assign": 0,
       "no-plusplus": 0,
       "no-shadow": 0,
+      "default-case": 0,
+      "no-nested-ternary": 0,
       "vue/valid-v-for": 0
     },
     "parserOptions": {

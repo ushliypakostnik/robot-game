@@ -30,20 +30,53 @@ $colors__white: #fff;
 $colors__black: #000;
 
 $colors__primary: #621211;
+$colors__triade1: #0a3b3b;
+$colors__triade2: #425b10;
+
 $colors__primary--light: #b14343;
+$colors__triade1--light: #3c9d9d;
+$colors__triade2--light: #89ad42;
 
+$colors__tetrade--light: #b17543;
 
-// Borders and shadows
+$colors__analog: #623611;
+$colors__analog--light: #b17543;
 
-$colors__shadows: $colors__black;
+$colors__blue: #88ccff;
+$colors__purple: #8267bf;
+$colors__purple--dark: #413460;
+$colors__red: #cf3326;
+$colors__red--dark: #681a13;
+$colors__green: #4cbb17;
+$colors__green--dark: #265e0b;
+$colors__orange: #f9a602;
 
-$colors__border: $colors__white;
+// $colors__cannons: #221e12;
+$colors__cannons: #00ff00;
+$colors__drones: #53baff;
+
+$colors__anemone: $colors__white;
+$colors__crocus: $colors__purple;
+$colors__daffodil: #f0cf08;
+$colors__tulip: $colors__red;
 
 $colors__white--transparent: rgba(255, 255, 255, 0.5);
 $colors__white--transparent2: rgba(255, 255, 255, 0.75);
 $colors__black--transparent: rgba(0, 0, 0, 0.5);
+$colors__primary-light--transparent: rgba(177, 67, 67, 0.5);
+$colors__primary-light--transparent2: rgba(177, 67, 67, 0.75);
+$colors__crocus--transparent: rgba(130, 103, 191, 0.5);
+
+
+// Borders and shadows
+
+$colors__border: $colors__white;
+
+$colors__shadows: $colors__black;
+$colors__shadows--light: $colors__black--transparent;
 
 $colors__gate: $colors__black--transparent;
+$colors__placeholder: $colors__white--transparent;
 
 
 // Effects

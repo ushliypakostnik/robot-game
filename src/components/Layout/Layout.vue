@@ -9,21 +9,17 @@
       <UI />
 
       <div
-        v-if="isPause"
+        v-if="isPause && isGameLoaded"
         class="layout__blocker"
       >
-        <div class="layout__instructions">
-          <h1>{{ $t('layout.title') }} {{ version }}</h1>
-          <h3>{{ $t('layout.level') }}: {{ level }}</h3>
+        <Instructions />
+
+        <div class="layout__button-wrapper">
           <button
-            class="button"
+            class="layout__button button"
             type="button"
             @click.prevent.stop="play"
           >{{ $t('layout.startbutton') }}</button>
-          <div class="switch__wrapper">
-            <LangSwitch />
-          </div>
-          <div class="layout__attention">{{ $t('layout.attention') }}</div>
         </div>
       </div>
     </Preloader>
@@ -42,14 +38,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import { DESIGN } from '@/utils/constants';
 import ScreenHelper from '@/utils/screen-helper';
 
 import Gate from '@/components/Layout/Gate.vue';
 import Preloader from '@/components/Layout/Preloader.vue';
 import Scene from '@/components/Three/Scene/Scene.vue';
-import LangSwitch from '@/components/Layout/LangSwitch.vue';
 import UI from '@/components/Layout/UI.vue';
+import Instructions from '@/components/Layout/Instructions.vue';
 
 export default {
   name: 'Layout',
@@ -58,8 +53,8 @@ export default {
     Gate,
     Preloader,
     Scene,
-    LangSwitch,
     UI,
+    Instructions,
   },
 
   data() {
@@ -80,27 +75,18 @@ export default {
 
   computed: {
     ...mapGetters({
-      level: 'layout/level',
       isPause: 'layout/isPause',
+      isGameLoaded: 'preloader/isGameLoaded',
     }),
-
-    version() {
-      return DESIGN.V;
-    },
   },
 
   methods: {
-    ...mapActions({
-      togglePause: 'layout/togglePause',
-    }),
-
     onWindowResize() {
       this.isDesktop = !!ScreenHelper.isDesktop();
     },
 
     play() {
       this.$eventHub.$emit('lock');
-      this.togglePause(false);
     },
   },
 };
@@ -120,34 +106,20 @@ export default {
     right: 0;
     bottom: 0;
     background-color: $colors__gate;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    z-index: $layouts__1;
     @include size(100%, 100%);
   }
 
-  &__instructions {
-    text-align: center;
-    color: $colors__white;
+  &__button {
+    margin: 0 auto;
+
+    &-wrapper {
+      display: flex;
+      width: 100%;
+      position: fixed;
+      bottom: $gutter;
+      z-index: $layouts__2;
+    }
   }
-
-  &__attention {
-    position: absolute;
-    bottom: $gutter;
-    left: 0;
-    right: 0;
-    text-align: center;
-    @include text($font-size--xsmall * 0.75);
-  }
-}
-
-.button {
-  margin-top: $gutter * 1.5;
-  margin-bottom: $gutter * 1.5;
-}
-
-h3,
-h4 {
-  margin: 0;
 }
 </style>

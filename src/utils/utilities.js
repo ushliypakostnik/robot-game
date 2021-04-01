@@ -15,10 +15,6 @@ export const yesOrNo = () => {
   return result;
 };
 
-export const lightRandomRaduis = (raduis) => {
-  return raduis * (1 + ((Math.random() + 0.01) / 5) * yesOrNo());
-};
-
 export const loaderDispatchHelper = (store, field) => {
   store.dispatch('preloader/preloadOrBuilt', field).then(() => {
     store.dispatch('preloader/isAllLoadedAndBuilt');
@@ -32,7 +28,7 @@ function delay(ms) {
 }
 
 export const messagesByIdDispatchHelper = (scope, view, name, data) => {
-  let id = scope.message + 1;
+  const id = scope.message + 1;
   scope.addMessage(id);
 
   scope.$store.dispatch('layout/showMessage', { id, view, name, data }).then(() => {
@@ -42,9 +38,21 @@ export const messagesByIdDispatchHelper = (scope, view, name, data) => {
   }).catch((error) => { console.log(error); });
 };
 
-export const messagesByViewDispatchHelper = (scope, view, name) => {
-  if (!scope.messages.some(message => message[1] === view))
-    scope.showMessage({ id: null, view, name });
+export const heroOnHitDispatchHelper = (scope, value) => {
+  scope.setScale({
+    field: DESIGN.HERO.scales.health.name,
+    value,
+  });
+
+  scope.$store.dispatch('hero/setHeroOnHit', true).then(() => {
+    delay(DESIGN.ANIMATION_TIMEOUT * 2).then(() => {
+      scope.$store.dispatch('hero/setHeroOnHit', false);
+    }).catch((error) => { console.log(error); });
+  }).catch((error) => { console.log(error); });
+};
+
+export const messagesByViewDispatchHelper = (scope, view, name, data) => {
+  if (!scope.messages.some(message => message[1] === view)) scope.showMessage({ id: null, view, name, data });
 };
 
 export const distance2D = (x1, y1, x2, y2) => {
@@ -67,47 +75,6 @@ export const randomPointInCircle = (radius, x, y) => {
 
 export const getNumberSign = (number) => {
   return number === 0 ? 0 : number > 0 ? 1 : -1;
-};
-
-export const isInPointObjectsWithDistance = (objects, x, z, distance) => {
-  const result = objects.filter(object => distance2D(object[0], object[1], x, z) < distance);
-  return result.length > 0 ? true : false;
-};
-
-export const isInRoundObjectsWithCoefficient = (objects, x, z, coefficient) => {
-  const result = objects.filter(object => distance2D(object[0], object[1], x, z) < object[2] * coefficient);
-  return result.length > 0 ? true : false;
-};
-
-export const fixEnemyPosition = (raduis, stones, trees, x, z) => {
-  let counter = 0;
-  let newX = x;
-  let newZ = z;
-  while (isInPointObjectsWithDistance(trees, newX, newZ, 3) ||
-        isInRoundObjectsWithCoefficient(stones, newX, newZ, 2) ||
-        distance2D(0, 0, newX, newZ) > raduis) {
-    counter++;
-    newX = randomInteger(raduis * -1, raduis);
-    newZ = randomInteger(raduis * -1, raduis);
-    if (counter > 50) break;
-  }
-  return [newX, newZ];
-};
-
-export const fixStaffPosition = (raduis, waters, stones, trees, x, z) => {
-  let counter = 0;
-  let newX = x;
-  let newZ = z;
-  while (isInRoundObjectsWithCoefficient(waters, newX, newZ, 1.25) ||
-  isInPointObjectsWithDistance(trees, newX, newZ, 5) ||
-  isInRoundObjectsWithCoefficient(stones, newX, newZ, 2.5) ||
-  distance2D(0, 0, newX, newZ) > raduis) {
-    counter++;
-    newX = randomInteger(raduis * -1, raduis);
-    newZ = randomInteger(raduis * -1, raduis);
-    if (counter > 50) break;
-  }
-  return [newX, newZ];
 };
 
 export const addImmediateAudioToObjects = (scope, objects, buffer, volume, isRobots) => {
