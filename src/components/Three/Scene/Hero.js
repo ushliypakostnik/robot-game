@@ -30,6 +30,7 @@ function Hero() {
   let notTiredTime = 0;
 
   let object;
+  let name;
 
   this.init = (scope) => {
     playerCollider = new Capsule(
@@ -149,36 +150,46 @@ function Hero() {
     if (scope.onForward) {
       scope.object = scope.intersections[0].object;
 
-      console.log('Объект: ', object);
-
-      // Кастим вещь
+      // Кастим пропуск
       if (scope.object.name.includes(OBJECTS.PASSES.name)) {
-        object = scope.objects.find(object => object.id === scope.object.id);
+        object = scope.things.find(thing => thing.id === scope.object.id);
 
-        // console.log('Пропуск: ', object.name);
+        messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
 
-        // Это пропуск
-        //messagesByViewDispatchHelper(scope, 2, 'pick', object.data.pass);
+        if (object && scope.keyStates['KeyE']) {
+          const { group } = object;
+
+          scope.scene.remove(group);
+          scope.objects.splice(scope.objects.indexOf(scope.object), 1);
+          scope.things.splice(scope.things.indexOf(group), 1);
+
+          name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.PASSES.name) + OBJECTS.PASSES.name.length);
+
+          scope.addPass(name);
+          messagesByIdDispatchHelper(scope, 1, 'pick', name);
+        }
       }
 
       // Кастим дверь
       if (scope.object.name.includes(OBJECTS.DOORS.name)) {
         object = scope.doors.find(door => door.data.id === scope.object.id);
 
-        if (!scope.passes.includes(object.data.pass)) {
-          messagesByViewDispatchHelper(scope, 2, 'closed', object.data.pass);
-        } else {
-          messagesByViewDispatchHelper(scope, 2, 'open');
+        if (object) {
+          if (!scope.passes.includes(object.data.pass)) {
+            messagesByViewDispatchHelper(scope, 2, 'closed', object.data.pass);
+          } else {
+            messagesByViewDispatchHelper(scope, 2, 'open');
 
-          if (scope.keyStates['KeyE']) {
-            scope.world.openDoor(scope, scope.object.id);
+            if (scope.keyStates['KeyE']) {
+              scope.world.openDoor(scope, scope.object.id);
 
-            // Победа на уровне
-            if (scope.object.name.includes('Out')) {
-              setTimeout(() => {
-                scope.setWin();
-                scope.setGameOver();
-              }, 3000);
+              // Победа на уровне
+              if (scope.object.name.includes('Out')) {
+                setTimeout(() => {
+                  scope.setWin();
+                  scope.setGameOver();
+                }, 3000);
+              }
             }
           }
         }

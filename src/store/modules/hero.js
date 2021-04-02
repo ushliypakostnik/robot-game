@@ -11,7 +11,7 @@ const initialState = {
   daffodil: 0,
   tulip: 0,
 
-  passes: ['red'],
+  passes: [],
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,

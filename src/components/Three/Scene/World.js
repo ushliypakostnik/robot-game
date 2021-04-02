@@ -20,6 +20,7 @@ function World() {
   let box;
   let place;
   const places = [];
+  const things = [];
 
   this.init = (scope) => {
     // Level objects
@@ -203,7 +204,7 @@ function World() {
                 pass,
               });
 
-              scope.objects.push(child);
+              things.push(child);
 
               child.visible = false;
             } else if (child.name.includes(OBJECTS.DOORS.name)) {
@@ -275,12 +276,12 @@ function World() {
           doorsGroup.add(door);
         });
 
-        scope.objects.forEach((object) => {
-          glb.scene.remove(object);
-        });
-
         places.forEach((place) => {
           glb.scene.remove(place);
+        });
+
+        things.forEach((object) => {
+          glb.scene.remove(object);
         });
 
         // Создаем октодеревья
@@ -440,8 +441,6 @@ function World() {
 
         let passGroup;
 
-        console.log(scope.objects);
-
         scope.things = [];
         for (let i = 0; i < OBJECTS.PASSES[scope.l].data.length; i++) {
           passMeshClone = passMesh.clone();
@@ -488,22 +487,17 @@ function World() {
           );
           passGroup.rotateY(degreesToRadians(randomInteger(0, 359)));
 
-          place = scope.objects.find(object => object.id === OBJECTS.DOORS[scope.l].data[i].id);
+          place = things.find(object => object.id === OBJECTS.DOORS[scope.l].data[i].id);
           scope.things.push({
             id: passPseudoMeshClone.id,
             data: OBJECTS.PASSES[scope.l].data[i],
-            mesh: passMeshClone,
-            marker: passMarkerMeshClone,
-            pseudo: passPseudoMeshClone,
+            group: passGroup,
           });
 
-          scope.scene.remove(place);
           scope.objects.push(passPseudoMeshClone);
           scope.scene.add(passGroup);
         }
 
-
-        console.log(scope.objects);
 
         // Toruch
 

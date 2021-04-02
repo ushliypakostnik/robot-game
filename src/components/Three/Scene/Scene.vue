@@ -161,6 +161,7 @@ export default {
       setGameOver: 'layout/setGameOver',
 
       setScale: 'hero/setScale',
+      addPass: 'hero/addPass',
       setHeroTired: 'hero/setHeroTired',
       setHeroOnUpgrade: 'hero/setHeroOnUpgrade',
 
@@ -193,7 +194,7 @@ export default {
 
       // Cameras
 
-      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.WORLD_SIZE[this.l] * 4);
+      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.WORLD_SIZE[this.l] * 4.25);
 
       // Controls
 

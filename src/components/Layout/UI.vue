@@ -70,6 +70,8 @@
           class="ui__message ui__message--small"
         >
           {{message[0]}}: <span v-html="$t(`messages.message${message[1]}.${message[2]}`)" />
+          <span v-if="message[3]"> {{ getMessage1ByName(message[3]) }}</span>
+          <span v-if="isPickPass(message[3])">{{ $t(`messages.passes.pass`) }}</span>
         </div>
 
         <!-- "Постоянные" сообщения -->
@@ -80,8 +82,13 @@
           <span v-if="message[2] ==='open'">{{ $t(`messages.message${message[1]}.${message[2]}`) }}</span>
           <span v-if="message[2] ==='closed'">
             {{ $t(`messages.message${message[1]}.${message[2]}.${message[2]}1`) }}
-            {{ $t(`messages.message${message[1]}.${message[2]}.passes.${message[3]}`) }}
+            {{ $t(`messages.passes.${message[3]}`) }}
             {{ $t(`messages.message${message[1]}.${message[2]}.${message[2]}2`) }}
+          </span>
+          <span v-if="message[2] ==='cast'">
+            {{ $t(`messages.message${message[1]}.${message[2]}`) }}
+            {{ getMessage2ByName(message[3]) }}
+            <span v-if="isCastPass(message[3])">{{ $t(`messages.passes.pass`) }}</span>
           </span>
         </div>
       </div>
@@ -187,7 +194,46 @@ export default {
       return this.passes.includes(DESIGN.PASSES[pass]);
     },
 
-    getMessageByName(name) {
+    isCastPass(name) {
+      if (name.includes(OBJECTS.PASSES.name)) return true;
+      return false;
+    },
+
+    isPickPass(name) {
+      switch (name) {
+        case DESIGN.PASSES.red:
+        case DESIGN.PASSES.orange:
+        case DESIGN.PASSES.green:
+        case DESIGN.PASSES.purple:
+        case DESIGN.PASSES.blue:
+          return true;
+        default:
+          return false;
+      }
+    },
+
+    getMessage1ByName(name) {
+      switch (name) {
+        case DESIGN.PASSES.red:
+        case DESIGN.PASSES.orange:
+        case DESIGN.PASSES.green:
+        case DESIGN.PASSES.purple:
+        case DESIGN.PASSES.blue:
+          return this.$t(`messages.passes.${name}`);
+        default:
+          return null;
+      }
+    },
+
+    getMessage2ByName(name) {
+      if (name.includes(OBJECTS.PASSES.name)) {
+        if (name.includes(DESIGN.PASSES.red)) return this.$t('messages.passes.red');
+        if (name.includes(DESIGN.PASSES.orange)) return this.$t('messages.passes.orange');
+        if (name.includes(DESIGN.PASSES.green)) return this.$t('messages.passes.green');
+        if (name.includes(DESIGN.PASSES.purple)) return this.$t('messages.passes.purple');
+        if (name.includes(DESIGN.PASSES.blue)) return this.$t('messages.passes.blue');
+      }
+
       switch (name) {
         case OBJECTS.ANEMONES.name:
         case OBJECTS.CROCUSES.name:
@@ -196,8 +242,9 @@ export default {
           return this.$t(`things.${name}.name`);
         case OBJECTS.BOTTLES.name:
           return this.$t(`things.${name}.declination`);
+        default:
+          return null;
       }
-      return null;
     },
   },
 
