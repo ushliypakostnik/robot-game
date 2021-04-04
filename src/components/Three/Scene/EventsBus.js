@@ -48,11 +48,9 @@ function EventsBus() {
     }).catch((error) => { console.log(error); });
   };
 
-  this.heroOnUpgradeDispatchHelper = (scope, delay) => {
-    pause = delay || DESIGN.ANIMATION_TIMEOUT / 2000;
-
+  this.heroOnUpgradeDispatchHelper = (scope) => {
     scope.$store.dispatch('hero/setHeroOnUpgrade', true).then(() => {
-      this.addEventsToBus(pause, null, () => {
+      this.addEventsToBus(DESIGN.ANIMATION_TIMEOUT / 250, null, () => {
         scope.$store.dispatch('hero/setHeroOnUpgrade', false);
       });
     }).catch((error) => { console.log(error); });
