@@ -9,8 +9,6 @@ import {
   loaderDispatchHelper,
   degreesToRadians,
   randomInteger,
-  addAudioToObjects,
-  playSoundWhoCanPlay,
 } from '@/utils/utilities';
 
 function World() {
@@ -449,8 +447,6 @@ function World() {
         let passPseudoMeshClone;
 
         let passGroup;
-        // eslint-disable-next-line no-unused-vars
-        let place;
 
         scope.things = [];
         for (let i = 0; i < OBJECTS.PASSES[scope.l].data.length; i++) {
@@ -498,11 +494,11 @@ function World() {
           );
           passGroup.rotateY(degreesToRadians(randomInteger(0, 359)));
 
-          place = things.find(object => object.id === OBJECTS.DOORS[scope.l].data[i].id);
           scope.things.push({
             id: passPseudoMeshClone.id,
             data: OBJECTS.PASSES[scope.l].data[i],
             group: passGroup,
+            isPicked: false,
           });
 
           scope.objects.push(passPseudoMeshClone);

@@ -12,7 +12,7 @@ const initialState = {
   tulip: 0,
 
   passes: [],
-  // passes: ['red', 'orange', 'green', 'purple', 'blue'],
+  // passes: ['red', 'orange', 'green', 'purple'],
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,

@@ -209,16 +209,19 @@ function Hero() {
 
       // Кастим пропуск
       if (scope.object.name.includes(OBJECTS.PASSES.name)) {
-        object = scope.things.find(thing => thing.id === scope.object.id);
+        object = scope.things.find(thing => thing.id === scope.object.id && !thing.isPicked);
 
         messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
 
         if (object && scope.keyStates['KeyE']) {
           const { group } = object;
 
-          scope.scene.remove(group);
-          scope.objects.splice(scope.objects.indexOf(scope.object), 1);
-          scope.things.splice(scope.things.indexOf(group), 1);
+          object.isPicked = true;
+          group.visible = false;
+
+          // scope.scene.remove(group);
+          // scope.objects.splice(scope.objects.indexOf(scope.object), 1);
+          // scope.things.splice(scope.things.indexOf(group), 1);
 
           name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.PASSES.name) + OBJECTS.PASSES.name.length);
 
