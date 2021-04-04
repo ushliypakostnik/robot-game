@@ -49,7 +49,7 @@ function EventsBus() {
   };
 
   this.heroOnUpgradeDispatchHelper = (scope, delay) => {
-    pause = delay || DESIGN.ANIMATION_TIMEOUT / 1000;
+    pause = delay || DESIGN.ANIMATION_TIMEOUT / 2000;
 
     scope.$store.dispatch('hero/setHeroOnUpgrade', true).then(() => {
       this.addEventsToBus(pause, null, () => {

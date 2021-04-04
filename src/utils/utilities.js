@@ -17,12 +17,6 @@ export const loaderDispatchHelper = (store, field) => {
   }).catch((error) => { console.log(error); });
 };
 
-function delay(ms) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 export const messagesByViewDispatchHelper = (scope, view, name, data) => {
   if (!scope.messages.some(message => message[1] === view)) scope.showMessage({ id: null, view, name, data });
 };
