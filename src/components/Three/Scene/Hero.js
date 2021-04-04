@@ -1,4 +1,4 @@
-/* eslint-disable dot-notation */
+/* eslint-disable dot-notation,prefer-destructuring */
 import * as Three from 'three';
 
 import { Capsule } from '../Modules/Math/Capsule';
@@ -6,9 +6,8 @@ import { Capsule } from '../Modules/Math/Capsule';
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import {
-  messagesByIdDispatchHelper,
+  loaderDispatchHelper,
   messagesByViewDispatchHelper,
-  heroOnHitDispatchHelper,
 } from '@/utils/utilities';
 
 function Hero() {
@@ -32,7 +31,42 @@ function Hero() {
   let object;
   let name;
 
+  const audioLoader = new Three.AudioLoader();
+  let steps;
+  let hit;
+
   this.init = (scope) => {
+    audioLoader.load('./audio/pick.mp3', (buffer) => {
+      scope.audio.addAudioToHero(scope, buffer, 'pick', DESIGN.VOLUME.hero.pick, false);
+      loaderDispatchHelper(scope.$store, 'isPickLoaded');
+    });
+
+    audioLoader.load('./audio/steps.mp3', (buffer) => {
+      steps = scope.audio.addAudioToHero(scope, buffer, 'steps', DESIGN.VOLUME.hero.step, false);
+      steps.onEnded = () => steps.stop();
+      loaderDispatchHelper(scope.$store, 'isStepsLoaded');
+    });
+
+    audioLoader.load('./audio/current.mp3', (buffer) => {
+      scope.audio.addAudioToHero(scope, buffer, 'damage', DESIGN.VOLUME.hero.current, true);
+      loaderDispatchHelper(scope.$store, 'isDamageLoaded');
+    });
+
+    audioLoader.load('./audio/current.mp3', (buffer) => {
+      hit = scope.audio.addAudioToHero(scope, buffer, 'hit', DESIGN.VOLUME.hero.current, false);
+      loaderDispatchHelper(scope.$store, 'isHitLoaded');
+    });
+
+    audioLoader.load('./audio/jumpstart.mp3', (buffer) => {
+      scope.audio.addAudioToHero(scope, buffer, 'jumpstart', DESIGN.VOLUME.hero.jumpstart, false);
+      loaderDispatchHelper(scope.$store, 'isJumpStartLoaded');
+    });
+
+    audioLoader.load('./audio/jumpend.mp3', (buffer) => {
+      scope.audio.addAudioToHero(scope, buffer, 'jumpend', DESIGN.VOLUME.hero.jumpend, false);
+      loaderDispatchHelper(scope.$store, 'isJumpEndLoaded');
+    });
+
     playerCollider = new Capsule(
       new Three.Vector3(
         DESIGN.HERO.START.x,
@@ -70,6 +104,8 @@ function Hero() {
         ),
         DESIGN.HERO.HEIGHT / 2,
       );
+
+      steps.setPlaybackRate(0.5);
     } else {
       playerCollider = new Capsule(
         new Three.Vector3(
@@ -84,7 +120,25 @@ function Hero() {
         ),
         DESIGN.HERO.HEIGHT / 2,
       );
+
+      steps.setPlaybackRate(1);
     }
+  };
+
+  this.setRun = (scope, isRun) => {
+    if (isRun && scope.keyStates['KeyW']) {
+      steps.setVolume(DESIGN.VOLUME.hero.run);
+      steps.setPlaybackRate(2);
+    } else {
+      steps.setVolume(DESIGN.VOLUME.hero.step);
+      steps.setPlaybackRate(1);
+    }
+  };
+
+  this.setOnHit = (scope, isOnHit) => {
+    if (isOnHit) {
+      if (!hit.isPlaying) hit.play();
+    } else if (hit.isPlaying) hit.stop();
   };
 
   const playerCollitions = (scope) => {
@@ -104,7 +158,10 @@ function Hero() {
       else {
         // console.log('Пролетел: ', jumpStart - playerCollider.end.y);
         jumpFinish = jumpStart - playerCollider.end.y;
-        if (jumpFinish > 15) heroOnHitDispatchHelper(scope, -2 * (jumpFinish - 15));
+        if (jumpFinish > 15) scope.events.heroOnHitDispatchHelper(scope, -2 * (jumpFinish - 15));
+
+        // Sound
+        if (Math.abs(jumpFinish) > 0.25) scope.audio.playHeroSoundFromStart('jumpend');
       }
     }
     scope.playerOnFloor = playerOnFloor;
@@ -165,8 +222,12 @@ function Hero() {
 
           name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.PASSES.name) + OBJECTS.PASSES.name.length);
 
+          // Sound
+          scope.audio.playHeroSoundFromStart('pick');
+
           scope.addPass(name);
-          messagesByIdDispatchHelper(scope, 1, 'pick', name);
+          scope.events.heroOnUpgradeDispatchHelper(scope);
+          scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', name);
         }
       }
 
@@ -185,10 +246,10 @@ function Hero() {
 
               // Победа на уровне
               if (scope.object.name.includes('Out')) {
-                setTimeout(() => {
+                scope.events.delayDispatchHelper(scope, 3, () => {
                   scope.setWin();
                   scope.setGameOver();
-                }, 3000);
+                });
               }
             }
           }
@@ -231,7 +292,7 @@ function Hero() {
         notTiredClock.stop();
         notTiredTime = 0;
         scope.setNotTired(false);
-        messagesByIdDispatchHelper(scope, 1, 'endNoTired');
+        scope.events.messagesByIdDispatchHelper(scope, 2, 'endNoTired');
       }
     }
 
@@ -257,18 +318,42 @@ function Hero() {
           playerVelocity.add(getSideVector(scope).multiplyScalar(speed * scope.delta));
         }
 
-        if (scope.keyStates['Space']) playerVelocity.y = DESIGN.HERO.JUMP;
+        // Steps sound
+        if (steps) {
+          if (scope.keyStates['KeyW']
+              || scope.keyStates['KeyS']
+              || scope.keyStates['KeyA']
+              || scope.keyStates['KeyD']) {
+            if (!steps.isPlaying) {
+              speed = scope.isHidden ? 0.5 : scope.isRun ? 2 : 1;
+              steps.setPlaybackRate(speed);
+              steps.play();
+            }
+          }
+        }
+
+        if (scope.keyStates['Space']) {
+          playerVelocity.y = DESIGN.HERO.JUMP;
+
+          // Sound
+          scope.audio.playHeroSoundFromStart('jumpstart');
+        }
       }
 
       scope.damping = Math.exp(-3 * scope.delta) - 1;
       playerVelocity.addScaledVector(playerVelocity, scope.damping);
-    } else playerVelocity.y -= DESIGN.GRAVITY * scope.delta;
+    } else {
+      if (steps && steps.isPlaying) steps.pause();
+
+      playerVelocity.y -= DESIGN.GRAVITY * scope.delta;
+    }
 
     playerCollider.translate(playerVelocity.clone().multiplyScalar(scope.delta));
 
     playerCollitions(scope);
 
     scope.camera.position.copy(playerCollider.end);
+
     if (scope.toruch && scope.isToruch) scope.toruch.position.copy(playerCollider.end);
     // console.log(scope.camera.position);
   };

@@ -1,6 +1,7 @@
 const initialState = {
   isGameLoaded: false,
 
+  // Textures
   isConcrete1Loaded: false,
   isConcrete2Loaded: false,
   isConcrete3Loaded: false,
@@ -11,8 +12,19 @@ const initialState = {
   isLeaderLoaded: false,
   isSandLoaded: false,
 
+  // Audio
+  isPickLoaded: false,
+  isStepsLoaded: false,
+  isDamageLoaded: false,
+  isHitLoaded: false,
+  isDoorsSoundLoaded: false,
+  isJumpStartLoaded: false,
+  isJumpEndLoaded: false,
+
+  // World build
   isDoorsBuild: false,
   isLeadersBuild: false,
+  isPassesBuild: false,
 };
 
 const state = initialState;

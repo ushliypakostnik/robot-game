@@ -56,13 +56,23 @@ export const DESIGN = {
     level1: size(1, 200), // размер клетки 200
   },
   VOLUME: {
-    small: 0.35,
+    small: 0.25,
     normal: 0.5,
-    max: 1,
+    max: 0.75,
     positional: {
       ref: 50,
       max: 2000,
     },
+    hero: {
+      pick: 0.15,
+      step: 0.2,
+      run: 0.45,
+      current: 0.4,
+      jumpstart: 0.7,
+      jumpend: 0.2,
+    },
+    wind: 0.3,
+    doors: 1,
   },
   GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
@@ -126,7 +136,7 @@ export const DESIGN = {
 export const OBJECTS = {
   DOORS: {
     name: 'door',
-    speed: 20,
+    speed: 15,
     pause: 3,
   },
   LEADER: {

@@ -9,6 +9,8 @@ import {
   loaderDispatchHelper,
   degreesToRadians,
   randomInteger,
+  addAudioToObjects,
+  playSoundWhoCanPlay,
 } from '@/utils/utilities';
 
 function World() {
@@ -18,9 +20,10 @@ function World() {
   let door;
   let direction;
   let box;
-  let place;
   const places = [];
   const things = [];
+
+  const audioLoader1 = new Three.AudioLoader();
 
   this.init = (scope) => {
     // Level objects
@@ -29,6 +32,7 @@ function World() {
       OBJECTS[object][scope.l] = {};
       OBJECTS[object][scope.l].data = [];
     }
+
 
     // Lights
 
@@ -172,8 +176,7 @@ function World() {
               if (child.name.includes('Z')) {
                 if (child.name.includes('R')) rotate = Math.PI / -2;
                 else rotate = Math.PI / 2;
-              }
-              else if (child.name.includes('X')) {
+              } else if (child.name.includes('X')) {
                 if (child.name.includes('R')) rotate = Math.PI;
                 else rotate = 0;
               }
@@ -403,11 +406,17 @@ function World() {
             isEnd: false,
             isUpdate: false,
             distance: 0,
+            isStoped: false,
           });
 
           scope.scene.add(door);
         }
         loaderDispatchHelper(scope.$store, 'isDoorsBuild');
+
+        audioLoader1.load('./audio/door.mp3', (buffer) => {
+          scope.audio.addAudioToObjects(scope, scope.doors, buffer, 'mesh', 'door', DESIGN.VOLUME.doors, false);
+          loaderDispatchHelper(scope.$store, 'isDoorsSoundLoaded');
+        });
 
 
         // Things
@@ -440,6 +449,8 @@ function World() {
         let passPseudoMeshClone;
 
         let passGroup;
+        // eslint-disable-next-line no-unused-vars
+        let place;
 
         scope.things = [];
         for (let i = 0; i < OBJECTS.PASSES[scope.l].data.length; i++) {
@@ -497,6 +508,7 @@ function World() {
           scope.objects.push(passPseudoMeshClone);
           scope.scene.add(passGroup);
         }
+        loaderDispatchHelper(scope.$store, 'isPassesBuild');
 
 
         // Toruch
@@ -553,7 +565,10 @@ function World() {
 
   this.openDoor = (scope, id) => {
     door = scope.doors.find(door => door.data.id === id && !door.isStart && !door.isPause && !door.isEnd);
-    if (door) door.isStart = true;
+    if (door && !door.isStart) {
+      door.isStart = true;
+      scope.audio.playObjectSoundFromStart(door.data.id, 'door');
+    }
   };
 
   const updateDoors = (scope) => {
@@ -586,7 +601,7 @@ function World() {
       }
 
       if (door.isStart) {
-        if (door.distance > 3 && !door.isUpdate) {
+        if (door.distance > DESIGN.HERO.HEIGHT + 1 && !door.isUpdate) {
           updateDoors(scope);
           door.isUpdate = true;
         }
@@ -606,6 +621,7 @@ function World() {
         if (!box.containsPoint(scope.controls.getObject().position)) {
           door.isPause = false;
           door.isEnd = true;
+          scope.audio.startObjectSound(door.data.id, 'door');
         }
       }
 
@@ -617,7 +633,7 @@ function World() {
           door.distance = door.data.height - door.distance;
         }
 
-        if (door.distance > 3 && !door.isUpdate) {
+        if (door.distance > door.data.height - DESIGN.HERO.HEIGHT - 1 && !door.isUpdate) {
           updateDoors(scope);
           door.isUpdate = true;
         }

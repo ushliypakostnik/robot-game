@@ -19,15 +19,17 @@ import { Octree } from '../Modules/Math/Octree';
 // Stats
 import Stats from '@/components/Three/Modules/Utils/Stats';
 
-import { DESIGN, OBJECTS } from '@/utils/constants';
+import { DESIGN } from '@/utils/constants';
 import {
   messagesByIdDispatchHelper,
-// messagesByViewDispatchHelper,
 } from '@/utils/utilities';
 
 // Modules
+import AudioBus from '@/components/Three/Scene/AudioBus';
+import EventsBus from '@/components/Three/Scene/EventsBus';
 import Hero from '@/components/Three/Scene/Hero';
 import World from '@/components/Three/Scene/World';
+import Atmosphere from '@/components/Three/Scene/Atmosphere';
 
 export default {
   name: 'Scene',
@@ -45,6 +47,8 @@ export default {
       clock: null,
       delta: null,
 
+      listener: null,
+
       // hero
       startDirection: null,
       directionStore: null,
@@ -53,15 +57,19 @@ export default {
       isHidden: false,
       isToruch: true,
 
-
       // world
       octree: null,
       octreeMutable: null,
 
+      toruch: null,
+
       // modules
+      audio: null,
+      events: null,
+
       hero: null,
       world: null,
-      toruch: false,
+      atmosphere: null,
 
       // utilities
 
@@ -93,6 +101,8 @@ export default {
     this.directionStore = this.startDirection;
 
     this.clock = new Three.Clock();
+
+    this.listener = new Three.AudioListener();
 
     this.init();
     this.animate();
@@ -138,7 +148,7 @@ export default {
       isHeroTired: 'hero/isHeroTired',
 
       isHeroOnDamage: 'hero/isHeroOnDamage',
-      isHeroOnHit: 'hero/isHeroOnFire',
+      isHeroOnHit: 'hero/isHeroOnHit',
 
       isNotDamaged: 'hero/isNotDamaged',
       isNotTired: 'hero/isNotTired',
@@ -196,6 +206,9 @@ export default {
 
       this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.WORLD_SIZE[this.l] * 4.25);
 
+      // Audio listener
+      this.camera.add(this.listener);
+
       // Controls
 
       // In First Person
@@ -220,11 +233,19 @@ export default {
       this.scene.add(this.camera);
 
       // Modules
+      this.audio = new AudioBus();
+      this.audio.init(this);
+
+      this.events = new EventsBus();
+
       this.hero = new Hero();
       this.hero.init(this);
 
       this.world = new World();
       this.world.init(this);
+
+      this.atmosphere = new Atmosphere();
+      this.atmosphere.init(this);
 
       // Listeners
       window.addEventListener('resize', this.onWindowResize, false);
@@ -264,13 +285,7 @@ export default {
 
         case 67: // C
         case 18: // Alt
-          if (!this.isPause) {
-            if (this.isRun) this.isRun = false;
-            this.isHidden = !this.isHidden;
-            this.hero.setHidden(this, this.isHidden);
-            if (this.isHidden) messagesByIdDispatchHelper(this, 1, 'hiddenMoveEnabled');
-            else messagesByIdDispatchHelper(this, 1, 'hiddenMoveDisabled');
-          }
+          if (!this.isPause) this.isHidden = !this.isHidden;
           break;
 
         case 80: // P
@@ -283,11 +298,11 @@ export default {
           if (this.isToruch) {
             this.toruch.visible = false;
             this.isToruch = false;
-            messagesByIdDispatchHelper(this, 1, 'toruchOff');
+            this.events.messagesByIdDispatchHelper(this, 1, 'toruchOff');
           } else {
             this.toruch.visible = true;
             this.isToruch = true;
-            messagesByIdDispatchHelper(this, 1, 'toruchOn');
+            this.events.messagesByIdDispatchHelper(this, 1, 'toruchOn');
           }
           break;
       }
@@ -298,10 +313,11 @@ export default {
 
       if (!this.isPause && !this.isGameOver) {
         // Modules
+        this.events.animate(this);
+
         this.hero.animate(this);
         this.world.animate(this);
-      } else {
-        // this.module.stop();
+        this.atmosphere.animate(this);
       }
 
       if (!this.isPause) this.render();
@@ -324,11 +340,30 @@ export default {
   },
 
   watch: {
-    // Усталость
+    isPause() {
+      this.audio.toggle();
+    },
+
     isHeroTired(value) {
       if (value && this.isRun) this.isRun = false;
-      if (value) messagesByIdDispatchHelper(this, 1, 'tired');
-      else messagesByIdDispatchHelper(this, 1, 'recovered');
+      if (value) this.events.messagesByIdDispatchHelper(this, 1, 'tired');
+      else this.events.messagesByIdDispatchHelper(this, 1, 'recovered');
+    },
+
+    isRun(value) {
+      if (!this.isHidden) this.hero.setRun(this, value);
+    },
+
+    isHidden(value) {
+      this.hero.setHidden(this, value);
+      if (value) {
+        if (this.isRun) this.isRun = false;
+        this.events.messagesByIdDispatchHelper(this, 1, 'hiddenMoveEnabled');
+      } else this.events.messagesByIdDispatchHelper(this, 1, 'hiddenMoveDisabled');
+    },
+
+    isHeroOnHit(value) {
+      this.hero.setOnHit(this, value);
     },
 
     isGameOver(value) {
