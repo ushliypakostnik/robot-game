@@ -56,7 +56,7 @@ function AudioBus() {
       audio.setLoop(isLoop);
       audio.setRolloffFactor(1);
 
-      addAudioToBus(scope, object.data.id, audio, name, isLoop);
+      addAudioToBus(scope, object.id, audio, name, isLoop);
 
       object[element].add(audio);
     });
@@ -70,7 +70,7 @@ function AudioBus() {
     return bus.find(record => record.id === id && record.name === name);
   };
 
-  this.playHeroSoundFromStart = (name) => {
+  this.replayHeroSound = (name) => {
     record = getRecordByName(name);
     if (record && record.audio) {
       if (record.audio.isPlaying) record.audio.stop();
@@ -78,7 +78,7 @@ function AudioBus() {
     }
   };
 
-  this.startHeroNotPlayingSound = (name) => {
+  this.startHeroSound = (name) => {
     record = getRecordByName(name);
     if (record && record.audio && !record.audio.isPlaying) record.audio.play();
   };
@@ -88,7 +88,12 @@ function AudioBus() {
     if (record && record.audio && !record.audio.isPlaying) record.audio.play();
   };
 
-  this.playObjectSoundFromStart = (id, name) => {
+  this.stopObjectSound = (id, name) => {
+    record = getRecordByIdAndName(id, name);
+    if (record && record.audio && record.audio.isPlaying) record.audio.stop();
+  };
+
+  this.replayObjectSound = (id, name) => {
     record = getRecordByIdAndName(id, name);
     if (record && record.audio) {
       if (!record.audio.isPlaying) record.audio.play();

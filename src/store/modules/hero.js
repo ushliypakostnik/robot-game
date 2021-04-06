@@ -6,13 +6,13 @@ const initialState = {
   endurance: DESIGN.HERO.scales.endurance.start,
   ammo: DESIGN.HERO.scales.ammo.start,
 
-  anemone: 0,
-  crocus: 0,
-  daffodil: 0,
-  tulip: 0,
+  red: 0,
+  orange: 0,
+  green: 0,
+  purple: 0,
 
-  passes: [],
-  // passes: ['red', 'orange', 'green', 'purple'],
+  // passes: [],
+  passes: ['red', 'orange', 'green', 'purple'],
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,
@@ -31,10 +31,10 @@ const getters = {
   endurance: state => state.endurance,
   ammo: state => state.ammo,
 
-  anemone: state => state.anemone,
-  crocus: state => state.crocus,
-  daffodil: state => state.daffodil,
-  tulip: state => state.tulip,
+  red: state => state.red,
+  orange: state => state.orange,
+  green: state => state.green,
+  purple: state => state.purple,
 
   passes: state => state.passes,
 

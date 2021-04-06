@@ -1,5 +1,5 @@
-Start frontend project on Three.js and Vue
-==========================================
+Browser classic custom FPS Game on Three and Vue.
+=================================================
 
 Deploy
 ------

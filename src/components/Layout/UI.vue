@@ -1,17 +1,17 @@
 <template>
   <div class="ui">
     <div class="ui__things">
-      <div class="ui__thing ui__thing--daffodils">
-        <div class="ui__thing-circle" />{{ flower(daffodil) }}
+      <div class="ui__thing ui__thing--red">
+        <div class="ui__thing-circle" />{{ flower(red) }}
       </div>
-      <div class="ui__thing ui__thing--anemones">
-        <div class="ui__thing-circle" />{{ flower(anemone) }}
+      <div class="ui__thing ui__thing--orange">
+        <div class="ui__thing-circle" />{{ flower(orange) }}
       </div>
-      <div class="ui__thing ui__thing--crocuses">
-        <div class="ui__thing-circle" />{{ flower(crocus) }}
+      <div class="ui__thing ui__thing--green">
+        <div class="ui__thing-circle" />{{ flower(green) }}
       </div>
-      <div class="ui__thing ui__thing--tulips">
-        <div class="ui__thing-circle" />{{ flower(tulip) }}
+      <div class="ui__thing ui__thing--purple">
+        <div class="ui__thing-circle" />{{ flower(purple) }}
       </div>
     </div>
 
@@ -71,7 +71,7 @@
         >
           {{message[0]}}: <span v-html="$t(`messages.message${message[1]}.${message[2]}`)" />
           <span v-if="message[3]"> {{ getMessage1ByName(message[3]) }}</span>
-          <span v-if="isPickPass(message[3])">{{ $t(`messages.passes.pass`) }}</span>
+          <span v-if="isPickPass(message[3])">{{ $t(`messages.objects.pass.name`) }}</span>
         </div>
 
         <!-- "Постоянные" сообщения -->
@@ -82,14 +82,29 @@
           <span v-if="message[2] ==='open'">{{ $t(`messages.message${message[1]}.${message[2]}`) }}</span>
           <span v-if="message[2] ==='closed'">
             {{ $t(`messages.message${message[1]}.${message[2]}.${message[2]}1`) }}
-            {{ $t(`messages.passes.${message[3]}`) }}
+            {{ $t(`messages.objects.pass.${message[3]}`) }}
             {{ $t(`messages.message${message[1]}.${message[2]}.${message[2]}2`) }}
           </span>
           <span v-if="message[2] ==='cast'">
             {{ $t(`messages.message${message[1]}.${message[2]}`) }}
             {{ getMessage2ByName(message[3]) }}
-            <span v-if="isCastPass(message[3])">{{ $t(`messages.passes.pass`) }}</span>
+            <span v-if="isCastPass(message[3])">{{ $t(`messages.objects.pass.name`) }}</span>
+            <span v-if="isCastFlower(message[3])">{{ $t(`messages.objects.flower.name`) }}</span>
+            <span v-if="isCastBottle(message[3])">{{ $t(`messages.objects.bottle.declination`) }}</span>
           </span>
+          <span v-if="message[2] ==='look'">
+            {{ $t(`messages.message${message[1]}.${message[2]}`) }}
+            {{ getMessage2ByName(message[3]) }}
+          </span>
+        </div>
+
+        <!-- Нумерованные сообщения связанные с положением в мире и врагами  -->
+        <div
+          v-if="message[1] === 3"
+          class="ui__message ui__message--small"
+        >
+          {{message[0]}}: <span v-html="$t(`messages.message3.${message[2]}`)" />
+          <span v-if="message[3]"> {{ $t(`messages.objects.${message[3]}.declination`) }}</span>
         </div>
       </div>
     </div>
@@ -145,10 +160,10 @@ export default {
       endurance: 'hero/endurance',
       ammo: 'hero/ammo',
 
-      anemone: 'hero/anemone',
-      crocus: 'hero/crocus',
-      daffodil: 'hero/daffodil',
-      tulip: 'hero/tulip',
+      red: 'hero/red',
+      orange: 'hero/orange',
+      green: 'hero/green',
+      purple: 'hero/purple',
 
       passes: 'hero/passes',
 
@@ -199,6 +214,16 @@ export default {
       return false;
     },
 
+    isCastFlower(name) {
+      if (name.includes(OBJECTS.FLOWERS.name)) return true;
+      return false;
+    },
+
+    isCastBottle(name) {
+      if (name.includes(OBJECTS.BOTTLES.name)) return true;
+      return false;
+    },
+
     isPickPass(name) {
       switch (name) {
         case DESIGN.PASSES.red:
@@ -219,7 +244,7 @@ export default {
         case DESIGN.PASSES.green:
         case DESIGN.PASSES.purple:
         case DESIGN.PASSES.blue:
-          return this.$t(`messages.passes.${name}`);
+          return this.$t(`messages.objects.pass.${name}`);
         default:
           return null;
       }
@@ -227,21 +252,23 @@ export default {
 
     getMessage2ByName(name) {
       if (name.includes(OBJECTS.PASSES.name)) {
-        if (name.includes(DESIGN.PASSES.red)) return this.$t('messages.passes.red');
-        if (name.includes(DESIGN.PASSES.orange)) return this.$t('messages.passes.orange');
-        if (name.includes(DESIGN.PASSES.green)) return this.$t('messages.passes.green');
-        if (name.includes(DESIGN.PASSES.purple)) return this.$t('messages.passes.purple');
-        if (name.includes(DESIGN.PASSES.blue)) return this.$t('messages.passes.blue');
+        if (name.includes(DESIGN.PASSES.red)) return this.$t('messages.objects.pass.red');
+        if (name.includes(DESIGN.PASSES.orange)) return this.$t('messages.objects.pass.orange');
+        if (name.includes(DESIGN.PASSES.green)) return this.$t('messages.objects.pass.green');
+        if (name.includes(DESIGN.PASSES.purple)) return this.$t('messages.objects.pass.purple');
+        if (name.includes(DESIGN.PASSES.blue)) return this.$t('messages.objects.pass.blue');
       }
 
       switch (name) {
+        case OBJECTS.SCREENS.name:
+          return this.$t(`messages.objects.${name}.declination`);
         case OBJECTS.ANEMONES.name:
         case OBJECTS.CROCUSES.name:
         case OBJECTS.DAFFODILS.name:
         case OBJECTS.TULIPS.name:
-          return this.$t(`things.${name}.name`);
+          return this.$t(`messages.objects.${name}.name`);
         case OBJECTS.BOTTLES.name:
-          return this.$t(`things.${name}.declination`);
+          return this.$t(`messages.objects.${name}.declination`);
         default:
           return null;
       }
@@ -376,28 +403,20 @@ export default {
       @include size($gutter / 2, $gutter / 2);
     }
 
-    &--anemones {
-      .ui__thing-circle {
-        background: $colors__anemone;
-      }
+    &--red .ui__thing-circle {
+      background: $colors__red;
     }
 
-    &--crocuses {
-      .ui__thing-circle {
-        background: $colors__crocus;
-      }
+    &--orange .ui__thing-circle {
+      background: $colors__orange;
     }
 
-    &--daffodils {
-      .ui__thing-circle {
-        background: $colors__daffodil;
-      }
+    &--green .ui__thing-circle {
+      background: $colors__green;
     }
 
-    &--tulips {
-      .ui__thing-circle {
-        background: $colors__tulip;
-      }
+    &--purple .ui__thing-circle {
+      background: $colors__purple;
     }
   }
 

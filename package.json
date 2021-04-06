@@ -1,7 +1,7 @@
 {
   "name": "three-vue-start",
   "version": "0.1.0",
-  "description": "Start frontend project on Three.js and Vue",
+  "description": "Browser classic custom FPS Game on Three and Vue.",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

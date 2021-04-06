@@ -12,6 +12,11 @@ const initialState = {
   isLeaderLoaded: false,
   isSandLoaded: false,
 
+  // Models
+  isBottleLoaded: false,
+  isPotLoaded: false,
+  isFlowerLoaded: false,
+
   // Audio
   isPickLoaded: false,
   isStepsLoaded: false,
@@ -20,11 +25,15 @@ const initialState = {
   isDoorsSoundLoaded: false,
   isJumpStartLoaded: false,
   isJumpEndLoaded: false,
+  isScreensSoundLoaded: false,
 
   // World build
   isDoorsBuild: false,
   isLeadersBuild: false,
   isPassesBuild: false,
+  isScreensBuild: false,
+  isBottlesBuilt: false,
+  isFlowersBuilt: false,
 };
 
 const state = initialState;

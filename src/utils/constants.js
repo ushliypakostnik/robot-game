@@ -36,6 +36,7 @@ export const DESIGN = {
     black: 0x000000,
 
     grayDark: 0x555555,
+    grayDarken: 0x222222,
     gray: 0x999999,
     grayLight: 0xaaaaaa,
     grayLight2: 0xdddddd,
@@ -47,10 +48,14 @@ export const DESIGN = {
     redDark: 0x681a13,
     green: 0x4cbb17,
     greenDark: 0x265e0b,
+    greenDark2: 0x132f06,
     orange: 0xf9a602,
+    orangeDark: 0x7d5301,
+    yellow: 0xf0cf08,
+    yellowDark: 0xb49b06,
 
     sun: 0xffff99,
-    lightnings: 0x8267bf,
+    wine: 0x413460,
   },
   WORLD_SIZE: {
     level1: size(1, 200), // размер клетки 200
@@ -71,17 +76,19 @@ export const DESIGN = {
       jumpstart: 0.7,
       jumpend: 0.2,
     },
-    wind: 0.3,
-    doors: 1,
+    wind: 0.2,
+    doors: 0.9,
+    screen: 0.3,
   },
   GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
   ANIMATION_TIMEOUT: 300,
+  CHECK: 10,
   HERO: {
     HEIGHT: 2, // средний рост челевеческой особи, мужики 1.7, бабы 1.6
     SPEED: 40,
     JUMP: 25,
-    CAST: 4,
+    CAST: 10,
     START: {
       x: 0,
       y: 0,
@@ -110,6 +117,12 @@ export const DESIGN = {
     purple: 'purple',
     blue: 'blue',
   },
+  FLOWERS: {
+    red: 'red',
+    orange: 'orange',
+    green: 'green',
+    purple: 'purple',
+  },
   EFFECTS: {
     time: { // длительность спецэффектов от цветов
       health: 20,
@@ -131,6 +144,13 @@ export const DESIGN = {
       ammo: ammo * 4,
     },
   },
+  STAFF: {
+    mode: {
+      idle: 'idle',
+      active: 'active',
+      thing: 'thing',
+    },
+  },
 };
 
 export const OBJECTS = {
@@ -147,25 +167,15 @@ export const OBJECTS = {
     name: 'pass',
     size: 1,
   },
-  DAFFODILS: {
-    name: 'daffodil',
-    scale: 0.35,
+  SCREENS: {
+    name: 'screen',
+    size: 1,
   },
-  ANEMONES: {
-    name: 'anemone',
-    scale: 0.1,
-  },
-  CROCUSES: {
-    name: 'crocus',
-    scale: 0.075,
-  },
-  TULIPS: {
-    name: 'tulip',
-    scale: 0.175,
+  FLOWERS: {
+    name: 'flower',
   },
   BOTTLES: {
     name: 'bottle',
-    scale: 0.05,
   },
 };
 
@@ -227,14 +237,37 @@ export const LOCALES = {
           closed2: ' access level',
         },
         cast: 'Pick up: ',
+        look: 'Look at: ',
       },
-      passes: {
-        pass: ' pass',
-        red: 'red',
-        orange: 'orange',
-        green: 'green',
-        purple: 'purple',
-        blue: 'blue',
+      message3: {
+        enemiesBeside: `Enemies spotted nearby!<br />The robot should be careful!`,
+        notEnemiesBeside: 'No one around...',
+        discovered: 'The robot disturbed '
+      },
+      objects: {
+        screen: {
+          name: 'dashboard',
+          declination: 'dashboard',
+        },
+        pass: {
+          name: ' pass',
+          red: 'red',
+          orange: 'orange',
+          green: 'green',
+          purple: 'purple',
+          blue: 'blue',
+        },
+        flower: {
+          name: ' flower',
+          red: 'red',
+          orange: 'orange',
+          green: 'green',
+          purple: 'purple',
+        },
+        bottle: {
+          name: 'bottle',
+          declination: 'bottle',
+        },
       },
     },
   },
@@ -295,14 +328,37 @@ export const LOCALES = {
           closed2: ' уровень доступа',
         },
         cast: 'Подобрать: ',
+        look: 'Смотреть: ',
       },
-      passes: {
-        pass: ' пропуск',
-        red: 'красный',
-        orange: 'оранжевый',
-        green: 'зеленый',
-        purple: 'фиолетовый',
-        blue: 'голубой',
+      message3: {
+        enemiesBeside: `Рядом замечены враги!<br/>Роботу стоит быть осторожнее!`,
+        notEnemiesBeside: 'Рядом никого...',
+        discovered: 'Робот потревожил'
+      },
+      objects: {
+        screen: {
+          name: 'информационная панель',
+          declination: 'информационную панель',
+        },
+        pass: {
+          name: ' пропуск',
+          red: 'красный',
+          orange: 'оранжевый',
+          green: 'зеленый',
+          purple: 'фиолетовый',
+          blue: 'голубой',
+        },
+        flower: {
+          name: ' цветок',
+          red: 'красный',
+          orange: 'оранжевый',
+          green: 'зеленый',
+          purple: 'фиолетовый',
+        },
+        bottle: {
+          name: 'бутылка вина',
+          declination: 'бутылку вина',
+        },
       },
     },
   },

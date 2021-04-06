@@ -3,12 +3,10 @@ export const randomInteger = (min, max) => {
   return Math.floor(rand);
 };
 
-export const yesOrNo = () => {
-  let result = 0;
-  while (result === 0) {
-    result = randomInteger(-1, 1);
-  }
-  return result;
+export const yesOrNo = () => Math.random() >= 0.5;
+
+export const plusOrMinus = () => {
+  return Math.random() >= 0.5 ? 1 : -1;
 };
 
 export const loaderDispatchHelper = (store, field) => {

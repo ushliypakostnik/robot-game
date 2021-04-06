@@ -81,10 +81,14 @@ export default {
       onForward: null,
       object: null,
 
+      decision: null,
+
       // store objects
       objects: [],
       doors: [],
       things: [],
+      screens: [],
+      enemies: [],
     };
   },
 
@@ -292,14 +296,16 @@ export default {
           break;
 
         case 84: // T
-          if (this.isToruch) {
-            this.toruch.visible = false;
-            this.isToruch = false;
-            this.events.messagesByIdDispatchHelper(this, 1, 'toruchOff');
-          } else {
-            this.toruch.visible = true;
-            this.isToruch = true;
-            this.events.messagesByIdDispatchHelper(this, 1, 'toruchOn');
+          if (!this.isPause) {
+            if (this.isToruch) {
+              this.toruch.visible = false;
+              this.isToruch = false;
+              this.events.messagesByIdDispatchHelper(this, 1, 'toruchOff');
+            } else {
+              this.toruch.visible = true;
+              this.isToruch = true;
+              this.events.messagesByIdDispatchHelper(this, 1, 'toruchOn');
+            }
           }
           break;
       }

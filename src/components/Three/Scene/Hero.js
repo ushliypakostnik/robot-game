@@ -161,7 +161,7 @@ function Hero() {
         if (jumpFinish > 15) scope.events.heroOnHitDispatchHelper(scope, -2 * (jumpFinish - 15));
 
         // Sound
-        if (Math.abs(jumpFinish) > 0.25) scope.audio.playHeroSoundFromStart('jumpend');
+        if (Math.abs(jumpFinish) > 0.25) scope.audio.replayHeroSound('jumpend');
       }
     }
     scope.playerOnFloor = playerOnFloor;
@@ -207,45 +207,75 @@ function Hero() {
     if (scope.onForward) {
       scope.object = scope.intersections[0].object;
 
+      // Кастим панель
+      if (scope.object.name.includes(OBJECTS.SCREENS.name)) {
+        object = scope.screens.find(screen => screen.id === scope.object.id);
+
+        if (object) messagesByViewDispatchHelper(scope, 2, 'look', scope.object.name);
+      }
+
       // Кастим пропуск
-      if (scope.object.name.includes(OBJECTS.PASSES.name)) {
-        object = scope.things.find(thing => thing.id === scope.object.id && !thing.isPicked);
+      if (scope.object.name.includes(OBJECTS.PASSES.name)
+          || scope.object.name.includes(OBJECTS.FLOWERS.name)) {
+        if (scope.object.name.includes(OBJECTS.PASSES.name)) {
+          object = scope.things.find(thing => thing.id === scope.object.id && !thing.isPicked);
 
-        messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
+          if (object) messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
 
-        if (object && scope.keyStates['KeyE']) {
-          const { group } = object;
+          if (object && scope.keyStates['KeyE']) {
+            const {group} = object;
 
-          object.isPicked = true;
-          group.visible = false;
+            object.isPicked = true;
+            group.visible = false;
 
-          // scope.scene.remove(group);
-          // scope.objects.splice(scope.objects.indexOf(scope.object), 1);
-          // scope.things.splice(scope.things.indexOf(group), 1);
+            name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.PASSES.name) + OBJECTS.PASSES.name.length);
 
-          name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.PASSES.name) + OBJECTS.PASSES.name.length);
+            // Sound
+            scope.audio.replayHeroSound('pick');
 
-          // Sound
-          scope.audio.playHeroSoundFromStart('pick');
+            scope.addPass(name);
+            scope.events.heroOnUpgradeDispatchHelper(scope);
+            scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', name);
+          }
+        }
 
-          scope.addPass(name);
-          scope.events.heroOnUpgradeDispatchHelper(scope);
-          scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', name);
+        // Кастим пропуск
+        if (scope.object.name.includes(OBJECTS.FLOWERS.name)) {
+          object = scope.things.find(thing => thing.id === scope.object.id);
+
+          if (object) messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
+
+          if (object && scope.keyStates['KeyE']) {
+            const {group} = object;
+
+            scope.scene.remove(group);
+            scope.objects.splice(scope.objects.indexOf(scope.object), 1);
+            scope.things.splice(scope.things.indexOf(group), 1);
+
+            name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.FLOWERS.name) + OBJECTS.PASSES.name.length);
+
+            // Sound
+            scope.audio.replayHeroSound('pick');
+
+            scope.addPass(name);
+            scope.events.heroOnUpgradeDispatchHelper(scope);
+            scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', name);
+          }
         }
       }
 
       // Кастим дверь
       if (scope.object.name.includes(OBJECTS.DOORS.name)) {
-        object = scope.doors.find(door => door.data.id === scope.object.id);
+        object = scope.doors.find(door => door.id === scope.object.id);
 
         if (object) {
-          if (!scope.passes.includes(object.data.pass)) {
-            messagesByViewDispatchHelper(scope, 2, 'closed', object.data.pass);
+          if (!scope.passes.includes(object.pass)) {
+            messagesByViewDispatchHelper(scope, 2, 'closed', object.pass);
           } else {
             messagesByViewDispatchHelper(scope, 2, 'open');
 
             if (scope.keyStates['KeyE']) {
-              scope.world.openDoor(scope, scope.object.id);
+              scope.world.doors.openDoor(scope, scope.object.id);
 
               // Победа на уровне
               if (scope.object.name.includes('Out')) {
@@ -339,7 +369,7 @@ function Hero() {
           playerVelocity.y = DESIGN.HERO.JUMP;
 
           // Sound
-          scope.audio.playHeroSoundFromStart('jumpstart');
+          scope.audio.replayHeroSound('jumpstart');
         }
       }
 
