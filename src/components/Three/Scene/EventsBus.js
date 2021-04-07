@@ -41,17 +41,29 @@ function EventsBus() {
       value,
     });
 
-    scope.$store.dispatch('hero/setHeroOnHit', true).then(() => {
+    scope.$store.dispatch('hero/setScale', {
+      field: 'isHeroOnHit',
+      value: true,
+    }).then(() => {
       this.addEventsToBus(pause, null, () => {
-        scope.$store.dispatch('hero/setHeroOnHit', false);
+        scope.$store.dispatch('hero/setScale', {
+          field: 'isHeroOnHit',
+          value: false,
+        });
       });
     }).catch((error) => { console.log(error); });
   };
 
   this.heroOnUpgradeDispatchHelper = (scope) => {
-    scope.$store.dispatch('hero/setHeroOnUpgrade', true).then(() => {
+    scope.$store.dispatch('hero/setScale', {
+      field: 'isHeroOnUpgrade',
+      value: true,
+    }).then(() => {
       this.addEventsToBus(DESIGN.ANIMATION_TIMEOUT / 250, null, () => {
-        scope.$store.dispatch('hero/setHeroOnUpgrade', false);
+        scope.$store.dispatch('hero/setScale', {
+          field: 'isHeroOnUpgrade',
+          value: false,
+        });
       });
     }).catch((error) => { console.log(error); });
   };

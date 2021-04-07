@@ -40,3 +40,7 @@ export const randomPointInCircle = (radius, x, y) => {
 export const getNumberSign = (number) => {
   return number === 0 ? 0 : number > 0 ? 1 : -1;
 };
+
+export const getNotPartOfName = (name, part) => {
+  return name.slice(name.indexOf(part) + part.length);
+};

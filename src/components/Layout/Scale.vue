@@ -3,7 +3,7 @@
     class="scale"
     :class="[
       lock && 'scale--lock',
-      not && 'not',
+      not && 'effect',
     ]"
   >
     <div

@@ -40,6 +40,52 @@
         <h4 v-html="$t('layout.legendtext')" />
       </div>
     </swiper-slide>
+
+    <swiper-slide>
+      <div class="instructions">
+        <h3>{{ $t('layout.rules') }}</h3>
+        <div class="instructions__block instructions--red">
+          <div class="instructions__circle" />
+          <div class="instructions__text">
+            {{ $t(`objects.flower.red.name`) }}
+            {{ $t(`objects.flower.name`) }}
+            <span v-html="$t(`objects.flower.red.text`)" />
+          </div>
+        </div>
+        <div class="instructions__block instructions--orange">
+          <div class="instructions__circle" />
+          <div class="instructions__text">
+            {{ $t(`objects.flower.orange.name`) }}
+            {{ $t(`objects.flower.name`) }}
+            <span v-html="$t(`objects.flower.orange.text`)" />
+          </div>
+        </div>
+        <div class="instructions__block instructions--green">
+          <div class="instructions__circle" />
+          <div class="instructions__text">
+            {{ $t(`objects.flower.green.name`) }}
+            {{ $t(`objects.flower.name`) }}
+            <span v-html="$t(`objects.flower.green.text`)" />
+          </div>
+        </div>
+        <div class="instructions__block instructions--purple">
+          <div class="instructions__circle" />
+          <div class="instructions__text">
+            {{ $t(`objects.flower.purple.name`) }}
+            {{ $t(`objects.flower.name`) }}
+            <span v-html="$t(`objects.flower.purple.text`)" />
+          </div>
+        </div>
+        <div class="instructions__block instructions--bottle">
+          <div class="instructions__circle" />
+          <div class="instructions__text">
+            {{ $t(`objects.bottle.name`) }}
+            <span v-html="$t(`objects.bottle.text`)" />
+          </div>
+        </div>
+      </div>
+    </swiper-slide>
+
     <div class="swiper-button-prev" slot="button-prev"></div>
     <div class="swiper-button-next" slot="button-next"></div>
 </swiper>
@@ -108,6 +154,54 @@ export default {
     }
   }
 
+  &__block {
+    margin-bottom: $gutter * 2/3;
+  }
+
+  &__text {
+    max-width: 40vw;
+    @include text($font-size--xsmall);
+  }
+
+  &__circle {
+    $size: $gutter;
+
+    margin: 0 auto $gutter / 4;
+    min-width: $size;
+    border-radius: 50%;
+    @include size($size, $size);
+  }
+
+  &--red {
+    .instructions__circle {
+      background: $colors__red;
+    }
+  }
+
+  &--orange {
+    .instructions__circle {
+      background: $colors__orange;
+    }
+  }
+
+  &--green {
+    .instructions__circle {
+      background: $colors__green;
+    }
+  }
+
+  &--purple {
+    .instructions__circle {
+      background: $colors__purple;
+    }
+  }
+
+  &--bottle {
+    .instructions__circle {
+      background: $colors__primary;
+    }
+  }
+
   &__attention {
     @include text($font-size--xsmall * 0.75);
   }
@@ -119,6 +213,6 @@ h4 {
 }
 
 h3 {
- margin-bottom: $gutter;
+  margin-bottom: $gutter;
 }
 </style>

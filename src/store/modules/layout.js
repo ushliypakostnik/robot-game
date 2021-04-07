@@ -13,7 +13,9 @@ if (!AUTO_LEVEL) {
 const initialState = {
   language: null,
   level: localStorage.getItem(LOCALSTORAGE.LEVEL) || 1,
+
   isPause: true,
+  isModal: false,
 
   messages: [],
   message: 0,
@@ -27,9 +29,13 @@ const state = initialState;
 const getters = {
   language: state => state.language,
   level: state => state.level,
+
   isPause: state => state.isPause,
+  isModal: state => state.isModal,
+
   messages: state => state.messages,
   message: state => state.message,
+
   isGameOver: state => state.isGameOver,
   isWin: state => state.isWin,
 };
@@ -67,6 +73,11 @@ const actions = {
   hideMessageById: ({ commit }, id) => {
     commit('hideMessageById', id);
   },
+
+  setModal: ({ commit }, isModal) => {
+    commit('setModal', isModal);
+  },
+
 
   setGameOver: ({ commit }) => {
     commit('setGameOver');
@@ -112,6 +123,10 @@ const mutations = {
     index = messages.find(message => message[0] === id);
     if (index) messages.splice(messages.indexOf(index), 1);
     state.messages = messages;
+  },
+
+  setModal: (state, isModal) => {
+    state.isModal =  isModal;
   },
 
   setGameOver: (state) => {

@@ -75,7 +75,7 @@
   }
 }
 
-@keyframes scaleNot {
+@keyframes effect {
   from {
     opacity: 0.5;
   }
@@ -95,6 +95,16 @@
   }
 
   50% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOn {
+  from {
     opacity: 0;
   }
 

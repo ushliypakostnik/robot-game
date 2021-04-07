@@ -8,6 +8,7 @@ import { DESIGN, OBJECTS } from '@/utils/constants';
 import {
   loaderDispatchHelper,
   messagesByViewDispatchHelper,
+  getNotPartOfName,
 } from '@/utils/utilities';
 
 function Hero() {
@@ -15,18 +16,30 @@ function Hero() {
   let playerVelocity;
   const playerDirection = new Three.Vector3(0, 0, 0);
 
+  let playerOnFloor;
+  let jumpStart;
+  let jumpFinish;
+
   let speed;
+
+  let damageClock;
+  let damageTime = 0;
 
   let enduranceClock;
   let enduranceTime = 0;
   let isEnduranceRecoveryStart = false;
 
-  let playerOnFloor;
-  let jumpStart;
-  let jumpFinish;
+  let notDamageClock;
+  let notDamageTime = 0;
 
   let notTiredClock;
   let notTiredTime = 0;
+
+  let timeMachineClock;
+  let timeMachineTime = 0;
+
+  let gainClock;
+  let gainTime = 0;
 
   let object;
   let name;
@@ -34,6 +47,9 @@ function Hero() {
   const audioLoader = new Three.AudioLoader();
   let steps;
   let hit;
+  let damage;
+
+  let stimulation;
 
   this.init = (scope) => {
     audioLoader.load('./audio/pick.mp3', (buffer) => {
@@ -48,7 +64,7 @@ function Hero() {
     });
 
     audioLoader.load('./audio/current.mp3', (buffer) => {
-      scope.audio.addAudioToHero(scope, buffer, 'damage', DESIGN.VOLUME.hero.current, true);
+      damage = scope.audio.addAudioToHero(scope, buffer, 'damage', DESIGN.VOLUME.hero.current, true);
       loaderDispatchHelper(scope.$store, 'isDamageLoaded');
     });
 
@@ -69,27 +85,37 @@ function Hero() {
 
     playerCollider = new Capsule(
       new Three.Vector3(
-        DESIGN.HERO.START.x,
-        DESIGN.HERO.START.y + DESIGN.HERO.HEIGHT / 2,
-        DESIGN.HERO.START.z,
+        DESIGN.HERO.START[scope.l].x,
+        DESIGN.HERO.START[scope.l].y, + DESIGN.HERO.HEIGHT / 2,
+        DESIGN.HERO.START[scope.l].z,
       ),
       new Three.Vector3(
-        DESIGN.HERO.START.x,
-        DESIGN.HERO.START.y + DESIGN.HERO.HEIGHT,
-        DESIGN.HERO.START.z,
+        DESIGN.HERO.START[scope.l].x,
+        DESIGN.HERO.START[scope.l].y + DESIGN.HERO.HEIGHT,
+        DESIGN.HERO.START[scope.l].z,
       ),
       DESIGN.HERO.HEIGHT / 2,
     );
     playerDirection.copy(scope.startDirection);
     playerVelocity = new Three.Vector3();
 
+    damageClock = new Three.Clock(false);
     enduranceClock = new Three.Clock(false);
+    notDamageClock = new Three.Clock(false);
     notTiredClock = new Three.Clock(false);
+    timeMachineClock = new Three.Clock(false);
+    gainClock = new Three.Clock(false);
 
     this.animate(scope);
   };
 
+  const getStimulation = (isNotTired) => {
+    return isNotTired ? 1 : 0.75;
+  };
+
   this.setHidden = (scope, isHidden) => {
+    stimulation = getStimulation(scope.isNotTired);
+
     if (isHidden) {
       playerCollider = new Capsule(
         new Three.Vector3(
@@ -105,7 +131,7 @@ function Hero() {
         DESIGN.HERO.HEIGHT / 2,
       );
 
-      steps.setPlaybackRate(0.5);
+      steps.setPlaybackRate(0.5 * stimulation);
     } else {
       playerCollider = new Capsule(
         new Three.Vector3(
@@ -121,17 +147,18 @@ function Hero() {
         DESIGN.HERO.HEIGHT / 2,
       );
 
-      steps.setPlaybackRate(1);
+      steps.setPlaybackRate(stimulation);
     }
   };
 
   this.setRun = (scope, isRun) => {
+    stimulation = getStimulation(scope.isNotTired);
     if (isRun && scope.keyStates['KeyW']) {
       steps.setVolume(DESIGN.VOLUME.hero.run);
-      steps.setPlaybackRate(2);
+      steps.setPlaybackRate(2 * stimulation);
     } else {
       steps.setVolume(DESIGN.VOLUME.hero.step);
-      steps.setPlaybackRate(1);
+      steps.setPlaybackRate(stimulation);
     }
   };
 
@@ -139,6 +166,12 @@ function Hero() {
     if (isOnHit) {
       if (!hit.isPlaying) hit.play();
     } else if (hit.isPlaying) hit.stop();
+  };
+
+  this.setHeroOnDamage = (scope, isOnDamage) => {
+    if (isOnDamage) {
+      if (!damage.isPlaying) damage.play();
+    } else if (damage.isPlaying) damage.stop();
   };
 
   const playerCollitions = (scope) => {
@@ -158,7 +191,7 @@ function Hero() {
       else {
         // console.log('Пролетел: ', jumpStart - playerCollider.end.y);
         jumpFinish = jumpStart - playerCollider.end.y;
-        if (jumpFinish > 15) scope.events.heroOnHitDispatchHelper(scope, -2 * (jumpFinish - 15));
+        if (jumpFinish > 15 && !scope.isNotDamaged) scope.events.heroOnHitDispatchHelper(scope, -2 * (jumpFinish - 15));
 
         // Sound
         if (Math.abs(jumpFinish) > 0.25) scope.audio.replayHeroSound('jumpend');
@@ -212,55 +245,51 @@ function Hero() {
         object = scope.screens.find(screen => screen.id === scope.object.id);
 
         if (object) messagesByViewDispatchHelper(scope, 2, 'look', scope.object.name);
+
+        if (object && scope.keyStates['KeyE']) {
+          scope.setModal(true);
+          scope.togglePause(true);
+          scope.$eventHub.$emit('unlock');
+        }
       }
 
-      // Кастим пропуск
+      // Кастим вещь
       if (scope.object.name.includes(OBJECTS.PASSES.name)
-          || scope.object.name.includes(OBJECTS.FLOWERS.name)) {
-        if (scope.object.name.includes(OBJECTS.PASSES.name)) {
-          object = scope.things.find(thing => thing.id === scope.object.id && !thing.isPicked);
+          || scope.object.name.includes(OBJECTS.FLOWERS.name)
+          || scope.object.name.includes(OBJECTS.BOTTLES.name)) {
+        object = scope.things.find(thing => thing.id === scope.object.id && !thing.isPicked);
 
-          if (object) messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
+        if (object) messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
 
-          if (object && scope.keyStates['KeyE']) {
-            const {group} = object;
+        if (object && scope.keyStates['KeyE']) {
+          const { group } = object;
 
-            object.isPicked = true;
-            group.visible = false;
+          scope.hideMessageByView(2);
 
-            name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.PASSES.name) + OBJECTS.PASSES.name.length);
+          object.isPicked = true;
+          group.visible = false;
+          // Не надо удалять объекты со сцены для того чтобы не было проблем с их дальнейшей идентификацией,
+          // Но если что-то вдруг надо удалить:
+          // scope.scene.remove(group);
+          // scope.objects.splice(scope.objects.indexOf(scope.object), 1);
+          // scope.things.splice(scope.things.indexOf(group), 1);
 
-            // Sound
-            scope.audio.replayHeroSound('pick');
+          // Sound
+          scope.audio.replayHeroSound('pick');
 
-            scope.addPass(name);
-            scope.events.heroOnUpgradeDispatchHelper(scope);
-            scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', name);
+          // Effect
+          if (scope.object.name.includes(OBJECTS.PASSES.name)) {
+            name = getNotPartOfName(scope.object.name, OBJECTS.PASSES.name);
+            scope.setScale({ field: 'passes', value: name });
+          } else if (scope.object.name.includes(OBJECTS.FLOWERS.name)) {
+            name = getNotPartOfName(scope.object.name, OBJECTS.FLOWERS.name);
+            scope.setScale({ field: DESIGN.FLOWERS[name], value: 1 });
+          } else if (scope.object.name.includes(OBJECTS.BOTTLES.name)) {
+            scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
           }
-        }
 
-        // Кастим пропуск
-        if (scope.object.name.includes(OBJECTS.FLOWERS.name)) {
-          object = scope.things.find(thing => thing.id === scope.object.id);
-
-          if (object) messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
-
-          if (object && scope.keyStates['KeyE']) {
-            const {group} = object;
-
-            scope.scene.remove(group);
-            scope.objects.splice(scope.objects.indexOf(scope.object), 1);
-            scope.things.splice(scope.things.indexOf(group), 1);
-
-            name = scope.object.name.slice(scope.object.name.indexOf(OBJECTS.FLOWERS.name) + OBJECTS.PASSES.name.length);
-
-            // Sound
-            scope.audio.replayHeroSound('pick');
-
-            scope.addPass(name);
-            scope.events.heroOnUpgradeDispatchHelper(scope);
-            scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', name);
-          }
+          scope.events.heroOnUpgradeDispatchHelper(scope);
+          scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', scope.object.name);
         }
       }
 
@@ -290,6 +319,66 @@ function Hero() {
       }
     } else scope.hideMessageByView(2);
 
+    // Урон персонажу
+    if (!scope.isNotDamaged) {
+      if (scope.isHeroOnDamage) {
+        if (!damageClock.running) damageClock.start();
+
+        damageTime += damageClock.getDelta();
+      } else {
+        if (damageClock.running) damageClock.stop();
+        damageTime = 0;
+      }
+    } else {
+      if (!notDamageClock.running) notDamageClock.start();
+
+      notDamageTime += notDamageClock.getDelta();
+
+      if (notDamageTime > DESIGN.EFFECTS.time.health) {
+        notDamageClock.stop();
+        notDamageTime = 0;
+        scope.setScale({
+          field: 'isNotDamaged',
+          value: false,
+        });
+        scope.events.messagesByIdDispatchHelper(scope, 1, 'endNoDamaged');
+      }
+    }
+
+    // Действие машины времени
+    if (scope.isTimeMachine) {
+      if (!timeMachineClock.running) timeMachineClock.start();
+
+      timeMachineTime += timeMachineClock.getDelta();
+
+      if (timeMachineTime > DESIGN.EFFECTS.time.machine) {
+        timeMachineClock.stop();
+        timeMachineTime = 0;
+        scope.setScale({
+          field: 'isTimeMachine',
+          value: false,
+        });
+        scope.events.messagesByIdDispatchHelper(scope, 1, 'endTimeMachine');
+      }
+    }
+
+    // Действие прокачки виномета
+    if (scope.isGain) {
+      if (!gainClock.running) gainClock.start();
+
+      gainTime += gainClock.getDelta();
+
+      if (gainTime > DESIGN.EFFECTS.time.gain) {
+        gainClock.stop();
+        gainTime = 0;
+        scope.setScale({
+          field: 'isGain',
+          value: false,
+        });
+        scope.events.messagesByIdDispatchHelper(scope, 1, 'endGain');
+      }
+    }
+
     // Усталость и ее восстановление
     if (!scope.isNotTired) {
       if (scope.isRun
@@ -304,7 +393,7 @@ function Hero() {
 
         enduranceTime += enduranceClock.getDelta();
 
-        if (enduranceTime > 0.025) {
+        if (enduranceTime > 0.035) {
           scope.setScale({
             field: DESIGN.HERO.scales.endurance.name,
             value: !isEnduranceRecoveryStart ? -1 : 1,
@@ -324,49 +413,46 @@ function Hero() {
       if (notTiredTime > DESIGN.EFFECTS.time.endurance) {
         notTiredClock.stop();
         notTiredTime = 0;
-        scope.setNotTired(false);
-        scope.events.messagesByIdDispatchHelper(scope, 2, 'endNoTired');
+        scope.setScale({
+          field: 'isNotTired',
+          value: false,
+        });
+        scope.events.messagesByIdDispatchHelper(scope, 1, 'endNoTired');
       }
     }
 
     if (scope.playerOnFloor) {
       if (!scope.isPause) {
+        if (steps) {
+          if (scope.keyStates['KeyW']
+            || scope.keyStates['KeyS']
+            || scope.keyStates['KeyA']
+            || scope.keyStates['KeyD']
+            || scope.keyStates['Space']) stimulation = getStimulation(scope.isNotTired);
+        }
+
         if (scope.keyStates['KeyW']) {
-          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : scope.isRun ? DESIGN.HERO.SPEED * 2.5 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getForwardVector(scope).multiplyScalar(speed * scope.delta));
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : scope.isRun ? DESIGN.HERO.SPEED * 2 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getForwardVector(scope).multiplyScalar(speed * scope.delta * stimulation));
         }
 
         if (scope.keyStates['KeyS']) {
-          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getForwardVector(scope).multiplyScalar(-speed * scope.delta));
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getForwardVector(scope).multiplyScalar(-speed * scope.delta * stimulation));
         }
 
         if (scope.keyStates['KeyA']) {
-          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getSideVector(scope).multiplyScalar(-speed * scope.delta));
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getSideVector(scope).multiplyScalar(-speed * scope.delta * stimulation));
         }
 
         if (scope.keyStates['KeyD']) {
-          speed = scope.isHidden ? DESIGN.HERO.SPEED / 4 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getSideVector(scope).multiplyScalar(speed * scope.delta));
-        }
-
-        // Steps sound
-        if (steps) {
-          if (scope.keyStates['KeyW']
-              || scope.keyStates['KeyS']
-              || scope.keyStates['KeyA']
-              || scope.keyStates['KeyD']) {
-            if (!steps.isPlaying) {
-              speed = scope.isHidden ? 0.5 : scope.isRun ? 2 : 1;
-              steps.setPlaybackRate(speed);
-              steps.play();
-            }
-          }
+          speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : DESIGN.HERO.SPEED;
+          playerVelocity.add(getSideVector(scope).multiplyScalar(speed * scope.delta * stimulation));
         }
 
         if (scope.keyStates['Space']) {
-          playerVelocity.y = DESIGN.HERO.JUMP;
+          playerVelocity.y = scope.isNotTired ? DESIGN.HERO.JUMP * 1.5 : DESIGN.HERO.JUMP;
 
           // Sound
           scope.audio.replayHeroSound('jumpstart');
@@ -375,6 +461,22 @@ function Hero() {
 
       scope.damping = Math.exp(-3 * scope.delta) - 1;
       playerVelocity.addScaledVector(playerVelocity, scope.damping);
+
+      // Steps sound
+      if (steps) {
+        if (scope.keyStates['KeyW']
+          || scope.keyStates['KeyS']
+          || scope.keyStates['KeyA']
+          || scope.keyStates['KeyD']) {
+          stimulation = scope.isNotTired ? 1.5 : 1;
+
+          if (!steps.isPlaying) {
+            speed = scope.isHidden ? 0.5 : scope.isRun ? 2 : 1;
+            steps.setPlaybackRate(speed);
+            steps.play();
+          }
+        }
+      }
     } else {
       if (steps && steps.isPlaying) steps.pause();
 

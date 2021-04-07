@@ -51,7 +51,10 @@
         :not="isNotTired && !isGameOver"
       />
     </div>
-    <div class="ui__ammo">
+    <div
+      class="ui__ammo"
+      :class="isGain && !isGameOver && 'effect'"
+    >
       {{ ammo }}/{{ ammoMagazine }}
     </div>
 
@@ -70,8 +73,10 @@
           class="ui__message ui__message--small"
         >
           {{message[0]}}: <span v-html="$t(`messages.message${message[1]}.${message[2]}`)" />
-          <span v-if="message[3]"> {{ getMessage1ByName(message[3]) }}</span>
-          <span v-if="isPickPass(message[3])">{{ $t(`messages.objects.pass.name`) }}</span>
+          <span v-if="message[3]">
+            {{ getObjectName(message[3]) }}
+            <span v-if="getObjectType(message[3]) !== 'bottle'">{{ getObjectTypeName(message[3]) }}</span>
+          </span>
         </div>
 
         <!-- "Постоянные" сообщения -->
@@ -82,19 +87,17 @@
           <span v-if="message[2] ==='open'">{{ $t(`messages.message${message[1]}.${message[2]}`) }}</span>
           <span v-if="message[2] ==='closed'">
             {{ $t(`messages.message${message[1]}.${message[2]}.${message[2]}1`) }}
-            {{ $t(`messages.objects.pass.${message[3]}`) }}
+            {{ $t(`objects.pass.${message[3]}`) }}
             {{ $t(`messages.message${message[1]}.${message[2]}.${message[2]}2`) }}
           </span>
           <span v-if="message[2] ==='cast'">
             {{ $t(`messages.message${message[1]}.${message[2]}`) }}
-            {{ getMessage2ByName(message[3]) }}
-            <span v-if="isCastPass(message[3])">{{ $t(`messages.objects.pass.name`) }}</span>
-            <span v-if="isCastFlower(message[3])">{{ $t(`messages.objects.flower.name`) }}</span>
-            <span v-if="isCastBottle(message[3])">{{ $t(`messages.objects.bottle.declination`) }}</span>
+            {{ getObjectName(message[3]) }}
+            <span v-if="getObjectType(message[3]) !== 'bottle'">{{ getObjectTypeName(message[3]) }}</span>
           </span>
           <span v-if="message[2] ==='look'">
             {{ $t(`messages.message${message[1]}.${message[2]}`) }}
-            {{ getMessage2ByName(message[3]) }}
+            {{ $t(`objects.screen.declination`) }}
           </span>
         </div>
 
@@ -104,7 +107,7 @@
           class="ui__message ui__message--small"
         >
           {{message[0]}}: <span v-html="$t(`messages.message3.${message[2]}`)" />
-          <span v-if="message[3]"> {{ $t(`messages.objects.${message[3]}.declination`) }}</span>
+          <span v-if="message[3]"> {{ $t(`objects.${message[3]}.declination`) }}</span>
         </div>
       </div>
     </div>
@@ -115,6 +118,8 @@
         (isHeroOnDamage || isHeroOnHit)
         && !isNotDamaged && !isGameOver && `ui__overlay--damage damage`,
         isHeroOnUpgrade && `ui__overlay--upgrade upgrade`,
+        isTimeMachine && `ui__overlay--effect effect`,
+        isModal && `ui__overlay--modal fadeOn`,
         isGameOver && !isWin && `ui__overlay--gameover ui__overlay--fail`,
         isGameOver && isWin && `ui__overlay--gameover ui__overlay--win`,
       ]"
@@ -124,6 +129,31 @@
         v-else-if="isGameOver && isWin"
         v-html="$t('layout.win')"
       />
+
+      <div
+        v-if="isModal"
+        class="ui__modal"
+      >
+        <div class="ui__modal--left">
+          <div class="ui__image-wrapper">
+            <img
+              src="../../assets/level1/modal1__1.jpg"
+              alt="image1"
+            >
+          </div>
+          <span v-html="$t('modals.modal1.text1')" />
+        </div>
+        <div class="ui__modal--right">
+          <span v-html="$t('modals.modal1.text2')" />
+          <div class="ui__image-wrapper">
+            <img
+              src="../../assets/level1/modal1__2.jpg"
+              alt="image1"
+            >
+          </div>
+        </div>
+      </div>
+
       <button
         class="button"
         type="button"
@@ -144,6 +174,9 @@
 import { mapActions, mapGetters } from 'vuex';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
+
+import { getNotPartOfName } from '@/utils/utilities';
+
 
 import Scale from '@/components/Layout/Scale.vue';
 
@@ -176,8 +209,14 @@ export default {
 
       isNotDamaged: 'hero/isNotDamaged',
       isNotTired: 'hero/isNotTired',
+      isTimeMachine: 'hero/isTimeMachine',
+      isGain: 'hero/isGain',
+
+      level: 'layout/level',
 
       messages: 'layout/messages',
+
+      isModal: 'layout/isModal',
 
       isGameOver: 'layout/isGameOver',
       isWin: 'layout/isWin',
@@ -191,9 +230,9 @@ export default {
 
   methods: {
     ...mapActions({
+      setModal: 'layout/setModal',
       setGameOver: 'layout/setGameOver',
 
-      setHeroTired: 'hero/setHeroTired',
       setScale: 'hero/setScale',
     }),
 
@@ -209,69 +248,34 @@ export default {
       return this.passes.includes(DESIGN.PASSES[pass]);
     },
 
-    isCastPass(name) {
-      if (name.includes(OBJECTS.PASSES.name)) return true;
-      return false;
-    },
+    getObjectName(name) {
+      const objectType = this.getObjectType(name);
+      const objectsName = getNotPartOfName(name, objectType);
 
-    isCastFlower(name) {
-      if (name.includes(OBJECTS.FLOWERS.name)) return true;
-      return false;
-    },
-
-    isCastBottle(name) {
-      if (name.includes(OBJECTS.BOTTLES.name)) return true;
-      return false;
-    },
-
-    isPickPass(name) {
-      switch (name) {
-        case DESIGN.PASSES.red:
-        case DESIGN.PASSES.orange:
-        case DESIGN.PASSES.green:
-        case DESIGN.PASSES.purple:
-        case DESIGN.PASSES.blue:
-          return true;
-        default:
-          return false;
-      }
-    },
-
-    getMessage1ByName(name) {
-      switch (name) {
-        case DESIGN.PASSES.red:
-        case DESIGN.PASSES.orange:
-        case DESIGN.PASSES.green:
-        case DESIGN.PASSES.purple:
-        case DESIGN.PASSES.blue:
-          return this.$t(`messages.objects.pass.${name}`);
-        default:
-          return null;
-      }
-    },
-
-    getMessage2ByName(name) {
-      if (name.includes(OBJECTS.PASSES.name)) {
-        if (name.includes(DESIGN.PASSES.red)) return this.$t('messages.objects.pass.red');
-        if (name.includes(DESIGN.PASSES.orange)) return this.$t('messages.objects.pass.orange');
-        if (name.includes(DESIGN.PASSES.green)) return this.$t('messages.objects.pass.green');
-        if (name.includes(DESIGN.PASSES.purple)) return this.$t('messages.objects.pass.purple');
-        if (name.includes(DESIGN.PASSES.blue)) return this.$t('messages.objects.pass.blue');
-      }
-
-      switch (name) {
-        case OBJECTS.SCREENS.name:
-          return this.$t(`messages.objects.${name}.declination`);
-        case OBJECTS.ANEMONES.name:
-        case OBJECTS.CROCUSES.name:
-        case OBJECTS.DAFFODILS.name:
-        case OBJECTS.TULIPS.name:
-          return this.$t(`messages.objects.${name}.name`);
+      switch (objectType) {
+        case OBJECTS.PASSES.name:
+          return this.$t(`objects.pass.${objectsName}`);
+        case OBJECTS.FLOWERS.name:
+          return this.$t(`objects.flower.${objectsName}.name`);
         case OBJECTS.BOTTLES.name:
-          return this.$t(`messages.objects.${name}.declination`);
+          return this.$t(`objects.${name}.declination`);
         default:
           return null;
       }
+    },
+
+    getObjectTypeName(name) {
+      if (name.includes(OBJECTS.PASSES.name)) return this.$t('objects.pass.name');
+      if (name.includes(OBJECTS.FLOWERS.name)) return this.$t('objects.flower.name');
+      if (name.includes(OBJECTS.BOTTLES.name)) return this.$t('objects.bottle.declination');
+      return null;
+    },
+
+    getObjectType(name) {
+      if (name.includes(OBJECTS.PASSES.name)) return OBJECTS.PASSES.name;
+      if (name.includes(OBJECTS.FLOWERS.name)) return OBJECTS.FLOWERS.name;
+      if (name.includes(OBJECTS.BOTTLES.name)) return OBJECTS.BOTTLES.name;
+      return null;
     },
   },
 
@@ -281,7 +285,12 @@ export default {
     },
 
     endurance(value) {
-      if (value < 0) this.setHeroTired(true);
+      if (value < 0) {
+        this.setScale({
+          field: 'isHeroTired',
+          value: true,
+        });
+      }
     },
   },
 };
@@ -302,6 +311,10 @@ export default {
   }
 
   &__overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     &--damage {
       background: $colors__primary-light--transparent;
     }
@@ -310,8 +323,17 @@ export default {
       background: $colors__primary-light--transparent;
     }
 
+    &--effect {
+      background: $colors__white--transparent1;
+    }
+
     &--upgrade {
       background: $colors__white--transparent2;
+    }
+
+    &--modal {
+      color: $colors__white;
+      background: $colors__black;
     }
 
     &--win {
@@ -335,6 +357,46 @@ export default {
         margin-bottom: 0;
       }
     }
+  }
+
+  &__modal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: $gutter / 10 solid $colors__white;
+    padding: $gutter / 2;
+    transform: translateY(-4vh);
+
+    &--left {
+      .ui__image-wrapper {
+        transform: translateX(-3vw);
+      }
+    }
+
+    &--right {
+      .ui__image-wrapper {
+        transform: translateX(3vw);
+      }
+    }
+
+    > div {
+      max-width: 70vw;
+      display: flex;
+
+      &:not(:last-child) {
+        margin-bottom: $gutter;
+      }
+
+      img {
+        width: 25vw;
+      }
+    }
+  }
+
+  &__image-wrapper {
+    background: $colors__black;
+    border: $gutter / 10 solid $colors__white;
+    padding: $gutter / 2;
   }
 
   &__scales {

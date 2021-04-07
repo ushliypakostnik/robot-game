@@ -34,11 +34,11 @@ function Bottles() {
           bottle.scene.traverse((child) => {
             if (child.isMesh) {
               if (child.name.includes('wine')) {
-                child.material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.wine });
+                child.material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.greenDark4 });
               } else if (child.name.includes('top')) {
                 child.material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.black });
               } else if (child.name.includes('glass')) {
-                child.material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.greenDark });
+                child.material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.greenDark3 });
               }
               child.material.blending = Three.NoBlending;
             }

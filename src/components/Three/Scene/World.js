@@ -179,7 +179,7 @@ function World() {
 
               places.push(child);
             } else if (child.name.includes(OBJECTS.BOTTLES.name)) {
-              /* if (!child.name.includes('Mandatory')) {
+              if (!child.name.includes('Mandatory')) {
                 if (yesOrNo()) {
                   OBJECTS.BOTTLES[scope.l].data.push({
                     x: child.position.x,
@@ -188,22 +188,30 @@ function World() {
                   });
                 }
               } else {
-              } */
-              OBJECTS.BOTTLES[scope.l].data.push({
-                x: child.position.x,
-                y: child.position.y,
-                z: child.position.z,
-              });
-
-              console.log(OBJECTS.BOTTLES);
+                OBJECTS.BOTTLES[scope.l].data.push({
+                  x: child.position.x,
+                  y: child.position.y,
+                  z: child.position.z,
+                });
+              }
 
               places.push(child);
             } else if (child.name.includes(OBJECTS.FLOWERS.name)) {
-              OBJECTS.FLOWERS[scope.l].data.push({
-                x: child.position.x,
-                y: child.position.y,
-                z: child.position.z,
-              });
+              if (!child.name.includes('Mandatory')) {
+                if (yesOrNo()) {
+                  OBJECTS.FLOWERS[scope.l].data.push({
+                    x: child.position.x,
+                    y: child.position.y,
+                    z: child.position.z,
+                  });
+                }
+              } else {
+                OBJECTS.FLOWERS[scope.l].data.push({
+                  x: child.position.x,
+                  y: child.position.y,
+                  z: child.position.z,
+                });
+              }
 
               places.push(child);
             } else if (child.name.includes(OBJECTS.PASSES.name)) {
@@ -324,8 +332,11 @@ function World() {
         // Things
         scope.things = [];
 
-        const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.HEIGHT,  8, 8);
-        const pseudoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white });
+        const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.HEIGHT,  4, 4);
+        const pseudoMaterial = new Three.MeshStandardMaterial({
+          color: DESIGN.COLORS.white,
+          side: Three.DoubleSide,
+        });
 
         new Bottles().init(scope, pseudoGeometry, pseudoMaterial);
         new Flowers().init(

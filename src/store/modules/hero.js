@@ -11,8 +11,8 @@ const initialState = {
   green: 0,
   purple: 0,
 
-  // passes: [],
-  passes: ['red', 'orange', 'green', 'purple'],
+  passes: [],
+  // passes: ['red', 'orange', 'green', 'purple'],
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,
@@ -20,8 +20,11 @@ const initialState = {
 
   isHeroTired: false,
 
+  // Эффекты от цветов
   isNotDamaged: false,
   isNotTired: false,
+  isTimeMachine: false,
+  isGain: false,
 };
 
 const state = initialState;
@@ -46,67 +49,32 @@ const getters = {
 
   isNotDamaged: state => state.isNotDamaged,
   isNotTired: state => state.isNotTired,
+  isTimeMachine: state => state.isTimeMachine,
+  isGain: state => state.isGain,
 };
 
+const arrayFields = [
+  'passes',
+];
+
+const notIncrementFields = [
+  'isHeroOnUpgrade',
+  'setHeroOnDamage',
+  'isHeroOnHit',
+  'isHeroTired',
+  'isNotDamaged',
+  'isNotTired',
+  'isTimeMachine',
+  'isGain',
+];
+
 const actions = {
-  setHeroOnDamage: ({ commit }, isHeroOnDamage) => {
-    commit('setHeroOnDamage', isHeroOnDamage);
-  },
-
-  setHeroOnHit: ({ commit }, isHeroOnHit) => {
-    commit('setHeroOnHit', isHeroOnHit);
-  },
-
-  setHeroTired: ({ commit }, isHeroTired) => {
-    commit('setHeroTired', isHeroTired);
-  },
-
-  setNotDamaged: ({ commit }, isNotDamaged) => {
-    commit('setNotDamaged', isNotDamaged);
-  },
-
-  setNotTired: ({ commit }, isNotTired) => {
-    commit('setNotTired', isNotTired);
-  },
-
-  setHeroOnUpgrade: ({ commit }, isHeroOnUpgrade) => {
-    commit('setHeroOnUpgrade', isHeroOnUpgrade);
-  },
-
   setScale: ({ commit }, payload) => {
     commit('setScale', payload);
-  },
-
-  addPass: ({ commit }, pass) => {
-    commit('addPass', pass);
   },
 };
 
 const mutations = {
-  setHeroOnDamage: (state, isHeroOnDamage) => {
-    state.isHeroOnDamage = isHeroOnDamage;
-  },
-
-  setHeroOnHit: (state, isHeroOnHit) => {
-    state.isHeroOnHit = isHeroOnHit;
-  },
-
-  setHeroTired: (state, isHeroTired) => {
-    state.isHeroTired = isHeroTired;
-  },
-
-  setNotDamaged: (state, isNotDamaged) => {
-    state.isNotDamaged = isNotDamaged;
-  },
-
-  setNotTired: (state, isNotTired) => {
-    state.isNotTired = isNotTired;
-  },
-
-  setHeroOnUpgrade: (state, isHeroOnUpgrade) => {
-    state.isHeroOnUpgrade = isHeroOnUpgrade;
-  },
-
   setScale: (state, payload) => {
     if (payload.field === DESIGN.HERO.scales.health.name
       && state[payload.field] + payload.value > 99.999999) {
@@ -115,12 +83,12 @@ const mutations = {
       && state[payload.field] + payload.value > 99) {
       state[payload.field] = 100;
       state.isHeroTired = false;
+    } else if (arrayFields.includes(payload.field)) {
+      if (!state[payload.field].includes(payload.value)) state[payload.field].push(payload.value);
+    } else if (notIncrementFields.includes(payload.field)) {
+      state[payload.field] = payload.value;
       // eslint-disable-next-line operator-assignment
     } else state[payload.field] = state[payload.field] + payload.value;
-  },
-
-  addPass: (state, pass) => {
-    if (!state.passes.includes(pass)) state.passes.push(pass);
   },
 };
 

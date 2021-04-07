@@ -22,9 +22,9 @@
   animation: hit $animation-duration infinite;
 }
 
-.not {
+.effect {
   will-change: opacity;
-  animation: scaleNot $animation-duration infinite;
+  animation: effect $animation-duration infinite;
 }
 
 .blink {
@@ -35,5 +35,10 @@
 .upgrade {
   will-change: opacity;
   animation: upgrade $animation-duration infinite;
+}
+
+.fadeOn {
+  will-change: opacity;
+  animation: fadeOn $animation-duration;
 }
 

@@ -70,6 +70,7 @@ export default {
 
       // utilities
 
+      distance: null,
       position: null,
       direction: null,
       result: null,
@@ -111,6 +112,7 @@ export default {
 
   created() {
     this.$eventHub.$on('lock', this.lock);
+    this.$eventHub.$on('unlock', this.unlock);
   },
 
   beforeDestroy() {
@@ -120,6 +122,7 @@ export default {
 
     // eslint-disable-next-line no-underscore-dangle
     if (this.$eventHub._events.lock) this.$eventHub.$off('lock');
+    if (this.$eventHub._events.unlock) this.$eventHub.$off('unlock');
   },
 
   computed: {
@@ -127,7 +130,9 @@ export default {
       isGameLoaded: 'preloader/isGameLoaded',
 
       level: 'layout/level',
+
       isPause: 'layout/isPause',
+      isModal: 'layout/isModal',
 
       messages: 'layout/messages',
       message: 'layout/message',
@@ -139,10 +144,10 @@ export default {
       endurance: 'hero/endurance',
       ammo: 'hero/ammo',
 
-      anemone: 'hero/anemone',
-      crocus: 'hero/crocus',
-      daffodil: 'hero/daffodil',
-      tulip: 'hero/tulip',
+      red: 'hero/red',
+      orange: 'hero/orange',
+      green: 'hero/green',
+      purple: 'hero/purple',
 
       passes: 'hero/passes',
 
@@ -153,6 +158,8 @@ export default {
 
       isNotDamaged: 'hero/isNotDamaged',
       isNotTired: 'hero/isNotTired',
+      isTimeMachine: 'hero/isTimeMachine',
+      isGain: 'hero/isGain',
     }),
 
     l() {
@@ -168,19 +175,12 @@ export default {
       showMessage: 'layout/showMessage',
       hideMessageByView: 'layout/hideMessageByView',
 
+      setModal: 'layout/setModal',
+
       setWin: 'layout/setWin',
       setGameOver: 'layout/setGameOver',
 
       setScale: 'hero/setScale',
-      addPass: 'hero/addPass',
-      setHeroTired: 'hero/setHeroTired',
-      setHeroOnUpgrade: 'hero/setHeroOnUpgrade',
-
-      setNotTired: 'hero/setNotTired',
-      setNotDamaged: 'hero/setNotDamaged',
-
-      setHeroOnDamage: 'hero/setHeroOnDamage',
-      setHeroOnHit: 'hero/setHeroOnHit',
     }),
 
     init() {
@@ -224,6 +224,7 @@ export default {
       });
 
       this.controls.addEventListener('lock', () => {
+        if (this.isModal) this.setModal(false);
         this.togglePause(false);
       });
 
@@ -265,6 +266,10 @@ export default {
       this.controls.lock();
     },
 
+    unlock() {
+      this.controls.unlock();
+    },
+
     // eslint-disable-next-line no-unused-vars
     onKeyDown(event) {
       this.keyStates[event.code] = true;
@@ -272,6 +277,88 @@ export default {
       switch (event.keyCode) {
         case 16: // Shift
           if (!this.isPause && !this.isRun && !this.isHeroTired) this.isRun = true;
+          break;
+
+        case 49: // 1
+          if (!this.isPause && this.red > 0 && !this.isNotDamaged) {
+            this.setScale({
+              field: DESIGN.FLOWERS.red,
+              value: -1,
+            });
+            this.setScale({
+              field: DESIGN.HERO.scales.health.name,
+              value: DESIGN.EFFECTS.red.health,
+            });
+            this.setScale({
+              field: 'isNotDamaged',
+              value: true,
+            });
+            this.events.messagesByIdDispatchHelper(this, 1, 'startNoDamaged');
+            this.events.heroOnUpgradeDispatchHelper(this);
+          }
+          break;
+
+        case 50: // 2
+          if (!this.isPause && this.orange > 0 && !this.isNotTired) {
+            this.setScale({
+              field: DESIGN.FLOWERS.orange,
+              value: -1,
+            });
+            this.setScale({
+              field: DESIGN.HERO.scales.health.name,
+              value: DESIGN.EFFECTS.orange.health,
+            });
+            if (this.isHeroTired) {
+              this.setScale({
+                field: 'isHeroTired',
+                value: false,
+              });
+            }
+            this.setScale({
+              field: 'isNotTired',
+              value: true,
+            });
+            this.events.messagesByIdDispatchHelper(this, 1, 'startNoTired');
+            this.events.heroOnUpgradeDispatchHelper(this);
+          }
+          break;
+
+        case 51: // 3
+          if (!this.isPause && this.green > 0) {
+            this.setScale({
+              field: DESIGN.FLOWERS.green,
+              value: -1,
+            });
+            this.setScale({
+              field: DESIGN.HERO.scales.health,
+              value: DESIGN.EFFECTS.green.health,
+            });
+            this.setScale({
+              field: 'isTimeMachine',
+              value: true,
+            });
+            this.events.messagesByIdDispatchHelper(this, 1, 'startTimeMachine');
+            this.events.heroOnUpgradeDispatchHelper(this);
+          }
+          break;
+
+        case 52: // 4
+          if (!this.isPause && this.purple > 0) {
+            this.setScale({
+              field: DESIGN.FLOWERS.purple,
+              value: -1,
+            });
+            this.setScale({
+              field: DESIGN.HERO.scales.health.name,
+              value: DESIGN.EFFECTS.purple.health,
+            });
+            this.setScale({
+              field: 'isGain',
+              value: true,
+            });
+            this.events.messagesByIdDispatchHelper(this, 1, 'startGain');
+            this.events.heroOnUpgradeDispatchHelper(this);
+          }
           break;
       }
     },
@@ -367,6 +454,10 @@ export default {
 
     isHeroOnHit(value) {
       this.hero.setOnHit(this, value);
+    },
+
+    isHeroOnDamage(value) {
+      this.hero.setHeroOnDamage(this, value);
     },
 
     isGameOver(value) {

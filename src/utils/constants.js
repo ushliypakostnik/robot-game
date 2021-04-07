@@ -49,13 +49,14 @@ export const DESIGN = {
     green: 0x4cbb17,
     greenDark: 0x265e0b,
     greenDark2: 0x132f06,
+    greenDark3: 0x013220,
+    greenDark4: 0x011A11,
     orange: 0xf9a602,
     orangeDark: 0x7d5301,
     yellow: 0xf0cf08,
     yellowDark: 0xb49b06,
 
     sun: 0xffff99,
-    wine: 0x413460,
   },
   WORLD_SIZE: {
     level1: size(1, 200), // размер клетки 200
@@ -90,9 +91,11 @@ export const DESIGN = {
     JUMP: 25,
     CAST: 10,
     START: {
-      x: 0,
-      y: 0,
-      z: 0,
+      level1: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
     },
     scales: {
       health: {
@@ -125,20 +128,22 @@ export const DESIGN = {
   },
   EFFECTS: {
     time: { // длительность спецэффектов от цветов
+      health: 15,
+      endurance: 15,
+      machine: 15,
+      gain: 15,
+    },
+    red: {
       health: 20,
-      endurance: 20,
     },
-    daffodil: {
-      health: 10,
+    orange: {
+      health: 40,
     },
-    anemone: {
-      health: 20,
-    },
-    crocus: {
-      health: 30,
-    },
-    tulip: {
+    green: {
       health: 60,
+    },
+    purple: {
+      health: 40,
     },
     bottle: {
       ammo: ammo * 4,
@@ -209,9 +214,11 @@ export const LOCALES = {
 
       legend: 'Legend',
       legendtext: `Earth, distant future. People a long time ago killed each other in nuclear wars, finding out who is right, who is left, who white, and who is red and so on. Several races bred on unbombed atolls in the Pacific Ocean humanoid robots. For example, more human-like, imitating organic, bisexual and personal relationships Drinking companions, which transform animals and vegetation into life force and special effects. Inside them, through thin strong tubes, a special a fermented organic mix similar to human wine, setting them in motion. Or more machine-like same-sex Cyber ​​Dancers preaching meditative Zen-Noise. Gender and religious differences between cultures, of course, raged a fierce war.<br /><br />A couple of young drinking buddies set off on a honeymoon trip across the ocean. But the boat suddenly started leaking and they barely made it to the nearest atoll. The island, beautiful at first glance, turned out to be a dangerous trap, as it had long been chosen for meditation by the Dancers. The stronghold is well prepared for defense - the entire territory is mined, heavy artillery has been brought in, and cover combat drones have been launched to control the airspace.<br /><br />The Robot Drinker wakes up on the floor of the torture chamber of the same-sex prison ... The tanks are empty ... His tormentors apparently decided that he was no longer a tenant and left him to die ... On the wall there is a portrait of the legendary Last President - the ideological forerunner and idol of the Dancers - a man who once unleashed the last war in the history of mankind ...`,
+
+      rules: 'Rules',
     },
     levels: {
-      level1: 'Jail break',
+      level1: 'Prison Break Democracy',
     },
     messages: {
       message1: {
@@ -225,10 +232,12 @@ export const LOCALES = {
         startNoTired: `The robot will not get tired of running ${DESIGN.EFFECTS.time.endurance} seconds!`,
         endNoDamaged: 'The invulnerability effeect is over',
         endNoTired: 'The robot gets tired of running again',
-        appliedСrocus: `The robot used a crocus!<br />Strength has grown by ${DESIGN.EFFECTS.crocus.power}%`,
-        appliedTulip: `The robot used a tulip!<br />It feels so much better!`,
-        pick: 'Robot picked up:',
-        pickBottle: 'The wine tank has been refilled!',
+        startTimeMachine: `The robot used a portable time machine!<br />He has ${DESIGN.EFFECTS.time.machine} seconds.`,
+        startGain: `The robot threw itself a purple gain!<br />The power of the weapon has increased by ${DESIGN.EFFECTS.time.gain} seconds!`,
+        endTimeMachine: 'Time acceleration effect is over!',
+        endGain: 'The effect of the pumped wine cannon is over!',
+        pick: 'The robot picked up: ',
+        pickBottle: 'Wine tank refilled!',
       },
       message2: {
         open: 'Open door?',
@@ -242,32 +251,51 @@ export const LOCALES = {
       message3: {
         enemiesBeside: `Enemies spotted nearby!<br />The robot should be careful!`,
         notEnemiesBeside: 'No one around...',
-        discovered: 'The robot disturbed '
+        discovered: 'The robot disturbed ',
       },
-      objects: {
-        screen: {
-          name: 'dashboard',
-          declination: 'dashboard',
+    },
+    objects: {
+      screen: {
+        name: 'dashboard',
+        declination: 'dashboard',
+      },
+      pass: {
+        name: ' pass',
+        red: 'red',
+        orange: 'orange',
+        green: 'green',
+        purple: 'purple',
+        blue: 'blue',
+      },
+      flower: {
+        name: ' flower',
+        red: {
+          name: 'red',
+          text: `: gives up to ${DESIGN.EFFECTS.red.health}% health<br />and ${DESIGN.EFFECTS.time.health} seconds the robot is invulnerable.`,
         },
-        pass: {
-          name: ' pass',
-          red: 'red',
-          orange: 'orange',
-          green: 'green',
-          purple: 'purple',
-          blue: 'blue',
+        orange: {
+          name: 'orange',
+          text: `: gives up to ${DESIGN.EFFECTS.orange.health}% health,<br />increases speed and jump height. ${DESIGN.EFFECTS.time.endurance} seconds<br />the robot does not get tired of running.`,
         },
-        flower: {
-          name: ' flower',
-          red: 'red',
-          orange: 'orange',
-          green: 'green',
-          purple: 'purple',
+        green: {
+          name: 'green',
+          text: `: grants up to ${DESIGN.EFFECTS.green.health}% health<br />and activates the Portable Time Machine<br />for ${DESIGN.EFFECTS.time.machine} seconds.`,
         },
-        bottle: {
-          name: 'bottle',
-          declination: 'bottle',
+        purple: {
+          name: 'purple',
+          text: `: Gives up to ${DESIGN.EFFECTS.purple.health}% health<br />and increases damage power for ${DESIGN.EFFECTS.time.gain} seconds.`,
         },
+      },
+      bottle: {
+        name: 'bottle',
+        declination: 'bottle',
+        text: `: contains ${DESIGN.EFFECTS.bottle.ammo} drops`,
+      },
+    },
+    modals: {
+      modal1: {
+        text1: 'The USA brought freedom and democracy to all peoples, more and more persistently and mercilessly. Trampling on sovereign governments, devouring industry and resources, leaving behind mountains of corpses and rivers of blood, rahrukha, civil war, famine, many thousands of refugees, broken destinies of generations ... <br /> <br /> One fine day, the Congress of the Democratic Party banned the Republicans by unanimous vote, declaring President for Life ...',
+        text2: 'The old body refused and the nano-surgeons changed the dying organs over and over again. At some point, there were more implants than organic matter. And one morning, it pressed the Button ... Now no one knows exactly why it did it, but after a few hours the number of people decreased many times ... <br /> <br /> Besides, it started very soon Global Dehumidification Program.',
       },
     },
   },
@@ -300,9 +328,11 @@ export const LOCALES = {
 
       legend: 'Легенда',
       legendtext: `Земля, далекое будущее. Люди давным-давно перебили друг-друга в ядерных войнах, выясняя кто правый, кто левый, кто белый, а кто красный и прочее. На не затронутых бомбардировками атоллах в Тихом Океане размножилось несколько рас человекоподобных роботов. Например, более человекоподобные, имитирующие органику, двуполость и личные отношения Собутыльники, которые перерабатывают животных и растительность в жизненную силу и спецэффекты. Внутри них, по тонким крепким трубкам, течет специальный сброженный органический микс, схожий с человеческим вином, приводя их в движение. Или более машиноподбные однополые Кибер-Танцоры, проповедующие медитативный Дзинь-Нойз. На почве гендерных и религиозных разногласий между культурами, конечно же, понеслась жестокая война.<br /><br />Пара молодых Собутыльников отправились в свадебное путешествие по океану. Но катер внезапно дал течь и они с трудом дотянули до ближайшего атолла. Прекрасный на первый взгляд остров оказался опасной ловушкой, так как был давно облюбован для медитаций Танцорами. Оплот хорошо подготовлен к обороне - вся территория заминирована, завезена тяжелая артиллерия, запущены боевые дроны прикрытия, контролирующие воздушное пространство...<br /><br />Робот-Собутыльник приходит в себя на полу пыточной камеры тюрьмы Однополых... Баки пусты... Его мучители, видимо, решили что он уже не жилец, и оставили подыхать... На стене висит портрет легендарного Последнего Президента - идеологического предтечи и кумира Танцоров - человека, когда-то развязавшего последнюю в истории человечества войну...`,
+
+      rules: 'Правила',
     },
     levels: {
-      level1: 'Побег из тюрьмы',
+      level1: 'Побег из тюрьмы Демократии',
     },
     messages: {
       message1: {
@@ -316,8 +346,10 @@ export const LOCALES = {
         startNoTired: `Робот не будет уставать от бега ${DESIGN.EFFECTS.time.endurance} секунд!`,
         endNoDamaged: 'Эффект неуязвимости закончился',
         endNoTired: 'Робот снова устает от бега',
-        appliedСrocus: `Робот использовал крокус!<br />Сила выросла на ${DESIGN.EFFECTS.crocus.power}%`,
-        appliedTulip: `Робот использовал тюльпан!<br />Он чувствует себя намного лучше!`,
+        startTimeMachine: `Робот включил портативную машину времени!<br />У него есть ${DESIGN.EFFECTS.time.machine} секунд.`,
+        startGain: `Робот задвинулся пурпурным драйвом!<br />Сила оружия выросла на ${DESIGN.EFFECTS.time.gain} секунд!`,
+        endTimeMachine: 'Эффект ускорения времени закончился!',
+        endGain: 'Эффект прокаченного виномета закончился!',
         pick: 'Робот подобрал: ',
         pickBottle: 'Бак с вином пополнен!',
       },
@@ -333,32 +365,51 @@ export const LOCALES = {
       message3: {
         enemiesBeside: `Рядом замечены враги!<br/>Роботу стоит быть осторожнее!`,
         notEnemiesBeside: 'Рядом никого...',
-        discovered: 'Робот потревожил'
+        discovered: 'Робот потревожил',
       },
-      objects: {
-        screen: {
-          name: 'информационная панель',
-          declination: 'информационную панель',
+    },
+    objects: {
+      screen: {
+        name: 'информационная панель',
+        declination: 'информационную панель',
+      },
+      pass: {
+        name: ' пропуск',
+        red: 'красный',
+        orange: 'оранжевый',
+        green: 'зеленый',
+        purple: 'фиолетовый',
+        blue: 'голубой',
+      },
+      flower: {
+        name: ' цветок',
+        red: {
+          name: 'красный',
+          text: `: дает до  ${DESIGN.EFFECTS.red.health}% здоровья<br />и ${DESIGN.EFFECTS.time.health} cекунд робот неуязвим.`,
         },
-        pass: {
-          name: ' пропуск',
-          red: 'красный',
-          orange: 'оранжевый',
-          green: 'зеленый',
-          purple: 'фиолетовый',
-          blue: 'голубой',
+        orange: {
+          name: 'оранжевый',
+          text: `: дает до ${DESIGN.EFFECTS.orange.health}% здоровья,<br />увеличивает скорость и высоту прыжка.<br .>${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега.`,
         },
-        flower: {
-          name: ' цветок',
-          red: 'красный',
-          orange: 'оранжевый',
-          green: 'зеленый',
-          purple: 'фиолетовый',
+        green: {
+          name: 'зеленый',
+          text: `: дает до ${DESIGN.EFFECTS.green.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.machine} секунд включает портативную машину времени.`,
         },
-        bottle: {
-          name: 'бутылка вина',
-          declination: 'бутылку вина',
+        purple: {
+          name: 'фиолетовый',
+          text: `: дает до ${DESIGN.EFFECTS.purple.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.gain} секунд увеличивает силу урона.`,
         },
+      },
+      bottle: {
+        name: 'бутылка вина',
+        declination: 'бутылку вина',
+        text: `: cодержит ${DESIGN.EFFECTS.bottle.ammo} капель`,
+      },
+    },
+    modals: {
+      modal1: {
+        text1: 'США несли свободу и демократию всем народам, все более и более настойчиво и беспощадно. Топча суверенные правительства, пожирая промышленность и ресурсы, оставляя после себя горы трупов и реки крови, разруху, гражданскую войну, голод, многие тысячи беженцев, поломанные судьбы поколений...<br /><br />В один прекрасный день Съезд Демократической Партии единогласным голосаванием запретил Республиканцев, объявив Пожизненного Презиента...',
+        text2: 'Старое тело отказывало и нано-хирурги раз за разом меняли отмирающие органы. В какой-то момент имплантов стало больше чем органической материи. И однажды утром, оно нажало Кнопку... Никто теперь не знает точно, зачем оно это сделало, но уже через несколько часов людей стало во много раз меньше....<br /><br />Кроме того, очень скоро стартовала Глобальная Программа Поголовного Расчеловачивания.',
       },
     },
   },

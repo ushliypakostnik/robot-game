@@ -11,8 +11,9 @@
       <div
         v-if="isPause && isGameLoaded"
         class="layout__blocker"
+        :class="isModal && 'layout__blocker--modal'"
       >
-        <Instructions />
+        <Instructions v-if="!isModal" />
 
         <div class="layout__button-wrapper">
           <button
@@ -76,6 +77,8 @@ export default {
   computed: {
     ...mapGetters({
       isPause: 'layout/isPause',
+      isModal: 'layout/isModal',
+
       isGameLoaded: 'preloader/isGameLoaded',
     }),
   },
@@ -108,17 +111,27 @@ export default {
     background-color: $colors__gate;
     z-index: $layouts__1;
     @include size(100%, 100%);
+
+    &--modal {
+      background-color: transparent;
+    }
   }
 
   &__button {
     margin: 0 auto;
 
     &-wrapper {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
       display: flex;
       width: 100%;
       position: fixed;
-      bottom: $gutter;
       z-index: $layouts__2;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
+      padding: $gutter * 3 0 $gutter * 1.5;
     }
   }
 }

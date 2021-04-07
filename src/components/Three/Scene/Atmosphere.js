@@ -1,11 +1,10 @@
 /* eslint-disable dot-notation,prefer-destructuring */
 import * as Three from 'three';
 
-import { DESIGN, OBJECTS } from '@/utils/constants';
+import { DESIGN } from '@/utils/constants';
 
 import {
   loaderDispatchHelper,
-  distance2D,
 } from '@/utils/utilities';
 
 function Atmosphere() {
@@ -22,8 +21,6 @@ function Atmosphere() {
   let objects;
   let isBeside = false;
   let isBesideNew;
-  let px;
-  let pz;
 
   this.init = (scope) => {
     // Wind
@@ -79,41 +76,40 @@ function Atmosphere() {
   // Обнаружение врагами
   const checkEnemies = (scope, x, z) => {
     objects = scope.enemies.filter(enemy => enemy.mode !== DESIGN.STAFF.mode.thing);
+    if (objects.length > 0) {
+      isBesideNew = false;
+      objects.forEach((enemy) => {
+        scope.distance = enemy.pseudo.position.distanceTo(scope.camera.position);
 
-    isBesideNew = false;
-    objects.forEach((enemy) => {
-      px = enemy.pseudo.position.x;
-      pz = enemy.pseudo.position.z;
+        // 50 метров - предупреждении что рядом враги или никого!
+        if (scope.distance < DESIGN.CHECK * 5 && !isBesideNew) isBesideNew = true;
 
-      // 50 метров - предупреждении что рядом враги или никого!
-      if (distance2D(px, pz, x, z) < DESIGN.CHECK * 5 && !isBesideNew) isBesideNew = true;
+        // 40 метров - напуганных врагов попускает
+        if (scope.distance > DESIGN.CHECK * 4 && enemy.mode === DESIGN.STAFF.mode.active) {
+          enemy.mode = DESIGN.STAFF.mode.idle;
+        }
 
-      // 40 метров - напуганных врагов попускает
-      if (distance2D(px, pz, x, z) > DESIGN.CHECK * 4 && enemy.mode === DESIGN.STAFF.mode.active) {
-        enemy.mode = DESIGN.STAFF.mode.idle;
+        // 20 метров - если скрытое передвижение, 20 если нет!
+        if ((scope.distance < DESIGN.CHECK * 3 && !scope.isHidden && enemy.mode === DESIGN.STAFF.mode.idle)
+            || (scope.distance < DESIGN.CHECK * 2 && scope.isHidden && enemy.mode === DESIGN.STAFF.mode.idle)) {
+          enemy.mode = DESIGN.STAFF.mode.active;
+          scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', enemy.pseudo.name);
+        }
+      });
+
+      // Обнаружение панелями
+      if (isBeside !== isBesideNew) {
+        if (isBesideNew) scope.events.messagesByIdDispatchHelper(scope, 3, 'enemiesBeside');
+        else scope.events.messagesByIdDispatchHelper(scope, 3, 'notEnemiesBeside');
+        isBeside = isBesideNew;
       }
-
-      // 20 метров - если скрытое передвижение, 20 если нет!
-      if ((distance2D(px, pz, x, z) < DESIGN.CHECK * 3 && !scope.isHidden && enemy.mode === DESIGN.STAFF.mode.idle)
-          || (distance2D(px, pz, x, z) < DESIGN.CHECK * 2 && scope.isHidden && enemy.mode === DESIGN.STAFF.mode.idle)) {
-        enemy.mode = DESIGN.STAFF.mode.active;
-        scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', enemy.pseudo.name);
-      }
-    });
-
-    // Обнаружение панелями
-    if (isBeside !== isBesideNew) {
-      if (isBesideNew) scope.events.messagesByIdDispatchHelper(scope, 3, 'enemiesBeside');
-      else scope.events.messagesByIdDispatchHelper(scope, 3, 'notEnemiesBeside');
-      isBeside = isBesideNew;
     }
 
     scope.screens.forEach((screen) => {
-      px = screen.pseudo.position.x;
-      pz = screen.pseudo.position.z;
+      scope.distance = screen.pseudo.position.distanceTo(scope.camera.position);
 
       // 40 метров - панели выключаются
-      if (distance2D(px, pz, x, z) > DESIGN.CHECK * 4 && screen.mode === DESIGN.STAFF.mode.active) {
+      if (scope.distance > DESIGN.CHECK * 4 && screen.mode === DESIGN.STAFF.mode.active) {
         screen.mode = DESIGN.STAFF.mode.idle;
         screen.isSoundStart = false;
         screen.isOn = true;
@@ -123,8 +119,8 @@ function Atmosphere() {
       }
 
       // 20 метров - если скрытое передвижение, 20 если нет!
-      if ((distance2D(px, pz, x, z) < DESIGN.CHECK * 3 && !scope.isHidden && screen.mode === DESIGN.STAFF.mode.idle)
-        || (distance2D(px, pz, x, z) < DESIGN.CHECK * 2 && scope.isHidden && screen.mode === DESIGN.STAFF.mode.idle)) {
+      if ((scope.distance < DESIGN.CHECK * 3 && !scope.isHidden && screen.mode === DESIGN.STAFF.mode.idle)
+          || (scope.distance < DESIGN.CHECK * 2 && scope.isHidden && screen.mode === DESIGN.STAFF.mode.idle)) {
         screen.mode = DESIGN.STAFF.mode.active;
         scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', screen.pseudo.name);
       }
