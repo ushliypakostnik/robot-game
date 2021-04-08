@@ -141,10 +141,10 @@
               alt="image1"
             >
           </div>
-          <span v-html="$t('modals.modal1.text1')" />
+          <span v-html="$t(`modals.level${level}.modal1.text1`)" />
         </div>
         <div class="ui__modal--right">
-          <span v-html="$t('modals.modal1.text2')" />
+          <span v-html="$t(`modals.level${level}.modal1.text2`)" />
           <div class="ui__image-wrapper">
             <img
               src="../../assets/level1/modal1__2.jpg"
@@ -389,6 +389,10 @@ export default {
 
       img {
         width: 25vw;
+      }
+
+      @media (max-height: 600px) {
+        @include text($font-size--xsmall);
       }
     }
   }

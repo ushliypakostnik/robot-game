@@ -134,10 +134,10 @@ export const DESIGN = {
       gain: 15,
     },
     red: {
-      health: 20,
+      health: 30,
     },
     orange: {
-      health: 40,
+      health: 50,
     },
     green: {
       health: 60,
@@ -275,7 +275,7 @@ export const LOCALES = {
         },
         orange: {
           name: 'orange',
-          text: `: gives up to ${DESIGN.EFFECTS.orange.health}% health,<br />increases speed and jump height. ${DESIGN.EFFECTS.time.endurance} seconds<br />the robot does not get tired of running.`,
+          text: `: gives up to ${DESIGN.EFFECTS.orange.health}% health,<br />and increases jump height. ${DESIGN.EFFECTS.time.endurance} seconds<br />the robot does not get tired of running.`,
         },
         green: {
           name: 'green',
@@ -293,9 +293,11 @@ export const LOCALES = {
       },
     },
     modals: {
-      modal1: {
-        text1: 'The USA brought freedom and democracy to all peoples, more and more persistently and mercilessly. Trampling on sovereign governments, devouring industry and resources, leaving behind mountains of corpses and rivers of blood, rahrukha, civil war, famine, many thousands of refugees, broken destinies of generations ... <br /> <br /> One fine day, the Congress of the Democratic Party banned the Republicans by unanimous vote, declaring President for Life ...',
-        text2: 'The old body refused and the nano-surgeons changed the dying organs over and over again. At some point, there were more implants than organic matter. And one morning, it pressed the Button ... Now no one knows exactly why it did it, but after a few hours the number of people decreased many times ... <br /> <br /> Besides, it started very soon Global Dehumidification Program.',
+      level1: {
+        modal1: {
+          text1: 'The United States carried its understanding of freedom and democracy to all peoples, more and more rudely, persistently and mercilessly. Trampling over sovereign governments, devouring industry and resources, leaving behind mountains of corpses and rivers of blood, devastation, civil war, famine, many thousands of refugees, broken destinies of generations ... <br /> <br /> One fine day, the ruling Democratic congress The parties unanimously banned the Republicans by declaring President for Life ...',
+          text2: 'The old body refused and the nano-surgeons changed the dying organs over and over again. At some point, there were more implants than organic flesh. And one morning, it suddenly decided to press the Button ... Now no one knows exactly why it did it, but after a few hours there are many times less people on the planet ... <br /> <br /> Except Moreover, the Global Dehumidification Program was launched very soon.',
+        },
       },
     },
   },
@@ -389,7 +391,7 @@ export const LOCALES = {
         },
         orange: {
           name: 'оранжевый',
-          text: `: дает до ${DESIGN.EFFECTS.orange.health}% здоровья,<br />увеличивает скорость и высоту прыжка.<br .>${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега.`,
+          text: `: дает до ${DESIGN.EFFECTS.orange.health}% здоровья,<br />и увеличивает высоту прыжка.<br .>${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега.`,
         },
         green: {
           name: 'зеленый',
@@ -407,9 +409,11 @@ export const LOCALES = {
       },
     },
     modals: {
-      modal1: {
-        text1: 'США несли свободу и демократию всем народам, все более и более настойчиво и беспощадно. Топча суверенные правительства, пожирая промышленность и ресурсы, оставляя после себя горы трупов и реки крови, разруху, гражданскую войну, голод, многие тысячи беженцев, поломанные судьбы поколений...<br /><br />В один прекрасный день Съезд Демократической Партии единогласным голосаванием запретил Республиканцев, объявив Пожизненного Презиента...',
-        text2: 'Старое тело отказывало и нано-хирурги раз за разом меняли отмирающие органы. В какой-то момент имплантов стало больше чем органической материи. И однажды утром, оно нажало Кнопку... Никто теперь не знает точно, зачем оно это сделало, но уже через несколько часов людей стало во много раз меньше....<br /><br />Кроме того, очень скоро стартовала Глобальная Программа Поголовного Расчеловачивания.',
+      level1: {
+        modal1: {
+          text1: 'США несли свое понимание свободы и демократиы всем народам, все более грубо, настойчиво и беспощадно. Топча суверенные правительства, пожирая промышленность и ресурсы, оставляя после себя горы трупов и реки крови, разруху, гражданскую войну, голод, многие тысячи беженцев, поломанные судьбы поколений...<br /><br />В один прекрасный день съезд правящей Демократической Партии единогласным решением запретил Республиканцев, объявив Пожизненного Презиента...',
+          text2: 'Старое тело отказывало и нано-хирурги раз за разом меняли отмирающие органы. В какой-то момент имплантов стало больше чем органической плоти. А однажды утром, оно вдруг решило нажать на Кнопку... Никто теперь не знает точно, зачем оно это сделало, но уже через несколько часов людей на планете стало во много раз меньше....<br /><br />Кроме того, очень скоро стартовала Глобальная Программа Поголовного Расчеловачивания.',
+        },
       },
     },
   },

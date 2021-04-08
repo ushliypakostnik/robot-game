@@ -11,8 +11,8 @@ const initialState = {
   green: 0,
   purple: 0,
 
-  passes: [],
-  // passes: ['red', 'orange', 'green', 'purple'],
+  // passes: [],
+  passes: ['red', 'orange', 'green', 'purple'],
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,

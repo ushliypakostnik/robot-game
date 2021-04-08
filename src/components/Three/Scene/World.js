@@ -166,8 +166,8 @@ function World() {
                 if (child.name.includes('R')) rotate = Math.PI / 2;
                 else rotate = Math.PI / -2;
               } else if (child.name.includes('X')) {
-                if (child.name.includes('R')) rotate = Math.PI;
-                else rotate = 0;
+                if (child.name.includes('R')) rotate = 0;
+                else rotate = Math.PI;
               }
 
               OBJECTS.SCREENS[scope.l].data.push({

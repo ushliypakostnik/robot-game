@@ -158,6 +158,7 @@ function Doors() {
     scope.octreeMutable = new Octree();
     scope.octreeMutable.fromGraphNode(group);
     scope.scene.add(group);
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
   };
 
   this.animate = (scope) => {
@@ -180,7 +181,7 @@ function Doors() {
       }
 
       if (door.isStart) {
-        if (door.distance > DESIGN.HERO.HEIGHT + 1 && !door.isUpdate) {
+        if (door.distance > DESIGN.HERO.HEIGHT + 2 && !door.isUpdate) {
           updateDoors(scope);
           door.isUpdate = true;
         }
@@ -212,7 +213,7 @@ function Doors() {
           door.distance = door.height - door.distance;
         }
 
-        if (door.distance > door.height - DESIGN.HERO.HEIGHT - 1 && !door.isUpdate) {
+        if (door.distance > door.height - DESIGN.HERO.HEIGHT - 2 && !door.isUpdate) {
           updateDoors(scope);
           door.isUpdate = true;
         }

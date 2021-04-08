@@ -49,8 +49,6 @@ function Hero() {
   let hit;
   let damage;
 
-  let stimulation;
-
   this.init = (scope) => {
     audioLoader.load('./audio/pick.mp3', (buffer) => {
       scope.audio.addAudioToHero(scope, buffer, 'pick', DESIGN.VOLUME.hero.pick, false);
@@ -109,13 +107,7 @@ function Hero() {
     this.animate(scope);
   };
 
-  const getStimulation = (isNotTired) => {
-    return isNotTired ? 1 : 0.75;
-  };
-
   this.setHidden = (scope, isHidden) => {
-    stimulation = getStimulation(scope.isNotTired);
-
     if (isHidden) {
       playerCollider = new Capsule(
         new Three.Vector3(
@@ -131,7 +123,7 @@ function Hero() {
         DESIGN.HERO.HEIGHT / 2,
       );
 
-      steps.setPlaybackRate(0.5 * stimulation);
+      steps.setPlaybackRate(0.5);
     } else {
       playerCollider = new Capsule(
         new Three.Vector3(
@@ -147,18 +139,17 @@ function Hero() {
         DESIGN.HERO.HEIGHT / 2,
       );
 
-      steps.setPlaybackRate(stimulation);
+      steps.setPlaybackRate(1);
     }
   };
 
   this.setRun = (scope, isRun) => {
-    stimulation = getStimulation(scope.isNotTired);
     if (isRun && scope.keyStates['KeyW']) {
       steps.setVolume(DESIGN.VOLUME.hero.run);
-      steps.setPlaybackRate(2 * stimulation);
+      steps.setPlaybackRate(2);
     } else {
       steps.setVolume(DESIGN.VOLUME.hero.step);
-      steps.setPlaybackRate(stimulation);
+      steps.setPlaybackRate(1);
     }
   };
 
@@ -295,7 +286,7 @@ function Hero() {
 
       // Кастим дверь
       if (scope.object.name.includes(OBJECTS.DOORS.name)) {
-        object = scope.doors.find(door => door.id === scope.object.id);
+        object = scope.doors.find(door => door.id === scope.object.id && (!door.isStart || !door.isEnd));
 
         if (object) {
           if (!scope.passes.includes(object.pass)) {
@@ -423,32 +414,24 @@ function Hero() {
 
     if (scope.playerOnFloor) {
       if (!scope.isPause) {
-        if (steps) {
-          if (scope.keyStates['KeyW']
-            || scope.keyStates['KeyS']
-            || scope.keyStates['KeyA']
-            || scope.keyStates['KeyD']
-            || scope.keyStates['Space']) stimulation = getStimulation(scope.isNotTired);
-        }
-
         if (scope.keyStates['KeyW']) {
           speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : scope.isRun ? DESIGN.HERO.SPEED * 2 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getForwardVector(scope).multiplyScalar(speed * scope.delta * stimulation));
+          playerVelocity.add(getForwardVector(scope).multiplyScalar(speed * scope.delta));
         }
 
         if (scope.keyStates['KeyS']) {
           speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getForwardVector(scope).multiplyScalar(-speed * scope.delta * stimulation));
+          playerVelocity.add(getForwardVector(scope).multiplyScalar(-speed * scope.delta));
         }
 
         if (scope.keyStates['KeyA']) {
           speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getSideVector(scope).multiplyScalar(-speed * scope.delta * stimulation));
+          playerVelocity.add(getSideVector(scope).multiplyScalar(-speed * scope.delta));
         }
 
         if (scope.keyStates['KeyD']) {
           speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : DESIGN.HERO.SPEED;
-          playerVelocity.add(getSideVector(scope).multiplyScalar(speed * scope.delta * stimulation));
+          playerVelocity.add(getSideVector(scope).multiplyScalar(speed * scope.delta));
         }
 
         if (scope.keyStates['Space']) {
@@ -468,8 +451,6 @@ function Hero() {
           || scope.keyStates['KeyS']
           || scope.keyStates['KeyA']
           || scope.keyStates['KeyD']) {
-          stimulation = scope.isNotTired ? 1.5 : 1;
-
           if (!steps.isPlaying) {
             speed = scope.isHidden ? 0.5 : scope.isRun ? 2 : 1;
             steps.setPlaybackRate(speed);
