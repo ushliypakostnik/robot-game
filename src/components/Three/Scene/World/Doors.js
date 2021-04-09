@@ -158,7 +158,6 @@ function Doors() {
     scope.octreeMutable = new Octree();
     scope.octreeMutable.fromGraphNode(group);
     scope.scene.add(group);
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
   };
 
   this.animate = (scope) => {

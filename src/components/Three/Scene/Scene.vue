@@ -224,7 +224,7 @@ export default {
       });
 
       this.controls.addEventListener('lock', () => {
-        if (this.isModal) this.setModal(false);
+        if (this.isModal) this.setModal({ isModal: false, modalId: null });
         this.togglePause(false);
       });
 

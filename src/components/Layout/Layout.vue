@@ -114,6 +114,7 @@ export default {
 
     &--modal {
       background-color: transparent;
+      height: 0;
     }
   }
 

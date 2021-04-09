@@ -12,7 +12,10 @@ import {
 function Screens() {
   const audioLoader = new Three.AudioLoader();
 
-  this.init = (scope) => {
+  let room;
+  let box;
+
+  this.init = (scope, rooms) => {
     const glassTexture = new Three.TextureLoader().load(
       './images/textures/glass.jpg',
       () => {
@@ -30,6 +33,8 @@ function Screens() {
     const screen = new Three.Mesh(screensGeometry, screensMaterial);
     let screenClone;
 
+    box = new Three.Box3();
+
     for (let i = 0; i < OBJECTS.SCREENS[scope.l].data.length; i++) {
       screenClone = screen.clone();
 
@@ -43,13 +48,18 @@ function Screens() {
         OBJECTS.SCREENS[scope.l].data[i].z,
       );
       screenClone.rotateY(OBJECTS.SCREENS[scope.l].data[i].rotate);
-
       screenClone.name = OBJECTS.SCREENS.name;
+
+      room = rooms.find(room => room.id === OBJECTS.SCREENS[scope.l].data[i].modalId);
+      room.room.geometry.computeBoundingBox();
+      room.room.visible = false;
 
       scope.screens.push({
         id: screenClone.id,
+        modalId: OBJECTS.SCREENS[scope.l].data[i].modalId,
         mode: DESIGN.STAFF.mode.idle,
         pseudo: screenClone,
+        room: room.room,
         isOn: true,
         counter: 0,
         isSoundStart: false,
@@ -57,6 +67,7 @@ function Screens() {
 
       scope.objects.push(screenClone);
       scope.scene.add(screenClone);
+      scope.scene.add(room.room);
     }
 
     audioLoader.load('./audio/screens.mp3', (buffer) => {
@@ -65,6 +76,12 @@ function Screens() {
     });
 
     loaderDispatchHelper(scope.$store, 'isScreensBuild');
+  };
+
+  this.isHeroInRoomWithScreen = (scope, screen) => {
+    box.copy(screen.room.geometry.boundingBox).applyMatrix4(screen.room.matrixWorld);
+    if (box.containsPoint(scope.controls.getObject().position)) return true;
+    return false;
   };
 
   this.animate = (scope) => {

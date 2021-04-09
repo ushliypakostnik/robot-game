@@ -84,7 +84,7 @@ function Hero() {
     playerCollider = new Capsule(
       new Three.Vector3(
         DESIGN.HERO.START[scope.l].x,
-        DESIGN.HERO.START[scope.l].y, + DESIGN.HERO.HEIGHT / 2,
+        DESIGN.HERO.START[scope.l].y + DESIGN.HERO.HEIGHT / 2,
         DESIGN.HERO.START[scope.l].z,
       ),
       new Three.Vector3(
@@ -112,7 +112,7 @@ function Hero() {
       playerCollider = new Capsule(
         new Three.Vector3(
           scope.camera.position.x,
-          scope.camera.position.y - DESIGN.HERO.HEIGHT,
+          scope.camera.position.y,
           scope.camera.position.z,
         ),
         new Three.Vector3(
@@ -238,7 +238,7 @@ function Hero() {
         if (object) messagesByViewDispatchHelper(scope, 2, 'look', scope.object.name);
 
         if (object && scope.keyStates['KeyE']) {
-          scope.setModal(true);
+          scope.setModal({ isModal: true, modalId: object.modalId });
           scope.togglePause(true);
           scope.$eventHub.$emit('unlock');
         }
@@ -471,7 +471,7 @@ function Hero() {
     scope.camera.position.copy(playerCollider.end);
 
     if (scope.toruch && scope.isToruch) scope.toruch.position.copy(playerCollider.end);
-    // console.log(scope.camera.position);
+    // console.log(scope.camera.position.y);
   };
 }
 

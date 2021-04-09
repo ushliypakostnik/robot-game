@@ -89,7 +89,7 @@ function Atmosphere() {
           enemy.mode = DESIGN.STAFF.mode.idle;
         }
 
-        // 20 метров - если скрытое передвижение, 20 если нет!
+        // 20 метров - если скрытое передвижение, 30 если нет!
         if ((scope.distance < DESIGN.CHECK * 3 && !scope.isHidden && enemy.mode === DESIGN.STAFF.mode.idle)
             || (scope.distance < DESIGN.CHECK * 2 && scope.isHidden && enemy.mode === DESIGN.STAFF.mode.idle)) {
           enemy.mode = DESIGN.STAFF.mode.active;
@@ -109,7 +109,9 @@ function Atmosphere() {
       scope.distance = screen.pseudo.position.distanceTo(scope.camera.position);
 
       // 40 метров - панели выключаются
-      if (scope.distance > DESIGN.CHECK * 4 && screen.mode === DESIGN.STAFF.mode.active) {
+      if (!scope.world.screens.isHeroInRoomWithScreen(scope, screen)
+          || (scope.distance > DESIGN.CHECK * 4
+              && screen.mode === DESIGN.STAFF.mode.active)) {
         screen.mode = DESIGN.STAFF.mode.idle;
         screen.isSoundStart = false;
         screen.isOn = true;
@@ -118,9 +120,15 @@ function Atmosphere() {
         scope.audio.stopObjectSound(screen.id, 'screen');
       }
 
-      // 20 метров - если скрытое передвижение, 20 если нет!
-      if ((scope.distance < DESIGN.CHECK * 3 && !scope.isHidden && screen.mode === DESIGN.STAFF.mode.idle)
-          || (scope.distance < DESIGN.CHECK * 2 && scope.isHidden && screen.mode === DESIGN.STAFF.mode.idle)) {
+      // 20 метров - если скрытое передвижение, 30 если нет!
+      if ((scope.distance < DESIGN.CHECK * 3
+          && !scope.isHidden
+          && screen.mode === DESIGN.STAFF.mode.idle
+          && scope.world.screens.isHeroInRoomWithScreen(scope, screen))
+          || (scope.distance < DESIGN.CHECK * 2
+            && scope.isHidden
+            && screen.mode === DESIGN.STAFF.mode.idle
+            && scope.world.screens.isHeroInRoomWithScreen(scope, screen))) {
         screen.mode = DESIGN.STAFF.mode.active;
         scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', screen.pseudo.name);
       }

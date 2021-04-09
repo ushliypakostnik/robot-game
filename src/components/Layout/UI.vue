@@ -136,20 +136,24 @@
       >
         <div class="ui__modal--left">
           <div class="ui__image-wrapper">
-            <img
-              src="../../assets/level1/modal1__1.jpg"
-              alt="image1"
-            >
+            <div class="ui__image-wrapper-wrapper">
+              <img
+                :src="modalSrc(1)"
+                alt="image1"
+              >
+            </div>
           </div>
-          <span v-html="$t(`modals.level${level}.modal1.text1`)" />
+          <span v-html="$t(`modals.level${level}.modal${modalId}.text1`)" />
         </div>
         <div class="ui__modal--right">
-          <span v-html="$t(`modals.level${level}.modal1.text2`)" />
+          <span v-html="$t(`modals.level${level}.modal${modalId}.text2`)" />
           <div class="ui__image-wrapper">
-            <img
-              src="../../assets/level1/modal1__2.jpg"
-              alt="image1"
-            >
+            <div class="ui__image-wrapper-wrapper">
+              <img
+                :src="modalSrc(2)"
+                alt="image2"
+              >
+            </div>
           </div>
         </div>
       </div>
@@ -217,6 +221,7 @@ export default {
       messages: 'layout/messages',
 
       isModal: 'layout/isModal',
+      modalId: 'layout/modalId',
 
       isGameOver: 'layout/isGameOver',
       isWin: 'layout/isWin',
@@ -277,6 +282,10 @@ export default {
       if (name.includes(OBJECTS.BOTTLES.name)) return OBJECTS.BOTTLES.name;
       return null;
     },
+
+    modalSrc(modal) {
+      return `/images/modals/level1/modal${this.modalId}__${modal}.jpg`;
+    },
   },
 
   watch: {
@@ -332,8 +341,12 @@ export default {
     }
 
     &--modal {
+      align-items: flex-start;
       color: $colors__white;
       background: $colors__black;
+      padding-top: $gutter * 2;
+      padding-bottom: $gutter * 2;
+      overflow-y: auto;
     }
 
     &--win {
@@ -389,6 +402,7 @@ export default {
 
       img {
         width: 25vw;
+        flex-grow: 0;
       }
 
       @media (max-height: 600px) {
@@ -398,9 +412,12 @@ export default {
   }
 
   &__image-wrapper {
-    background: $colors__black;
-    border: $gutter / 10 solid $colors__white;
-    padding: $gutter / 2;
+
+    &-wrapper {
+      background: $colors__black;
+      border: $gutter / 10 solid $colors__white;
+      padding: $gutter / 2;
+    }
   }
 
   &__scales {

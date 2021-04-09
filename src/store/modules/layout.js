@@ -15,7 +15,9 @@ const initialState = {
   level: localStorage.getItem(LOCALSTORAGE.LEVEL) || 1,
 
   isPause: true,
+
   isModal: false,
+  modalId: null,
 
   messages: [],
   message: 0,
@@ -31,7 +33,9 @@ const getters = {
   level: state => state.level,
 
   isPause: state => state.isPause,
+
   isModal: state => state.isModal,
+  modalId: state => state.modalId,
 
   messages: state => state.messages,
   message: state => state.message,
@@ -74,8 +78,8 @@ const actions = {
     commit('hideMessageById', id);
   },
 
-  setModal: ({ commit }, isModal) => {
-    commit('setModal', isModal);
+  setModal: ({ commit }, { isModal, modalId }) => {
+    commit('setModal', { isModal, modalId });
   },
 
 
@@ -125,8 +129,10 @@ const mutations = {
     state.messages = messages;
   },
 
-  setModal: (state, isModal) => {
-    state.isModal =  isModal;
+  setModal: (state, { isModal, modalId }) => {
+    state.isModal = isModal;
+    if (isModal) state.modalId = modalId;
+    else state.modalId = null;
   },
 
   setGameOver: (state) => {

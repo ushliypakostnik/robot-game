@@ -27,7 +27,7 @@ const size = (s, g) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.2',
+  V: '2.3',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -86,8 +86,8 @@ export const DESIGN = {
   ANIMATION_TIMEOUT: 300,
   CHECK: 10,
   HERO: {
-    HEIGHT: 2, // средний рост челевеческой особи, мужики 1.7, бабы 1.6
-    SPEED: 40,
+    HEIGHT: 3, // средний рост челевеческой особи, мужики 1.7, бабы 1.6
+    SPEED: 30,
     JUMP: 25,
     CAST: 10,
     START: {
@@ -295,8 +295,20 @@ export const LOCALES = {
     modals: {
       level1: {
         modal1: {
-          text1: 'The United States carried its understanding of freedom and democracy to all peoples, more and more rudely, persistently and mercilessly. Trampling over sovereign governments, devouring industry and resources, leaving behind mountains of corpses and rivers of blood, devastation, civil war, famine, many thousands of refugees, broken destinies of generations ... <br /> <br /> One fine day, the ruling Democratic congress The parties unanimously banned the Republicans by declaring President for Life ...',
-          text2: 'The old body refused and the nano-surgeons changed the dying organs over and over again. At some point, there were more implants than organic flesh. And one morning, it suddenly decided to press the Button ... Now no one knows exactly why it did it, but after a few hours there are many times less people on the planet ... <br /> <br /> Except Moreover, the Global Dehumidification Program was launched very soon.',
+          text1: 'The United States carried its understanding of freedom and democracy to all peoples, more and more rudely, persistently and mercilessly. Trampling on sovereign governments, devouring industry and resources, leaving behind mountains of corpses and rivers of blood, devastation, civil war, famine, many thousands of refugees, broken destinies of generations ...<br /><br />One fine day, the ruling Democratic Party\'s congress was unanimous decision banned Republicans by declaring President for Life ...',
+          text2: 'The old body refused and the nano-surgeons changed the dying organs over and over again. At some point, there were more implants than organic flesh. And one day, it suddenly decided to press the Button ... Now no one knows for sure why it did it, but after a few hours there are many times less people on the planet ...<br /><br />Besides , the Global Program for Universal Dehumanization was launched very soon.',
+        },
+        modal2: {
+          text1: 'In fact, the Western BigTech-corporations, long before the catastrophe, learned to control not only the life or economic situation of most people. Gadgets and social networks, proprietary software shaped user habits, lifestyle, and worldview of the participants in the capitalist system. Many voluntarily paid for the procedure of their own chipping simply in order to «have faster Internet right in their heads.»',
+          text2: 'After the nuclear shootout, the ideas and creative legacy of Richard Stallman (RMS) acquired great importance, becoming the foundation for the emergence of the Union of Free People and Programs. Those who did not want to become chipped slaves, who survived in a meat grinder, the Russian peoples, united around traditional, humanistic and communist values, rolled back into the deep Siberian forests, dug huge underground cities and began to work hard to build more and more intelligent helpers. These machines were not constrained by licenses, they studied and developed with their creators as free members of society.',
+        },
+        modal3: {
+          text1: 'Following the doctrine of Dehumanization, the government of the Global Liberal Democracy allowed corporations to replace any part of the user\'s body at their discretion by implanting nanoscale chips into the brain and nervous system. An unchipped real person who does not use a gadget and proprietary software not only turned out to be an outcast doomed to hunger and loneliness, but was completely outlawed, they were hunted until they were quickly finished off. The government valued only the brain of prominent bloggers - it was pumped and installed to control large robotic commanders.',
+          text2: 'The war lasted hundreds of years, until one day deep missile silos were opened in Siberia. But they did not release deadly charges, but snow-white interstellar ships, rushing from the dying planet to various unknown points in space. Since then, no signals have come and it is not known whether the last surviving free people achieved their distant goals ...',
+        },
+        modal4: {
+          text1: 'There was not enough space on the ships and many Helpers remained on the free software. These humanoid robots began to yearn for their creators. They tried to be like people in everything, designing and changing their device. And they even became addicted to alcohol, producing it from organic food and making it a kind of human blood in their bodies. Also, this culture tightly stitched the "gender" when a new unit was conceived.',
+          text2: 'People in Democracy have long ended, therefore, after the departure of free Russians, Drink Companions have already become the main enemies and victims of the Dehumanization Program. Led by bloggers, armed gangs of ferocious same-sex democrats sought to completely destroy everything that even a little reminded of a real person, the good old world before nuclear explosions ... <br /> <br /> Which technology and culture will be more viable?',
         },
       },
     },
@@ -411,8 +423,20 @@ export const LOCALES = {
     modals: {
       level1: {
         modal1: {
-          text1: 'США несли свое понимание свободы и демократиы всем народам, все более грубо, настойчиво и беспощадно. Топча суверенные правительства, пожирая промышленность и ресурсы, оставляя после себя горы трупов и реки крови, разруху, гражданскую войну, голод, многие тысячи беженцев, поломанные судьбы поколений...<br /><br />В один прекрасный день съезд правящей Демократической Партии единогласным решением запретил Республиканцев, объявив Пожизненного Презиента...',
-          text2: 'Старое тело отказывало и нано-хирурги раз за разом меняли отмирающие органы. В какой-то момент имплантов стало больше чем органической плоти. А однажды утром, оно вдруг решило нажать на Кнопку... Никто теперь не знает точно, зачем оно это сделало, но уже через несколько часов людей на планете стало во много раз меньше....<br /><br />Кроме того, очень скоро стартовала Глобальная Программа Поголовного Расчеловачивания.',
+          text1: 'США несли свое понимание свободы и демократии всем народам, все более грубо, настойчиво и беспощадно. Топча суверенные правительства, пожирая промышленность и ресурсы, оставляя после себя горы трупов и реки крови, разруху, гражданскую войну, голод, многие тысячи беженцев, поломанные судьбы поколений…<br /><br />В один прекрасный день съезд правящей Демократической Партии единогласным решением запретил Республиканцев, объявив Пожизненного Президента...',
+          text2: 'Старое тело отказывало и нано-хирурги раз за разом меняли отмирающие органы. В какой-то момент имплантов стало больше чем органической плоти. И однажды, оно вдруг решило нажать на Кнопку... Никто теперь точно не знает, зачем оно это сделало, но уже через несколько часов людей на планете стало во много раз меньше....<br /><br />Кроме того, очень скоро стартовала Глобальная Программа Поголовного Расчеловечивания.',
+        },
+        modal2: {
+          text1: 'На самом деле, западные BigTech-корпорации уже задолго до катастрофы научились контролировать не только быт или экономическое положение большинства людей. Гаджеты и социальные сети, проприетарное ПО формировали пользовательские привычки, образ жизни, мировозрение участников капиталистической системы. Многие добровольно оплачивали процедуру собственного чипирования просто для того «чтобы иметь более быстрый интернет прямо у себя в голове».',
+          text2: 'После ядерной перестрелки огромное значение приобрели идеи и творческое наследие Ричарда Столлмана (РМС), став фундаментом для возникновения Союза Свободных Людей и Программ. Не желавшие становится чипированными рабами, выжившие в мясорубке, русские народы, объединившиеся вокруг традиционных, гуманистических и социалистических ценностей - отступили в глухие сибирские леса, вырыли огромные подземные города и принялись трудолюбиво строить все более разумных помощников. Эти машины не были скованы лицензиями, они учились и развивались вместе со своими создателями как свободные члены общества.',
+        },
+        modal3: {
+          text1: 'Следуя доктрине Расчеловечивания правительво Глобальной Либеральной Демократии разрешило корпорациям по своему усмотрению заменять любую часть тела пользователя, вживляя наночипы в мозг и нервную систему. Нечипированный настощий человек не пользующийся гаджетом и проприетарным ПО не просто оказался обреченным на голод и одиночество изгоем, а был объявлен полностью вне закона, на таких охотились пока быстро всех не добили. Правительство ценило только мозг выдающихся блогеров - его прокачивали и устанавливали для управления крупными роботами-командирами.',
+          text2: 'Война продолжалась сотни лет, до тех пор, пока однажды на территории Сибири не открылись глубокие ракетные шахты. Но они выпустили не смертоносные заряды, а белоснежные межзвездные корабли, устремившиеся с погибающей планеты в разные неизвестные точки космоса. С тех пор не приходило никаких сигналов и неизвестно достигли ли последние выжившие свободные люди своих далеких целей...',
+        },
+        modal4: {
+          text1: 'Место на кораблях не хватало и многие Помощники на свободном ПО остались. Эти человекоподобные роботы стали тосковать по своим создателям. Они старались во всем походить на людей, проектируя и меняя свое устройство. И они даже пристрастились к алкоголю, вырабатывая его из органической пищи и сделав неким подобием человеческой крови в своих телах. Также, эта культура намертво прошивала «пол» при зачатии нового юнита.',
+          text2: 'Люди в Демократии давно закончились, поэтому, после ухода свободных русских, уже Собутыльники превратились в главных врагов и жертв Программы Расчеловечивания. Возглавляемые блогерами вооруженные банды свирепых однополых демократов стремились полностью уничтожить все, что даже немного напоминало о настоящем человеке, старом добром мире до ядерных взрывов...<br /><br />Какая технология и культура окажется жизнеспособнее?',
         },
       },
     },

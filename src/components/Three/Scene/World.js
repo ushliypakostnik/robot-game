@@ -23,6 +23,8 @@ function World() {
   this.doors = null;
   this.screens = null;
 
+  const rooms = [];
+
   this.init = (scope) => {
     // Level objects
     // eslint-disable-next-line guard-for-in,no-restricted-syntax
@@ -168,15 +170,22 @@ function World() {
               } else if (child.name.includes('X')) {
                 if (child.name.includes('R')) rotate = 0;
                 else rotate = Math.PI;
-              }
+              };
 
               OBJECTS.SCREENS[scope.l].data.push({
+                modalId: Number(child.name.substring(6, 7)),
                 x: child.position.x,
                 y: child.position.y,
                 z: child.position.z,
                 rotate,
               });
 
+              places.push(child);
+            } else if (child.name.includes('room')) {
+              rooms.push({
+                id: Number(child.name.substring(4, 5)),
+                room: child,
+              });
               places.push(child);
             } else if (child.name.includes(OBJECTS.BOTTLES.name)) {
               if (!child.name.includes('Mandatory')) {
@@ -286,7 +295,8 @@ function World() {
                 && !child.name.includes(OBJECTS.PASSES.name)
                 && !child.name.includes(OBJECTS.SCREENS.name)
                 && !child.name.includes(OBJECTS.BOTTLES.name)
-                && !child.name.includes(OBJECTS.FLOWERS.name)) {
+                && !child.name.includes(OBJECTS.FLOWERS.name)
+                && !child.name.includes('room')) {
               child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
               child.material.map.encoding = Three.sRGBEncoding;
             }
@@ -325,8 +335,10 @@ function World() {
         this.doors = new Doors();
         this.doors.init(scope);
 
+        console.log(rooms);
+
         this.screens = new Screens();
-        this.screens.init(scope);
+        this.screens.init(scope, rooms);
 
 
         // Things
