@@ -134,25 +134,27 @@
         v-if="isModal"
         class="ui__modal"
       >
-        <div class="ui__modal--left">
-          <div class="ui__image-wrapper">
-            <div class="ui__image-wrapper-wrapper">
-              <img
-                :src="modalSrc(1)"
-                alt="image1"
-              >
+        <div class="ui__modal-wrapper">
+          <div class="ui__modal--left">
+            <div class="ui__image-wrapper">
+              <div class="ui__image-wrapper-wrapper">
+                <img
+                  :src="modalSrc(1)"
+                  alt="image1"
+                >
+              </div>
             </div>
+            <span v-html="$t(`modals.level${level}.modal${modalId}.text1`)" />
           </div>
-          <span v-html="$t(`modals.level${level}.modal${modalId}.text1`)" />
-        </div>
-        <div class="ui__modal--right">
-          <span v-html="$t(`modals.level${level}.modal${modalId}.text2`)" />
-          <div class="ui__image-wrapper">
-            <div class="ui__image-wrapper-wrapper">
-              <img
-                :src="modalSrc(2)"
-                alt="image2"
-              >
+          <div class="ui__modal--right">
+            <span v-html="$t(`modals.level${level}.modal${modalId}.text2`)" />
+            <div class="ui__image-wrapper">
+              <div class="ui__image-wrapper-wrapper">
+                <img
+                  :src="modalSrc(2)"
+                  alt="image2"
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -341,11 +343,10 @@ export default {
     }
 
     &--modal {
-      align-items: flex-start;
       color: $colors__white;
       background: $colors__black;
-      padding-top: $gutter * 2;
-      padding-bottom: $gutter * 2;
+      padding-top: $gutter * 4;
+      padding-bottom: $gutter * 3;
       overflow-y: auto;
     }
 
@@ -375,7 +376,8 @@ export default {
   &__modal {
     position: relative;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     border: $gutter / 10 solid $colors__white;
     padding: $gutter / 2;
     transform: translateY(-4vh);
@@ -392,27 +394,32 @@ export default {
       }
     }
 
-    > div {
+    &-wrapper {
       max-width: 70vw;
       display: flex;
+      flex-direction: column;
 
-      &:not(:last-child) {
-        margin-bottom: $gutter;
-      }
+      > div {
+        display: flex;
+        flex-direction: row;
 
-      img {
-        width: 25vw;
-        flex-grow: 0;
-      }
+        &:not(:last-child) {
+          margin-bottom: $gutter;
+        }
 
-      @media (max-height: 600px) {
-        @include text($font-size--xsmall);
+        img {
+          width: 25vw;
+          flex-grow: 0;
+        }
+
+        @media (max-height: 600px) {
+          @include text($font-size--xsmall);
+        }
       }
     }
   }
 
   &__image-wrapper {
-
     &-wrapper {
       background: $colors__black;
       border: $gutter / 10 solid $colors__white;

@@ -128,12 +128,12 @@ function Hero() {
       playerCollider = new Capsule(
         new Three.Vector3(
           scope.camera.position.x,
-          scope.camera.position.y - DESIGN.HERO.HEIGHT,
+          scope.camera.position.y,
           scope.camera.position.z,
         ),
         new Three.Vector3(
           scope.camera.position.x,
-          scope.camera.position.y - DESIGN.HERO.HEIGHT / 2,
+          scope.camera.position.y + DESIGN.HERO.HEIGHT / 2,
           scope.camera.position.z,
         ),
         DESIGN.HERO.HEIGHT / 2,
@@ -377,12 +377,12 @@ function Hero() {
           || (!scope.isRun && !scope.isHeroTired && scope.endurance < 100)) {
         if (scope.isRun && !enduranceClock.running) enduranceClock.start();
 
-        if (!isEnduranceRecoveryStart && scope.endurance < 100 && !scope.isRun) {
+        if (!isEnduranceRecoveryStart && scope.endurance < 100 && (!scope.isRun)) {
           isEnduranceRecoveryStart = true;
           enduranceClock.start();
         } else if (isEnduranceRecoveryStart && scope.isRun) isEnduranceRecoveryStart = false;
 
-        enduranceTime += enduranceClock.getDelta();
+        if (scope.playerOnFloor) enduranceTime += enduranceClock.getDelta();
 
         if (enduranceTime > 0.035) {
           scope.setScale({
