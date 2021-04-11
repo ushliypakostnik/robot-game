@@ -27,7 +27,7 @@ const size = (s, g) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.3',
+  V: '2.31',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -61,6 +61,9 @@ export const DESIGN = {
   WORLD_SIZE: {
     level1: size(1, 200), // размер клетки 200
   },
+  CAMERA: {
+    fov: 80,
+  },
   VOLUME: {
     small: 0.25,
     normal: 0.5,
@@ -76,6 +79,7 @@ export const DESIGN = {
       current: 0.4,
       jumpstart: 0.7,
       jumpend: 0.2,
+      shot: 0.3,
     },
     wind: 0.2,
     doors: 0.9,

@@ -9,13 +9,18 @@ const initialState = {
   isMetall1Loaded: false,
   isMetall2Loaded: false,
   isMetall3Loaded: false,
+  isMetall4Loaded: false,
   isLeaderLoaded: false,
   isSandLoaded: false,
+  isFireLoaded: false,
+  isPurpleLoaded: false,
 
   // Models
   isBottleLoaded: false,
   isPotLoaded: false,
   isFlowerLoaded: false,
+  isVinometLoaded: false,
+  isVinometOpticalLoaded: false,
 
   // Audio
   isPickLoaded: false,
@@ -26,6 +31,7 @@ const initialState = {
   isJumpStartLoaded: false,
   isJumpEndLoaded: false,
   isScreensSoundLoaded: false,
+  isShotLoaded: false,
 
   // World build
   isDoorsBuild: false,

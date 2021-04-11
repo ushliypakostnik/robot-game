@@ -1,15 +1,19 @@
 /* eslint-disable dot-notation,prefer-destructuring */
 import * as Three from 'three';
 
+import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 import { Capsule } from '../Modules/Math/Capsule';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
+
+import HeroWeapon from './Weapon/HeroWeapon';
 
 import {
   loaderDispatchHelper,
   messagesByViewDispatchHelper,
   getNotPartOfName,
 } from '@/utils/utilities';
+import Doors from './World/Doors';
 
 function Hero() {
   let playerCollider;
@@ -49,6 +53,82 @@ function Hero() {
   let hit;
   let damage;
 
+  let shot;
+
+  const weaponDirection = new Three.Vector3();
+  const weaponPosition = new Three.Vector3();
+
+  let weaponFire;
+  let weaponOpticalFire;
+
+  let isFire = false;
+  let isFireOff = false;
+  let fireScale = 0;
+  let storeOptical;
+
+  this.weapon = null;
+
+  const getForwardVector = (scope) => {
+    scope.camera.getWorldDirection(playerDirection);
+    playerDirection.y = 0;
+    playerDirection.normalize();
+
+    return playerDirection;
+  };
+
+  const getSideVector = (scope) => {
+    scope.camera.getWorldDirection(playerDirection);
+    playerDirection.y = 0;
+    playerDirection.normalize();
+    playerDirection.cross(scope.camera.up);
+
+    return playerDirection;
+  };
+
+  const setWeaponData = (scope) => {
+    scope.camera.getWorldDirection(weaponDirection);
+    weaponPosition.copy(scope.camera.position);
+  };
+
+  const setWeapon = (scope) => {
+    if (scope.weapon
+        && scope.weaponOptical
+        && weaponDirection
+        && weaponPosition
+        && (!weaponDirection.equals(scope.camera.getWorldDirection(scope.direction))
+            || !weaponPosition.equals(scope.camera.position))) {
+      setWeaponData(scope);
+
+      if (scope.camera.getWorldDirection(scope.direction).y > -1) {
+        if (scope.isOptical) {
+          scope.weaponOptical.setRotationFromMatrix(scope.camera.matrix);
+          scope.weaponOptical.rotateY(Math.PI / -2);
+          scope.weaponOptical.position.copy(weaponPosition);
+          scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.5));
+          scope.weaponOptical.visible = true;
+          scope.weapon.visible = false;
+        } else {
+          scope.weapon.setRotationFromMatrix(scope.camera.matrix);
+          scope.weapon.rotateY(Math.PI / -2);
+
+          if (scope.camera.getWorldDirection(scope.direction).y < 0.75) {
+            scope.weapon.position.copy(weaponPosition);
+            scope.weapon.position.y -= 0.1;
+            scope.weapon.position.add(getSideVector(scope).multiplyScalar(0.25)).add(getForwardVector(scope).multiplyScalar(0.25));
+          } else {
+            scope.weapon.position.copy(weaponPosition);
+            scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.1));
+          }
+          scope.weaponOptical.visible = false;
+          scope.weapon.visible = true;
+        }
+      } else {
+        scope.weapon.visible = false;
+        scope.weaponOptical.visible = false;
+      }
+    }
+  };
+
   this.init = (scope) => {
     audioLoader.load('./audio/pick.mp3', (buffer) => {
       scope.audio.addAudioToHero(scope, buffer, 'pick', DESIGN.VOLUME.hero.pick, false);
@@ -81,6 +161,106 @@ function Hero() {
       loaderDispatchHelper(scope.$store, 'isJumpEndLoaded');
     });
 
+    audioLoader.load('./audio/shot.mp3', (buffer) => {
+      shot = scope.audio.addAudioToHero(scope, buffer, 'shot', DESIGN.VOLUME.hero.shot, false);
+      loaderDispatchHelper(scope.$store, 'isShotLoaded');
+    });
+
+    const metallWeaponTexture = new Three.TextureLoader().load(
+      './images/textures/metall.jpg',
+      () => {
+        scope.render();
+        loaderDispatchHelper(scope.$store, 'isMetall4Loaded');
+      },
+    );
+    const metallWeaponMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark });
+    const glasslMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.blue, transparent: true, opacity: 0.25 });
+
+    const fireTexture = new Three.TextureLoader().load(
+      './images/textures/fire.jpg',
+      () => {
+        loaderDispatchHelper(scope.$store, 'isFireLoaded');
+        scope.render();
+      },
+    );
+    const fireMaterial = new Three.MeshPhongMaterial({
+      map: fireTexture,
+      color: DESIGN.COLORS.white,
+      transparent: true,
+      opacity: 0,
+    });
+    fireMaterial.map.repeat.set(4, 4);
+    fireMaterial.map.wrapS = fireMaterial.map.wrapT = Three.RepeatWrapping;
+    fireMaterial.map.encoding = Three.sRGBEncoding;
+
+    new GLTFLoader().load(
+      './images/models/Objects/Vinomet.glb',
+      (vinomet) => {
+        loaderDispatchHelper(scope.$store, 'isVinometLoaded');
+
+        scope.weapon = vinomet.scene;
+
+        scope.weapon.traverse((child) => {
+          if (child.isMesh) {
+            if (child.name.includes('metall')) {
+              child.material = metallWeaponMaterial;
+              child.material.map = metallWeaponTexture;
+              child.material.map.repeat.set(2, 2);
+              child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
+              child.material.map.encoding = Three.sRGBEncoding;
+            } else if (child.name.includes('fire')) {
+              child.material = fireMaterial;
+              child.material.map = fireTexture;
+
+              weaponFire = child;
+              weaponFire.visible = false;
+            } else if (child.name.includes('glass')) {
+              child.material = glasslMaterial;
+            }
+          }
+        });
+
+        scope.weapon.scale.set(0.05, 0.05, 0.05);
+        scope.weapon.visible = true;
+
+        scope.scene.add(scope.weapon);
+      },
+    );
+
+    new GLTFLoader().load(
+      './images/models/Objects/VinometOptical.glb',
+      (vinomet) => {
+        loaderDispatchHelper(scope.$store, 'isVinometOpticalLoaded');
+
+        scope.weaponOptical = vinomet.scene;
+
+        scope.weaponOptical.traverse((child) => {
+          if (child.isMesh) {
+            if (child.name.includes('fire')) {
+              child.material = fireMaterial;
+              child.material.map = fireTexture;
+
+              weaponOpticalFire = child;
+              weaponOpticalFire.visible = false;
+            } else {
+              child.material = metallWeaponMaterial;
+              child.material.map = metallWeaponTexture;
+              child.material.map.repeat.set(2, 2);
+              child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
+              child.material.map.encoding = Three.sRGBEncoding;
+            }
+          }
+        });
+
+        scope.weaponOptical.visible = false;
+        scope.weaponOptical.scale.set(0.1, 0.1, 0.1);
+
+        setWeapon(scope);
+
+        scope.scene.add(scope.weaponOptical);
+      },
+    );
+
     playerCollider = new Capsule(
       new Three.Vector3(
         DESIGN.HERO.START[scope.l].x,
@@ -103,6 +283,12 @@ function Hero() {
     notTiredClock = new Three.Clock(false);
     timeMachineClock = new Three.Clock(false);
     gainClock = new Three.Clock(false);
+
+    this.weapon = new HeroWeapon();
+    this.weapon.init(scope);
+
+    setWeaponData(scope);
+    storeOptical = scope.isOptical;
 
     this.animate(scope);
   };
@@ -141,6 +327,67 @@ function Hero() {
 
       steps.setPlaybackRate(1);
     }
+  };
+
+  const updateFire = () => {
+    isFire = true;
+    isFireOff = false;
+    fireScale = 0;
+  };
+
+  const removeFire = () => {
+    isFire = false;
+    isFireOff = false;
+    fireScale = 0;
+    weaponFire.visible = false;
+    weaponOpticalFire.visible = false;
+  };
+
+  const showFire = (scope) => {
+    if (!isFireOff) fireScale += scope.delta * 50;
+    else fireScale -= scope.delta * 50;
+
+    if (fireScale > 5) isFireOff = true;
+
+    if (!storeOptical) {
+      if (fireScale >= 0) weaponFire.scale.set(fireScale, fireScale, fireScale);
+      if (fireScale >= 5) {
+        weaponFire.material.opacity = 5;
+      } else if (fireScale < 0) {
+        weaponFire.material.opacity = 0;
+      } else weaponFire.material.opacity = fireScale / 5;
+    } else {
+      if (fireScale >= 0) weaponOpticalFire.scale.set(fireScale, fireScale, fireScale);
+      if (fireScale >= 5) {
+        weaponOpticalFire.material.opacity = 5;
+      } else if (fireScale < 0) {
+        weaponOpticalFire.material.opacity = 0;
+      } else weaponOpticalFire.material.opacity = fireScale / 5;
+    }
+
+    if (fireScale < 0) removeFire();
+  };
+
+  const toggleFire = () => {
+    if (!storeOptical) {
+      weaponFire.visible = true;
+      weaponOpticalFire.visible = false;
+    } else {
+      weaponOpticalFire.visible = true;
+      weaponFire.visible = false;
+    }
+  };
+
+  this.shot = (scope) => {
+    this.weapon.shot(scope);
+    if (shot.isPlaying) shot.stop();
+    shot.play();
+
+    storeOptical = scope.isOptical;
+    updateFire();
+    toggleFire();
+    showFire(scope);
+    if (!isFire) isFire = true;
   };
 
   this.setRun = (scope, isRun) => {
@@ -197,24 +444,20 @@ function Hero() {
     }
   };
 
-  const getForwardVector = (scope) => {
-    scope.camera.getWorldDirection(playerDirection);
-    playerDirection.y = 0;
-    playerDirection.normalize();
+  const animateFire = (scope) => {
+    if (storeOptical !== scope.isOptical) {
+      storeOptical = scope.isOptical;
+      toggleFire();
+    }
 
-    return playerDirection;
-  };
-
-  const getSideVector = (scope) => {
-    scope.camera.getWorldDirection(playerDirection);
-    playerDirection.y = 0;
-    playerDirection.normalize();
-    playerDirection.cross(scope.camera.up);
-
-    return playerDirection;
+    showFire(scope);
   };
 
   this.animate = (scope) => {
+    this.weapon.animate(scope);
+
+    if (isFire) animateFire(scope);
+
     // Raycasting
 
     scope.raycaster = new Three.Raycaster(
@@ -469,6 +712,8 @@ function Hero() {
     playerCollitions(scope);
 
     scope.camera.position.copy(playerCollider.end);
+
+    setWeapon(scope);
 
     if (scope.toruch && scope.isToruch) scope.toruch.position.copy(playerCollider.end);
     // console.log(scope.camera.position.y);

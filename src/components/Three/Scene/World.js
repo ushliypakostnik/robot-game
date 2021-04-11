@@ -335,8 +335,6 @@ function World() {
         this.doors = new Doors();
         this.doors.init(scope);
 
-        console.log(rooms);
-
         this.screens = new Screens();
         this.screens.init(scope, rooms);
 
@@ -344,7 +342,7 @@ function World() {
         // Things
         scope.things = [];
 
-        const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.HEIGHT,  4, 4);
+        const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.HEIGHT / 2,  4, 4);
         const pseudoMaterial = new Three.MeshStandardMaterial({
           color: DESIGN.COLORS.white,
           side: Three.DoubleSide,

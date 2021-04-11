@@ -67,6 +67,8 @@ export default {
       hero: null,
       world: null,
       atmosphere: null,
+      weapon: null,
+      weaponOptical: null,
 
       // utilities
 
@@ -122,6 +124,7 @@ export default {
 
     // eslint-disable-next-line no-underscore-dangle
     if (this.$eventHub._events.lock) this.$eventHub.$off('lock');
+    // eslint-disable-next-line no-underscore-dangle
     if (this.$eventHub._events.unlock) this.$eventHub.$off('unlock');
   },
 
@@ -152,6 +155,8 @@ export default {
       passes: 'hero/passes',
 
       isHeroTired: 'hero/isHeroTired',
+
+      isOptical: 'hero/isOptical',
 
       isHeroOnDamage: 'hero/isHeroOnDamage',
       isHeroOnHit: 'hero/isHeroOnHit',
@@ -201,11 +206,20 @@ export default {
       this.scene.background = new Three.Color(DESIGN.COLORS.blue);
 
       // Туман
-      this.scene.fog = new Three.Fog(DESIGN.COLORS.white, DESIGN.WORLD_SIZE[this.l] / 10, DESIGN.WORLD_SIZE[this.l] * 2);
+      this.scene.fog = new Three.Fog(
+        DESIGN.COLORS.white,
+        DESIGN.WORLD_SIZE[this.l] / 10,
+        DESIGN.WORLD_SIZE[this.l] * 2
+      );
 
       // Cameras
 
-      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, DESIGN.WORLD_SIZE[this.l] * 4.25);
+      this.camera = new Three.PerspectiveCamera(
+        DESIGN.CAMERA.fov,
+        container.clientWidth / container.clientHeight,
+        0.1,
+        DESIGN.WORLD_SIZE[this.l] * 4.25
+      );
 
       // Audio listener
       this.camera.add(this.listener);
@@ -253,6 +267,25 @@ export default {
       window.addEventListener('resize', this.onWindowResize, false);
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
+      document.body.onmousedown = (event) => {
+        if (!this.isPause && event.button === 0 && this.ammo > 0) this.hero.shot(this);
+
+        if (!this.isPause && event.button === 2 && !this.isOptical) {
+          this.setScale({
+            field: 'isOptical',
+            value: true,
+          });
+        }
+      };
+
+      document.body.onmouseup = (event) => {
+        if (!this.isPause && event.button === 2 && this.isOptical) {
+          this.setScale({
+            field: 'isOptical',
+            value: false,
+          });
+        }
+      };
 
       // Stats
       this.stats = new Stats();
@@ -430,8 +463,20 @@ export default {
   },
 
   watch: {
-    isPause() {
+    isPause(value) {
       this.audio.toggle();
+      if (!value && this.isOptical) {
+        this.setScale({
+          field: 'isOptical',
+          value: false,
+        });
+      }
+    },
+
+    isOptical(value) {
+      if (value) this.camera.fov = DESIGN.CAMERA.fov / 4;
+      else this.camera.fov = DESIGN.CAMERA.fov;
+      this.camera.updateProjectionMatrix();
     },
 
     isHeroTired(value) {

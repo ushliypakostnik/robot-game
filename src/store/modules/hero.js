@@ -20,6 +20,8 @@ const initialState = {
 
   isHeroTired: false,
 
+  isOptical: false,
+
   // Эффекты от цветов
   isNotDamaged: false,
   isNotTired: false,
@@ -47,6 +49,8 @@ const getters = {
 
   isHeroTired: state => state.isHeroTired,
 
+  isOptical: state => state.isOptical,
+
   isNotDamaged: state => state.isNotDamaged,
   isNotTired: state => state.isNotTired,
   isTimeMachine: state => state.isTimeMachine,
@@ -66,6 +70,7 @@ const notIncrementFields = [
   'isNotTired',
   'isTimeMachine',
   'isGain',
+  'isOptical',
 ];
 
 const actions = {

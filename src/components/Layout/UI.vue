@@ -1,5 +1,17 @@
 <template>
   <div class="ui">
+    <div class="ui__background" />
+
+
+    <div class="ui__optical-preload" />
+    <div class="ui__optical"
+      v-if="isOptical"
+    >
+      <div class="ui__optical--side" />
+      <div class="ui__optical--center" />
+      <div class="ui__optical--side" />
+    </div>
+
     <div class="ui__things">
       <div class="ui__thing ui__thing--red">
         <div class="ui__thing-circle" />{{ flower(red) }}
@@ -210,6 +222,8 @@ export default {
 
       isHeroTired: 'hero/isHeroTired',
 
+      isOptical: 'hero/isOptical',
+
       isHeroOnDamage: 'hero/isHeroOnDamage',
       isHeroOnHit: 'hero/isHeroOnHit',
 
@@ -312,13 +326,46 @@ export default {
 
 .ui {
   &,
-  &__overlay {
+  &__background,
+  &__overlay,
+  &__optical {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     @include size(100%, 100%);
+  }
+
+  &__background {
+    background: rgba(112, 66, 20, 0.1);
+    box-shadow: inset 0 0 $gutter * 6 $colors__black;
+  }
+
+  &__optical {
+    display: flex;
+    transform: scale(1.1, 1.1);
+
+    &--side {
+      background: $colors__black;
+      flex-grow: 1;
+      transform: scale(1.1, 1.1);
+    }
+
+    &--center {
+      flex-grow: 0;
+      background: url("#{$images__path}optical.png") no-repeat center top;
+      background-size: cover;
+      width: 100vh;
+      height: 100vh;
+    }
+
+    &-preload {
+      position: absolute;
+      left: 99999px;
+      opacity: 0;
+      background: url("#{$images__path}optical.png") no-repeat center top;
+    }
   }
 
   &__overlay {
