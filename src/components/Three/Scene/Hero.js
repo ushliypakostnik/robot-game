@@ -64,7 +64,6 @@ function Hero() {
   let isFire = false;
   let isFireOff = false;
   let fireScale = 0;
-  let storeOptical;
 
   this.weapon = null;
 
@@ -90,6 +89,36 @@ function Hero() {
     weaponPosition.copy(scope.camera.position);
   };
 
+  this.checkWeapon = (scope) => {
+    if (scope.camera.getWorldDirection(scope.direction).y > -1) {
+      if (scope.isOptical) {
+        scope.weaponOptical.setRotationFromMatrix(scope.camera.matrix);
+        scope.weaponOptical.rotateY(Math.PI / -2);
+        scope.weaponOptical.position.copy(weaponPosition);
+        scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.5));
+        scope.weaponOptical.visible = true;
+        scope.weapon.visible = false;
+      } else {
+        scope.weapon.setRotationFromMatrix(scope.camera.matrix);
+        scope.weapon.rotateY(Math.PI / -2);
+
+        if (scope.camera.getWorldDirection(scope.direction).y < 0.75) {
+          scope.weapon.position.copy(weaponPosition);
+          scope.weapon.position.y -= 0.1;
+          scope.weapon.position.add(getSideVector(scope).multiplyScalar(0.25)).add(getForwardVector(scope).multiplyScalar(0.25));
+        } else {
+          scope.weapon.position.copy(weaponPosition);
+          scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.1));
+        }
+        scope.weaponOptical.visible = false;
+        scope.weapon.visible = true;
+      }
+    } else {
+      scope.weapon.visible = false;
+      scope.weaponOptical.visible = false;
+    }
+  }
+
   const setWeapon = (scope) => {
     if (scope.weapon
         && scope.weaponOptical
@@ -98,34 +127,7 @@ function Hero() {
         && (!weaponDirection.equals(scope.camera.getWorldDirection(scope.direction))
             || !weaponPosition.equals(scope.camera.position))) {
       setWeaponData(scope);
-
-      if (scope.camera.getWorldDirection(scope.direction).y > -1) {
-        if (scope.isOptical) {
-          scope.weaponOptical.setRotationFromMatrix(scope.camera.matrix);
-          scope.weaponOptical.rotateY(Math.PI / -2);
-          scope.weaponOptical.position.copy(weaponPosition);
-          scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.5));
-          scope.weaponOptical.visible = true;
-          scope.weapon.visible = false;
-        } else {
-          scope.weapon.setRotationFromMatrix(scope.camera.matrix);
-          scope.weapon.rotateY(Math.PI / -2);
-
-          if (scope.camera.getWorldDirection(scope.direction).y < 0.75) {
-            scope.weapon.position.copy(weaponPosition);
-            scope.weapon.position.y -= 0.1;
-            scope.weapon.position.add(getSideVector(scope).multiplyScalar(0.25)).add(getForwardVector(scope).multiplyScalar(0.25));
-          } else {
-            scope.weapon.position.copy(weaponPosition);
-            scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.1));
-          }
-          scope.weaponOptical.visible = false;
-          scope.weapon.visible = true;
-        }
-      } else {
-        scope.weapon.visible = false;
-        scope.weaponOptical.visible = false;
-      }
+      this.checkWeapon(scope);
     }
   };
 
@@ -252,10 +254,10 @@ function Hero() {
           }
         });
 
+        setWeapon(scope);
+
         scope.weaponOptical.visible = false;
         scope.weaponOptical.scale.set(0.1, 0.1, 0.1);
-
-        setWeapon(scope);
 
         scope.scene.add(scope.weaponOptical);
       },
@@ -288,7 +290,6 @@ function Hero() {
     this.weapon.init(scope);
 
     setWeaponData(scope);
-    storeOptical = scope.isOptical;
 
     this.animate(scope);
   };
@@ -349,13 +350,16 @@ function Hero() {
 
     if (fireScale > 5) isFireOff = true;
 
-    if (!storeOptical) {
+    if (!scope.isOptical) {
       if (fireScale >= 0) weaponFire.scale.set(fireScale, fireScale, fireScale);
       if (fireScale >= 5) {
         weaponFire.material.opacity = 5;
       } else if (fireScale < 0) {
         weaponFire.material.opacity = 0;
       } else weaponFire.material.opacity = fireScale / 5;
+      weaponFire.rotateX(scope.delta * -3);
+      weaponFire.rotateZ(scope.delta * -3);
+      weaponFire.rotateY(scope.delta * -3);
     } else {
       if (fireScale >= 0) weaponOpticalFire.scale.set(fireScale, fireScale, fireScale);
       if (fireScale >= 5) {
@@ -363,18 +367,23 @@ function Hero() {
       } else if (fireScale < 0) {
         weaponOpticalFire.material.opacity = 0;
       } else weaponOpticalFire.material.opacity = fireScale / 5;
+      weaponOpticalFire.rotateX(scope.delta * -3);
+      weaponOpticalFire.rotateZ(scope.delta * -3);
+      weaponOpticalFire.rotateY(scope.delta * -3);
     }
 
     if (fireScale < 0) removeFire();
   };
 
-  const toggleFire = () => {
-    if (!storeOptical) {
-      weaponFire.visible = true;
-      weaponOpticalFire.visible = false;
-    } else {
-      weaponOpticalFire.visible = true;
-      weaponFire.visible = false;
+  this.toggleFire = (value) => {;
+    if (isFire) {
+      if (!value) {
+        weaponFire.visible = true;
+        weaponOpticalFire.visible = false;
+      } else {
+        weaponOpticalFire.visible = true;
+        weaponFire.visible = false;
+      }
     }
   };
 
@@ -383,11 +392,8 @@ function Hero() {
     if (shot.isPlaying) shot.stop();
     shot.play();
 
-    storeOptical = scope.isOptical;
     updateFire();
-    toggleFire();
-    showFire(scope);
-    if (!isFire) isFire = true;
+    this.toggleFire(scope.isOptical);
   };
 
   this.setRun = (scope, isRun) => {
@@ -444,19 +450,10 @@ function Hero() {
     }
   };
 
-  const animateFire = (scope) => {
-    if (storeOptical !== scope.isOptical) {
-      storeOptical = scope.isOptical;
-      toggleFire();
-    }
-
-    showFire(scope);
-  };
-
   this.animate = (scope) => {
     this.weapon.animate(scope);
 
-    if (isFire) animateFire(scope);
+    if (isFire) showFire(scope);
 
     // Raycasting
 

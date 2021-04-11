@@ -474,6 +474,8 @@ export default {
     },
 
     isOptical(value) {
+      this.hero.checkWeapon(this);
+      this.hero.toggleFire(value);
       if (value) this.camera.fov = DESIGN.CAMERA.fov / 4;
       else this.camera.fov = DESIGN.CAMERA.fov;
       this.camera.updateProjectionMatrix();
