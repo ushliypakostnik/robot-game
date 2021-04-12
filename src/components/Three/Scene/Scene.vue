@@ -26,7 +26,6 @@ import AudioBus from '@/components/Three/Scene/AudioBus';
 import EventsBus from '@/components/Three/Scene/EventsBus';
 import Hero from '@/components/Three/Scene/Hero';
 import World from '@/components/Three/Scene/World';
-import Atmosphere from '@/components/Three/Scene/Atmosphere';
 
 export default {
   name: 'Scene',
@@ -77,7 +76,6 @@ export default {
       direction: null,
       result: null,
       resultMutable: null,
-      damping: null,
 
       raycaster: null,
       intersections: null,
@@ -170,6 +168,10 @@ export default {
     l() {
       return `level${this.level}`;
     },
+
+    damping() {
+      return Math.exp(-3 * this.delta) - 1;
+    },
   },
 
   methods: {
@@ -208,8 +210,8 @@ export default {
       // Туман
       this.scene.fog = new Three.Fog(
         DESIGN.COLORS.white,
-        DESIGN.WORLD_SIZE[this.l] / 10,
-        DESIGN.WORLD_SIZE[this.l] * 2
+        DESIGN.WORLD_SIZE[this.l] / 40,
+        DESIGN.WORLD_SIZE[this.l] * 1.5,
       );
 
       // Cameras
@@ -218,7 +220,7 @@ export default {
         DESIGN.CAMERA.fov,
         container.clientWidth / container.clientHeight,
         0.1,
-        DESIGN.WORLD_SIZE[this.l] * 4.25
+        DESIGN.WORLD_SIZE[this.l] * 3,
       );
 
       // Audio listener
@@ -260,8 +262,6 @@ export default {
       this.world = new World();
       this.world.init(this);
 
-      this.atmosphere = new Atmosphere();
-      this.atmosphere.init(this);
 
       // Listeners
       window.addEventListener('resize', this.onWindowResize, false);
@@ -440,7 +440,6 @@ export default {
 
         this.hero.animate(this);
         this.world.animate(this);
-        this.atmosphere.animate(this);
       }
 
       if (!this.isPause) this.render();

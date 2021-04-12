@@ -12,7 +12,8 @@ const initialState = {
   isMetall4Loaded: false,
   isLeaderLoaded: false,
   isSandLoaded: false,
-  isFireLoaded: false,
+  isFire1Loaded: false,
+  isFire2Loaded: false,
   isPurpleLoaded: false,
 
   // Models
@@ -32,6 +33,7 @@ const initialState = {
   isJumpEndLoaded: false,
   isScreensSoundLoaded: false,
   isShotLoaded: false,
+  isExplosionLoaded: false,
 
   // World build
   isDoorsBuild: false,

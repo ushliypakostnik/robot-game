@@ -57,6 +57,8 @@ function Hero() {
 
   const weaponDirection = new Three.Vector3();
   const weaponPosition = new Three.Vector3();
+  let weaponVelocity;
+  let weaponUpVelocity;
 
   let weaponFire;
   let weaponOpticalFire;
@@ -102,30 +104,34 @@ function Hero() {
         scope.weapon.setRotationFromMatrix(scope.camera.matrix);
         scope.weapon.rotateY(Math.PI / -2);
 
+        weaponVelocity.addScaledVector(weaponVelocity, scope.damping);
+        weaponUpVelocity.addScaledVector(weaponUpVelocity, scope.damping);
         if (scope.camera.getWorldDirection(scope.direction).y < 0.75) {
-          scope.weapon.position.copy(weaponPosition);
+          scope.weapon.position.copy(weaponPosition).add(weaponVelocity);
           scope.weapon.position.y -= 0.1;
           scope.weapon.position.add(getSideVector(scope).multiplyScalar(0.25)).add(getForwardVector(scope).multiplyScalar(0.25));
         } else {
-          scope.weapon.position.copy(weaponPosition);
-          scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.1));
+          scope.weapon.position.copy(weaponPosition).add(weaponUpVelocity);
+          scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.15));
         }
+
         scope.weaponOptical.visible = false;
         scope.weapon.visible = true;
+
       }
     } else {
       scope.weapon.visible = false;
       scope.weaponOptical.visible = false;
     }
-  }
+  };
 
-  const setWeapon = (scope) => {
+  const animateWeapon = (scope) => {
     if (scope.weapon
-        && scope.weaponOptical
-        && weaponDirection
-        && weaponPosition
-        && (!weaponDirection.equals(scope.camera.getWorldDirection(scope.direction))
-            || !weaponPosition.equals(scope.camera.position))) {
+      && scope.weaponOptical
+      && weaponDirection
+      && weaponPosition
+      && (!weaponDirection.equals(scope.camera.getWorldDirection(scope.direction))
+        || !weaponPosition.equals(scope.camera.position))) {
       setWeaponData(scope);
       this.checkWeapon(scope);
     }
@@ -181,7 +187,7 @@ function Hero() {
     const fireTexture = new Three.TextureLoader().load(
       './images/textures/fire.jpg',
       () => {
-        loaderDispatchHelper(scope.$store, 'isFireLoaded');
+        loaderDispatchHelper(scope.$store, 'isFire1Loaded');
         scope.render();
       },
     );
@@ -254,7 +260,7 @@ function Hero() {
           }
         });
 
-        setWeapon(scope);
+        animateWeapon(scope);
 
         scope.weaponOptical.visible = false;
         scope.weaponOptical.scale.set(0.1, 0.1, 0.1);
@@ -278,6 +284,8 @@ function Hero() {
     );
     playerDirection.copy(scope.startDirection);
     playerVelocity = new Three.Vector3();
+    weaponVelocity = new Three.Vector3();
+    weaponUpVelocity = new Three.Vector3();
 
     damageClock = new Three.Clock(false);
     enduranceClock = new Three.Clock(false);
@@ -344,7 +352,7 @@ function Hero() {
     weaponOpticalFire.visible = false;
   };
 
-  const showFire = (scope) => {
+  const redrawFire = (scope) => {
     if (!isFireOff) fireScale += scope.delta * 50;
     else fireScale -= scope.delta * 50;
 
@@ -353,7 +361,7 @@ function Hero() {
     if (!scope.isOptical) {
       if (fireScale >= 0) weaponFire.scale.set(fireScale, fireScale, fireScale);
       if (fireScale >= 5) {
-        weaponFire.material.opacity = 5;
+        weaponFire.material.opacity = 1;
       } else if (fireScale < 0) {
         weaponFire.material.opacity = 0;
       } else weaponFire.material.opacity = fireScale / 5;
@@ -363,7 +371,7 @@ function Hero() {
     } else {
       if (fireScale >= 0) weaponOpticalFire.scale.set(fireScale, fireScale, fireScale);
       if (fireScale >= 5) {
-        weaponOpticalFire.material.opacity = 5;
+        weaponOpticalFire.material.opacity = 1;
       } else if (fireScale < 0) {
         weaponOpticalFire.material.opacity = 0;
       } else weaponOpticalFire.material.opacity = fireScale / 5;
@@ -375,7 +383,7 @@ function Hero() {
     if (fireScale < 0) removeFire();
   };
 
-  this.toggleFire = (value) => {;
+  this.toggleFire = (value) => {
     if (isFire) {
       if (!value) {
         weaponFire.visible = true;
@@ -394,6 +402,12 @@ function Hero() {
 
     updateFire();
     this.toggleFire(scope.isOptical);
+
+    // recoil
+    if (scope.isOptical) playerVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.optical * scope.delta));
+    else playerVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.player * scope.delta));
+    weaponVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.weapon * scope.delta));
+    weaponUpVelocity.add(scope.camera.getWorldDirection(playerDirection).normalize().multiplyScalar(-1 * DESIGN.HERO.recoil.weapon * scope.delta));
   };
 
   this.setRun = (scope, isRun) => {
@@ -453,7 +467,7 @@ function Hero() {
   this.animate = (scope) => {
     this.weapon.animate(scope);
 
-    if (isFire) showFire(scope);
+    if (isFire) redrawFire(scope);
 
     // Raycasting
 
@@ -511,12 +525,21 @@ function Hero() {
           // Effect
           if (scope.object.name.includes(OBJECTS.PASSES.name)) {
             name = getNotPartOfName(scope.object.name, OBJECTS.PASSES.name);
-            scope.setScale({ field: 'passes', value: name });
+            scope.setScale({
+              field: 'passes',
+              value: name,
+            });
           } else if (scope.object.name.includes(OBJECTS.FLOWERS.name)) {
             name = getNotPartOfName(scope.object.name, OBJECTS.FLOWERS.name);
-            scope.setScale({ field: DESIGN.FLOWERS[name], value: 1 });
+            scope.setScale({
+              field: DESIGN.FLOWERS[name],
+              value: 1,
+            });
           } else if (scope.object.name.includes(OBJECTS.BOTTLES.name)) {
-            scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
+            scope.setScale({
+              field: DESIGN.HERO.scales.ammo.name,
+              value: DESIGN.EFFECTS.bottle.ammo,
+            });
           }
 
           scope.events.heroOnUpgradeDispatchHelper(scope);
@@ -682,7 +705,6 @@ function Hero() {
         }
       }
 
-      scope.damping = Math.exp(-3 * scope.delta) - 1;
       playerVelocity.addScaledVector(playerVelocity, scope.damping);
 
       // Steps sound
@@ -710,7 +732,7 @@ function Hero() {
 
     scope.camera.position.copy(playerCollider.end);
 
-    setWeapon(scope);
+    animateWeapon(scope);
 
     if (scope.toruch && scope.isToruch) scope.toruch.position.copy(playerCollider.end);
     // console.log(scope.camera.position.y);

@@ -17,12 +17,6 @@ export const LANGUAGES = [
 
 // World
 
-// Тут главный размер, относительно которого все по ширине,
-// кроме того что должно быть адекватным росту по высоте
-const size = (s, g) => {
-  return s * g / 2 * Math.sqrt(2);
-};
-
 // Количество реальных объектов-капель в обойме вино-оружия
 const ammo = 25;
 
@@ -59,7 +53,7 @@ export const DESIGN = {
     sun: 0xffff99,
   },
   WORLD_SIZE: {
-    level1: size(1, 200), // размер клетки 200
+    level1: 200, // размер клетки 200
   },
   CAMERA: {
     fov: 80,
@@ -84,6 +78,7 @@ export const DESIGN = {
     wind: 0.2,
     doors: 0.9,
     screen: 0.3,
+    explosion: 1,
   },
   GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
@@ -100,6 +95,15 @@ export const DESIGN = {
         y: 0,
         z: 0,
       },
+    },
+    weapon: {
+      radius: 0.5,
+      quantity: 20,
+    },
+    recoil: {
+      player: 50,
+      weapon: 3,
+      optical: 150,
     },
     scales: {
       health: {

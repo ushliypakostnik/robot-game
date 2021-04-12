@@ -16,12 +16,17 @@ import Leader from './World/Leader';
 import Bottles from './World/Bottles';
 import Flowers from './World/Flowers';
 
+import Atmosphere from './Atmosphere';
+import Explosions from './Weapon/Explosions';
+
 function World() {
   const places = [];
   const things = [];
 
   this.doors = null;
   this.screens = null;
+  this.atmosphere = null;
+  this.explosions = null;
 
   const rooms = [];
 
@@ -99,6 +104,24 @@ function World() {
       },
     );
 
+    const fireTexture = new Three.TextureLoader().load(
+      './images/textures/fire.jpg',
+      () => {
+        loaderDispatchHelper(scope.$store, 'isFire2Loaded');
+        scope.render();
+      },
+    );
+    const fireMaterial = new Three.MeshPhongMaterial({
+      map: fireTexture,
+      color: DESIGN.COLORS.white,
+      transparent: true,
+      opacity: 0,
+    });
+    fireMaterial.map.repeat.set(4, 4);
+    fireMaterial.map.wrapS = fireMaterial.map.wrapT = Three.RepeatWrapping;
+    fireMaterial.map.encoding = Three.sRGBEncoding;
+    fireMaterial.side = Three.DoubleSide;
+
     const floorMaterial = new Three.MeshStandardMaterial({
       color: DESIGN.COLORS.grayDark,
       blending: Three.NoBlending,
@@ -106,8 +129,8 @@ function World() {
     const wallsNormalMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const wallsLargeMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const wallsHightMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
-    const rodsMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
-    const compsMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark });
+    const metallLightMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
+    const metallDarkMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark });
     const doorsMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayLight });
     const sandMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white });
 
@@ -137,11 +160,11 @@ function World() {
               child.material.map.anisotropy = 8;
               child.material.map.repeat.set(0.75, 0.5);
             } else if (child.name.includes('rod')) {
-              child.material = rodsMaterial;
+              child.material = metallLightMaterial;
               child.material.map = metallRodsTexture;
               child.material.map.repeat.set(0.05, 0.05);
             } else if (child.name.includes('comp')) {
-              child.material = compsMaterial;
+              child.material = metallDarkMaterial;
               child.material.map = metallTexture;
               child.material.map.repeat.set(2, 2);
             } else if (child.name.includes(OBJECTS.LEADER.name)) {
@@ -360,13 +383,31 @@ function World() {
         );
 
         // Passes
-        new Passes().init(scope, metallTexture, pseudoGeometry, pseudoMaterial);
+        new Passes().init(
+          scope,
+          metallTexture,
+          pseudoGeometry,
+          pseudoMaterial
+        );
 
 
         // Design
 
         // Leader
         new Leader().init(scope);
+
+
+        // Checking
+        this.atmosphere = new Atmosphere();
+        this.atmosphere.init(scope);
+
+        // More modules
+
+        this.explosions = new Explosions();
+        this.explosions.init(
+          scope,
+          fireMaterial,
+        );
       },
     );
   };
@@ -374,6 +415,8 @@ function World() {
   this.animate = (scope) => {
     this.doors.animate(scope);
     this.screens.animate(scope);
+    this.atmosphere.animate(scope);
+    this.explosions.animate(scope);
   };
 }
 

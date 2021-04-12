@@ -34,7 +34,7 @@ function Atmosphere() {
 
     // Hemisphere
     const light = new Three.HemisphereLight(DESIGN.COLORS.white, DESIGN.COLORS.grayLight2, 0.5);
-    light.position.set(0, DESIGN.WORLD_SIZE[scope.l] / 4, 0).normalize();
+    light.position.set(0, 20, 0).normalize();
     scope.scene.add(light);
 
     // Ambient
@@ -43,14 +43,20 @@ function Atmosphere() {
 
     // Sky
     const skyGeometry = new Three.SphereBufferGeometry(
-      DESIGN.WORLD_SIZE[scope.l] * 2.25,
+      DESIGN.WORLD_SIZE[scope.l] * 6 / 4,
       64,
       64,
     );
     // invert the geometry on the x-axis so that all of the faces point inward
     skyGeometry.scale(-1, 1, 1);
 
-    const skyTexture = new Three.TextureLoader().load('./images/textures/sky.jpg');
+    const skyTexture = new Three.TextureLoader().load(
+      './images/textures/sky.jpg',
+      () => {
+        if (scope.l !== 1) scope.render();
+        loaderDispatchHelper(scope.$store, 'isSkyLoaded');
+      },
+    );
     const skyMaterial = new Three.MeshBasicMaterial({ map: skyTexture });
     sky = new Three.Mesh(skyGeometry, skyMaterial);
 

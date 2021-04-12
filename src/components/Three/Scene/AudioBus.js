@@ -8,7 +8,7 @@ function AudioBus() {
   const pseudoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white });
   const heroSound = new Three.Mesh(pseudoGeometry, pseudoMaterial);
 
-  const bus = [];
+  let bus = [];
   let isPlay;
   let record;
 
@@ -27,39 +27,63 @@ function AudioBus() {
     });
   };
 
+  const removeAudioFromBus = (scope, object, name) => {
+    bus = bus.filter(record => record.id !== object.id && record.name !== name);
+  };
+
   this.addAudioToHero = (scope, buffer, name, volume, isLoop) => {
-    const audio = new Three.Audio(scope.listener);
+    record = new Three.Audio(scope.listener);
 
-    audio.setBuffer(buffer);
-    audio.setVolume(volume);
-    audio.setLoop(isLoop);
+    record.setBuffer(buffer);
+    record.setVolume(volume);
+    record.setLoop(isLoop);
 
-    addAudioToBus(scope, heroSound.id, audio, name, isLoop);
+    addAudioToBus(scope, heroSound.id, record, name, isLoop);
 
-    heroSound.add(audio);
+    heroSound.add(record);
     heroSound.visible = false;
 
     scope.scene.add(heroSound);
 
-    return audio;
+    return record;
   };
 
   this.addAudioToObjects = (scope, objects, buffer, element, name, volume, isLoop) => {
-    let audio;
     objects.forEach((object) => {
-      audio = new Three.PositionalAudio(scope.listener);
+      record = new Three.PositionalAudio(scope.listener);
 
-      audio.setBuffer(buffer);
-      audio.setVolume(volume);
-      audio.setRefDistance(DESIGN.VOLUME.positional.ref);
-      audio.setMaxDistance(DESIGN.VOLUME.positional.max);
-      audio.setLoop(isLoop);
-      audio.setRolloffFactor(1);
+      record.setBuffer(buffer);
+      record.setVolume(volume);
+      record.setRefDistance(DESIGN.VOLUME.positional.ref);
+      record.setMaxDistance(DESIGN.VOLUME.positional.max);
+      record.setLoop(isLoop);
+      record.setRolloffFactor(1);
 
-      addAudioToBus(scope, object.id, audio, name, isLoop);
+      addAudioToBus(scope, object.id, record, name, isLoop);
 
-      object[element].add(audio);
+      object[element].add(record);
     });
+  };
+
+  this.playAudioAndRemoveObject = (scope, object, buffer, name, volume) => {
+    record = new Three.PositionalAudio(scope.listener);
+
+    record.setBuffer(buffer);
+    record.setVolume(volume);
+    record.setRefDistance(DESIGN.VOLUME.positional.ref);
+    record.setMaxDistance(DESIGN.VOLUME.positional.max);
+    record.setLoop(false);
+    record.setRolloffFactor(1);
+
+    addAudioToBus(scope, object.id, record, name, false);
+
+    object.add(record);
+    record.play();
+    record.onEnded = () => {
+      record.stop();
+      removeAudioFromBus(scope, object.id, name);
+      scope.scene.remove(object);
+    };
   };
 
   const getRecordByName = (name) => {
@@ -69,6 +93,7 @@ function AudioBus() {
   const getRecordByIdAndName = (id, name) => {
     return bus.find(record => record.id === id && record.name === name);
   };
+
 
   this.replayHeroSound = (name) => {
     record = getRecordByName(name);
