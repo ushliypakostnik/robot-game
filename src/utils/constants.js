@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/no-cycle
-import storage from '@/utils/storage';
-
 // const isProd = process.env.NODE_ENV === 'production';
 // const apiUrl = process.env.VUE_APP_API_URL;
 // export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://localhost:8082';
@@ -573,19 +570,3 @@ export const LOCALES = {
     },
   },
 };
-
-
-// Auto
-
-const autoLevel = Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || null;
-
-console.log('AAAAAAAAAAAAAAAAAAAAAAA', autoLevel);
-
-if (!autoLevel) {
-  storage.rememberLevel(DESIGN.LEVELS.start);
-}
-
-const autoDirection = Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) || null;
-if (!autoDirection) {
-  storage.rememberDirection(DESIGN.HERO.START.direction.x, DESIGN.HERO.START.direction.y, DESIGN.HERO.START.direction.z);
-}

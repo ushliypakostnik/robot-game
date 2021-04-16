@@ -5,8 +5,6 @@ import storage from '@/utils/storage';
 // eslint-disable-next-line import/no-cycle
 import { DESIGN, LOCALSTORAGE } from '@/utils/constants';
 
-console.log('AAAAAAAAA', DESIGN, LOCALSTORAGE);
-
 const initialState = {
   language: null,
   level: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || DESIGN.LEVELS.start,

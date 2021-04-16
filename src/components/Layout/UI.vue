@@ -179,7 +179,7 @@
         class="button"
         type="button"
         v-if="isGameOver && !isWin"
-        @click.prevent.stop="levelReload"
+        @click.prevent.stop="levelReload(null, null)"
       >{{ $t('layout.gameovebuttonStart') }}</button>
       <!-- Для перехода из песочницы -->
       <button
@@ -197,7 +197,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
-import common from "./mixins";
+import common from './mixins';
 
 import { getNotPartOfName } from '@/utils/utilities';
 

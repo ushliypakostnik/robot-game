@@ -47,7 +47,7 @@ import { mapGetters, mapActions } from 'vuex';
 
 import ScreenHelper from '@/utils/screen-helper';
 
-import common from "./mixins";
+import common from './mixins';
 
 import Gate from '@/components/Layout/Gate.vue';
 import Preloader from '@/components/Layout/Preloader.vue';
