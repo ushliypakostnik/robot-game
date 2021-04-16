@@ -1,3 +1,9 @@
+import * as Three from "three";
+
+import { Octree } from "../components/Three/Modules/Math/Octree";
+
+import { DESIGN, OBJECTS } from '@/utils/constants';
+
 export const randomInteger = (min, max) => {
   const rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
@@ -43,4 +49,112 @@ export const getNumberSign = (number) => {
 
 export const getNotPartOfName = (name, part) => {
   return name.slice(name.indexOf(part) + part.length);
+};
+
+export const isSphereCollitions = (scope, сollider) => {
+  scope.result = scope.octree.sphereIntersect(сollider);
+  scope.resultDoors = scope.octreeDoors.sphereIntersect(сollider);
+  scope.resultEnemies = scope.octreeEnemies.sphereIntersect(сollider);
+  if (scope.result || scope.resultDoors || scope.resultEnemies) return true;
+  return false;
+};
+
+export const isSphereHeroCollitions = (scope, сollider) => {
+  scope.result = scope.octree.sphereIntersect(сollider);
+  scope.resultDoors = scope.octreeDoors.sphereIntersect(сollider);
+  scope.resultEnemies = scope.octreeHeroEnemies.sphereIntersect(сollider);
+  if (scope.result || scope.resultDoors || scope.resultEnemies) return true;
+  return false;
+};
+
+let arrowHelper;
+export const isToHeroRayIntersectWorld = (scope, сollider) => {
+  // get ray
+  scope.direction.subVectors(сollider.center, scope.camera.position).negate().normalize();
+  scope.ray = new Three.Ray(сollider.center, scope.direction);
+
+  scope.result = scope.octree.rayIntersect(scope.ray);
+  scope.resultDoors = scope.octreeDoors.rayIntersect(scope.ray);
+
+  // arrowHelper = new Three.ArrowHelper(scope.direction, сollider.center, scope.resultEnemies.distance, 0xffffff);
+  // scope.scene.add(arrowHelper);
+
+  if (scope.result || scope.resultDoors) {
+    if (scope.result && scope.resultDoors) {
+      scope.number = Math.min(scope.result.distance, scope.resultDoors.distance);
+    } else if (scope.result && !scope.resultDoors) {
+      scope.number = scope.result.distance;
+    } else scope.number = scope.resultDoors.distance;
+
+    scope.dictance = scope.camera.position.distanceTo(сollider.center);
+
+    return scope.number < scope.dictance;
+  }
+  return false;
+};
+
+export const updateEnemiesOctree = (scope) => {
+  if (scope.enemies.length > 0) {
+    scope.group = new Three.Group();
+    scope.enemies.forEach((enemy) => {
+      scope.group.add(enemy.pseudoLarge);
+    });
+    scope.octreeEnemies = new Octree();
+    scope.octreeEnemies.fromGraphNode(scope.group);
+    scope.scene.add(scope.group);
+  }
+};
+
+export const updateHeroEnemiesOctree = (scope) => {
+  if (scope.enemies.length > 0) {
+    scope.group = new Three.Group();
+    scope.enemies.forEach((enemy) => {
+      scope.group.add(enemy.pseudo);
+    });
+    scope.octreeHeroEnemies = new Octree();
+    scope.octreeHeroEnemies.fromGraphNode(scope.group);
+    scope.scene.add(scope.group);
+  }
+};
+
+export const updateEnemiesPersonalOctree = (scope, id) => {
+  scope.group = new Three.Group();
+  scope.enemies.filter(obj => obj.id !== id).forEach((enemy) => {
+    scope.group.add(enemy.pseudoLarge);
+  });
+  scope.octreeEnemies = new Octree();
+  scope.octreeEnemies.fromGraphNode(scope.group);
+  scope.scene.add(scope.group);
+};
+
+export const enemyToActiveMode = (scope, enemy) => {
+  enemy.mode = DESIGN.STAFF.mode.active;
+  scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', enemy.mesh.name);
+  if (!enemy.isPlay) {
+    enemy.isPlay = true;
+    scope.audio.startObjectSound(enemy.id, 'mechanism');
+  }
+};
+
+export const setNewEnemy = (name) => {
+  return {
+    height: OBJECTS[name].size,
+    mode: DESIGN.STAFF.mode.idle,
+    velocity: new Three.Vector3(),
+    speed: OBJECTS[name].speed,
+    distance: OBJECTS[name].distance,
+    jump: OBJECTS[name].jump,
+    distanceToHero: null,
+    enjoyClock: new Three.Clock(false),
+    enjoyTime: 0,
+    updateClock: new Three.Clock(false),
+    updateTime: 0,
+    isEnjoy: false,
+    isOnJump: false,
+    isOnFloor: true,
+    health: 100,
+    speedCooeficient: 1,
+    bend: plusOrMinus(),
+    isPlay: false,
+  };
 };

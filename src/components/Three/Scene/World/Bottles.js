@@ -5,11 +5,7 @@ import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
-import {
-  loaderDispatchHelper,
-  randomInteger,
-  degreesToRadians,
-} from '@/utils/utilities';
+import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Bottles() {
   let bottleClone;
@@ -46,10 +42,6 @@ function Bottles() {
 
           bottleClone = bottle.scene.clone();
           bottlePseudoClone = bottlePseudo.clone();
-
-          // bottleClone.scale.set(OBJECTS.BOTTLES.scale, OBJECTS.BOTTLES.scale, OBJECTS.BOTTLES.scale);
-          // bottleClone.rotateX(-Math.PI / 2);
-          // bottleClone.rotateZ(degreesToRadians(randomInteger(-1, 360)));
 
           bottlePseudoClone.name = OBJECTS.BOTTLES.name;
           bottlePseudoClone.position.y += 1.5;

@@ -7,7 +7,14 @@ export default ({
     i18n.i18next.changeLanguage(language);
   },
 
-  rememberLevel: (level) => {
+  rememberLevel: (level, levelFrom) => {
     localStorage.setItem(LOCALSTORAGE.LEVEL, level);
+    if (levelFrom) localStorage.setItem(LOCALSTORAGE.LEVELFROM, levelFrom);
+  },
+
+  rememberDirection: (x, y, z) => {
+    localStorage.setItem(LOCALSTORAGE.DIRECTIONX, x);
+    localStorage.setItem(LOCALSTORAGE.DIRECTIONY, y);
+    localStorage.setItem(LOCALSTORAGE.DIRECTIONZ, z);
   },
 });

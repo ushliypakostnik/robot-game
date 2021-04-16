@@ -9,6 +9,8 @@ import {
   yesOrNo,
 } from '@/utils/utilities';
 
+import Hero from './Hero';
+
 import Doors from './World/Doors';
 import Screens from './World/Screens';
 import Passes from './World/Passes';
@@ -17,7 +19,11 @@ import Bottles from './World/Bottles';
 import Flowers from './World/Flowers';
 
 import Atmosphere from './Atmosphere';
+
 import Explosions from './Weapon/Explosions';
+import Shots from './Weapon/Shots';
+
+import Enemies from './Enemies';
 
 function World() {
   const places = [];
@@ -27,6 +33,8 @@ function World() {
   this.screens = null;
   this.atmosphere = null;
   this.explosions = null;
+  this.shots = null;
+  this.enemies = null;
 
   const rooms = [];
 
@@ -89,7 +97,7 @@ function World() {
     );
 
     const metallRodsTexture = new Three.TextureLoader().load(
-      './images/textures/metall.jpg',
+      './images/textures/metall2.jpg',
       () => {
         scope.render();
         loaderDispatchHelper(scope.$store, 'isMetal3Loaded');
@@ -107,7 +115,7 @@ function World() {
     const fireTexture = new Three.TextureLoader().load(
       './images/textures/fire.jpg',
       () => {
-        loaderDispatchHelper(scope.$store, 'isFire2Loaded');
+        loaderDispatchHelper(scope.$store, 'isFireLoaded');
         scope.render();
       },
     );
@@ -122,6 +130,38 @@ function World() {
     fireMaterial.map.encoding = Three.sRGBEncoding;
     fireMaterial.side = Three.DoubleSide;
 
+    const glassTexture = new Three.TextureLoader().load(
+      './images/textures/glass.jpg',
+      () => {
+        scope.render();
+        loaderDispatchHelper(scope.$store, 'isGlassLoaded');
+      },
+    );
+    const glassMaterial = new Three.MeshPhongMaterial({
+      map: glassTexture,
+      color: DESIGN.COLORS.grayLight,
+    });
+    glassMaterial.map.repeat.set(2, 2);
+    glassMaterial.map.wrapS = glassMaterial.map.wrapT = Three.RepeatWrapping;
+    glassMaterial.map.encoding = Three.sRGBEncoding;
+
+    const glassTransparentTexture = new Three.TextureLoader().load(
+      './images/textures/glass.jpg',
+      () => {
+        scope.render();
+        loaderDispatchHelper(scope.$store, 'isGlassTransparentLoaded');
+      },
+    );
+    const glassTransparentMaterial = new Three.MeshPhongMaterial({
+      map: glassTransparentTexture,
+      color: DESIGN.COLORS.grayLight,
+      transparent: true,
+      opacity: 0.33,
+    });
+    glassTransparentMaterial.map.repeat.set(2, 2);
+    glassTransparentMaterial.map.wrapS = glassTransparentMaterial.map.wrapT = Three.RepeatWrapping;
+    glassTransparentMaterial.map.encoding = Three.sRGBEncoding;
+
     const floorMaterial = new Three.MeshStandardMaterial({
       color: DESIGN.COLORS.grayDark,
       blending: Three.NoBlending,
@@ -129,10 +169,20 @@ function World() {
     const wallsNormalMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const wallsLargeMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const wallsHightMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
-    const metallLightMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const metallDarkMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark });
+    const metallLightMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const doorsMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayLight });
     const sandMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white });
+    const holeMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.black });
+
+    scope.hero = new Hero();
+    scope.hero.init(
+      scope,
+      fireMaterial,
+      fireTexture,
+      metallDarkMaterial,
+      metallTexture,
+    );
 
     new GLTFLoader().load(
       `./images/models/Levels/${scope.l}/Scene.glb`,
@@ -159,6 +209,8 @@ function World() {
               child.material.map = wallsHightTexture;
               child.material.map.anisotropy = 8;
               child.material.map.repeat.set(0.75, 0.5);
+            } else if (child.name.includes('glass')) {
+              child.material = glassTransparentMaterial;
             } else if (child.name.includes('rod')) {
               child.material = metallLightMaterial;
               child.material.map = metallRodsTexture;
@@ -167,6 +219,14 @@ function World() {
               child.material = metallDarkMaterial;
               child.material.map = metallTexture;
               child.material.map.repeat.set(2, 2);
+            } else if (child.name.includes(OBJECTS.SPIDERS.name)) {
+              OBJECTS.SPIDERS[scope.l].data.push({
+                x: child.position.x,
+                y: child.position.y,
+                z: child.position.z,
+              });
+
+              places.push(child);
             } else if (child.name.includes(OBJECTS.LEADER.name)) {
               let rotate;
               if (child.name.includes('Z')) {
@@ -319,6 +379,7 @@ function World() {
                 && !child.name.includes(OBJECTS.SCREENS.name)
                 && !child.name.includes(OBJECTS.BOTTLES.name)
                 && !child.name.includes(OBJECTS.FLOWERS.name)
+                && !child.name.includes(OBJECTS.SPIDERS.name)
                 && !child.name.includes('room')) {
               child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
               child.material.map.encoding = Three.sRGBEncoding;
@@ -346,7 +407,7 @@ function World() {
 
         // Создаем октодеревья
         scope.octree.fromGraphNode(glb.scene);
-        scope.octreeMutable.fromGraphNode(doorsGroup);
+        scope.octreeDoors.fromGraphNode(doorsGroup);
 
         scope.scene.add(glb.scene);
         scope.scene.add(doorsGroup);
@@ -359,7 +420,11 @@ function World() {
         this.doors.init(scope);
 
         this.screens = new Screens();
-        this.screens.init(scope, rooms);
+        this.screens.init(
+          scope,
+          rooms,
+          glassMaterial,
+        );
 
 
         // Things
@@ -379,7 +444,7 @@ function World() {
           sandMaterial,
           sandTexture,
           pseudoGeometry,
-          pseudoMaterial
+          pseudoMaterial,
         );
 
         // Passes
@@ -387,7 +452,7 @@ function World() {
           scope,
           metallTexture,
           pseudoGeometry,
-          pseudoMaterial
+          pseudoMaterial,
         );
 
 
@@ -401,12 +466,28 @@ function World() {
         this.atmosphere = new Atmosphere();
         this.atmosphere.init(scope);
 
-        // More modules
+
+        // Weapon modules
 
         this.explosions = new Explosions();
         this.explosions.init(
           scope,
           fireMaterial,
+        );
+
+        this.shots = new Shots();
+        this.shots.init(scope);
+
+
+        // Enemies
+        this.enemies = new Enemies();
+        this.enemies.init(
+          scope,
+          metallDarkMaterial,
+          metallTexture,
+          holeMaterial,
+          glassMaterial,
+          pseudoMaterial,
         );
       },
     );
@@ -417,6 +498,8 @@ function World() {
     this.screens.animate(scope);
     this.atmosphere.animate(scope);
     this.explosions.animate(scope);
+    this.shots.animate(scope);
+    this.enemies.animate(scope);
   };
 }
 

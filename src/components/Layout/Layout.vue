@@ -21,6 +21,12 @@
             type="button"
             @click.prevent.stop="play"
           >{{ $t('layout.startbutton') }}</button>
+          <button
+            class="layout__button button"
+            type="button"
+            v-if="level === 0"
+            @click.prevent.stop="levelReload(1, 0)"
+          >{{ $t('layout.gameovebuttonNext') }}</button>
         </div>
       </div>
     </Preloader>
@@ -41,6 +47,8 @@ import { mapGetters, mapActions } from 'vuex';
 
 import ScreenHelper from '@/utils/screen-helper';
 
+import common from "./mixins";
+
 import Gate from '@/components/Layout/Gate.vue';
 import Preloader from '@/components/Layout/Preloader.vue';
 import Scene from '@/components/Three/Scene/Scene.vue';
@@ -49,6 +57,8 @@ import Instructions from '@/components/Layout/Instructions.vue';
 
 export default {
   name: 'Layout',
+
+  mixins: [common],
 
   components: {
     Gate,
@@ -78,6 +88,8 @@ export default {
     ...mapGetters({
       isPause: 'layout/isPause',
       isModal: 'layout/isModal',
+
+      level: 'layout/level',
 
       isGameLoaded: 'preloader/isGameLoaded',
     }),
@@ -119,9 +131,14 @@ export default {
   }
 
   &__button {
-    margin: 0 auto;
+    & + .layout__button {
+      margin-left: $gutter * 2;
+    }
 
     &-wrapper {
+      display: flex;
+      justify-content: center;
+
       position: absolute;
       bottom: 0;
       left: 0;

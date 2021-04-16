@@ -5,9 +5,7 @@ import { Octree } from '../../Modules/Math/Octree';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
-import {
-  loaderDispatchHelper,
-} from '@/utils/utilities';
+import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Doors() {
   const audioLoader = new Three.AudioLoader();
@@ -153,11 +151,13 @@ function Doors() {
   };
 
   const updateDoors = (scope) => {
-    group = new Three.Group();
-    scope.doors.forEach(door => group.add(door.mesh));
-    scope.octreeMutable = new Octree();
-    scope.octreeMutable.fromGraphNode(group);
-    scope.scene.add(group);
+    scope.group = new Three.Group();
+    scope.doors.forEach(door => scope.group.add(door.mesh));
+    scope.octreeDoors = new Octree();
+    scope.octreeDoors.fromGraphNode(scope.group);
+    scope.scene.add(scope.group);
+
+    scope.world.atmosphere.checkEnemies(scope);
   };
 
   this.animate = (scope) => {

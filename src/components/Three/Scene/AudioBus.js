@@ -80,7 +80,7 @@ function AudioBus() {
     object.add(record);
     record.play();
     record.onEnded = () => {
-      record.stop();
+      if (record && record.isPlaying) record.stop();
       removeAudioFromBus(scope, object.id, name);
       scope.scene.remove(object);
     };
@@ -108,7 +108,7 @@ function AudioBus() {
     if (record && record.audio && !record.audio.isPlaying) record.audio.play();
   };
 
-  this.startObjectSound = (id, name) => {
+  this.startObjectSound = (id, name, test) => {
     record = getRecordByIdAndName(id, name);
     if (record && record.audio && !record.audio.isPlaying) record.audio.play();
   };
@@ -116,6 +116,11 @@ function AudioBus() {
   this.stopObjectSound = (id, name) => {
     record = getRecordByIdAndName(id, name);
     if (record && record.audio && record.audio.isPlaying) record.audio.stop();
+  };
+
+  this.pauseObjectSound = (id, name) => {
+    record = getRecordByIdAndName(id, name);
+    if (record && record.audio && record.audio.isPlaying) record.audio.pause();
   };
 
   this.replayObjectSound = (id, name) => {

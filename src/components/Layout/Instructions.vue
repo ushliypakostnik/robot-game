@@ -6,7 +6,8 @@
     <swiper-slide>
       <div class="instructions">
         <h1>{{ $t('layout.title') }} {{ version }}</h1>
-        <h3>{{ $t('layout.level') }} {{ level }}: {{ $t(`levels.level${level}`) }}</h3>
+        <h3>{{ $t('layout.level') }} {{ $t(`texts.level${level}.header`) }}</h3>
+        <h5>{{ $t(`texts.level${level}.subheader`) }}</h5>
         <div class="switch__wrapper">
           <LangSwitch />
         </div>
@@ -213,6 +214,10 @@ h4 {
 }
 
 h3 {
+  margin-bottom: $gutter / 2;
+}
+
+h5 {
   margin-bottom: $gutter;
 }
 </style>

@@ -19,16 +19,21 @@ import { Octree } from '../Modules/Math/Octree';
 // Stats
 import Stats from '@/components/Three/Modules/Utils/Stats';
 
+// Config
 import { DESIGN } from '@/utils/constants';
+
+// Mixins
+import common from "@/components/Layout/mixins";
 
 // Modules
 import AudioBus from '@/components/Three/Scene/AudioBus';
 import EventsBus from '@/components/Three/Scene/EventsBus';
-import Hero from '@/components/Three/Scene/Hero';
 import World from '@/components/Three/Scene/World';
 
 export default {
   name: 'Scene',
+
+  mixins: [common],
 
   data() {
     return {
@@ -46,7 +51,6 @@ export default {
       listener: null,
 
       // hero
-      startDirection: null,
       directionStore: null,
       keyStates: {},
       isRun: false,
@@ -55,7 +59,9 @@ export default {
 
       // world
       octree: null,
-      octreeMutable: null,
+      octreeDoors: null,
+      octreeEnemies: null,
+      octreeHeroEnemies: null,
 
       toruch: null,
 
@@ -74,9 +80,20 @@ export default {
       distance: null,
       position: null,
       direction: null,
+      directionOnHero: null,
+      angle: null,
+      rotate: null,
+      cooeficient: null,
+      boolean: null,
+      number: null,
       result: null,
-      resultMutable: null,
+      resultDoors: null,
+      resultEnemies: null,
+      group: null,
 
+      y: null,
+
+      ray: null,
       raycaster: null,
       intersections: null,
       onForward: null,
@@ -87,20 +104,33 @@ export default {
       // store objects
       objects: [],
       doors: [],
-      things: [],
       screens: [],
+      things: [],
       enemies: [],
     };
   },
 
   mounted() {
     this.octree = new Octree();
-    this.octreeMutable = new Octree();
+    this.octreeDoors = new Octree();
+    this.octreeEnemies = new Octree();
+    this.octreeHeroEnemies = new Octree();
 
     this.position = new Three.Vector3();
     this.direction = new Three.Vector3();
-    this.startDirection = new Three.Vector3(-0.7071067758832469, 0, 0.7071067864898483);
-    this.directionStore = this.startDirection;
+    this.directionOnHero = new Three.Vector3();
+    this.directionStore = new Three.Vector3(this.directionX, this.directionY, this.directionZ);
+    this.y = new Three.Vector3(0, 1, 0);
+    this.group = new Three.Group();
+
+    this.ray = new Three.Ray(
+      new Three.Vector3(),
+      new Three.Vector3()
+    );
+    this.raycaster = new Three.Raycaster(
+      new Three.Vector3(),
+      new Three.Vector3(0, 0, -1), 0, 3,
+    );
 
     this.clock = new Three.Clock();
 
@@ -131,6 +161,7 @@ export default {
       isGameLoaded: 'preloader/isGameLoaded',
 
       level: 'layout/level',
+      levelFrom: 'layout/levelFrom',
 
       isPause: 'layout/isPause',
       isModal: 'layout/isModal',
@@ -163,6 +194,10 @@ export default {
       isNotTired: 'hero/isNotTired',
       isTimeMachine: 'hero/isTimeMachine',
       isGain: 'hero/isGain',
+
+      directionX: 'hero/directionX',
+      directionY: 'hero/directionY',
+      directionZ: 'hero/directionZ',
     }),
 
     l() {
@@ -210,7 +245,7 @@ export default {
       // Туман
       this.scene.fog = new Three.Fog(
         DESIGN.COLORS.white,
-        DESIGN.WORLD_SIZE[this.l] / 40,
+        DESIGN.WORLD_SIZE[this.l] / 50,
         DESIGN.WORLD_SIZE[this.l] * 1.5,
       );
 
@@ -244,7 +279,7 @@ export default {
         this.togglePause(false);
       });
 
-      this.camera.lookAt(this.startDirection.multiplyScalar(1000));
+      this.camera.lookAt(this.directionStore.multiplyScalar(1000));
 
       this.scene.add(this.controls.getObject());
 
@@ -256,9 +291,6 @@ export default {
 
       this.events = new EventsBus();
 
-      this.hero = new Hero();
-      this.hero.init(this);
-
       this.world = new World();
       this.world.init(this);
 
@@ -268,9 +300,15 @@ export default {
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
       document.body.onmousedown = (event) => {
-        if (!this.isPause && event.button === 0 && this.ammo > 0) this.hero.shot(this);
+        if (!this.isPause
+            && !this.isGameOver
+            && event.button === 0
+            && this.ammo > 0) this.hero.shot(this);
 
-        if (!this.isPause && event.button === 2 && !this.isOptical) {
+        if (!this.isPause
+            && !this.isGameOver
+            && event.button === 2
+            && !this.isOptical) {
           this.setScale({
             field: 'isOptical',
             value: true,
@@ -279,7 +317,10 @@ export default {
       };
 
       document.body.onmouseup = (event) => {
-        if (!this.isPause && event.button === 2 && this.isOptical) {
+        if (!this.isPause
+            && !this.isGameOver
+            && event.button === 2
+            && this.isOptical) {
           this.setScale({
             field: 'isOptical',
             value: false,
@@ -363,7 +404,7 @@ export default {
               value: -1,
             });
             this.setScale({
-              field: DESIGN.HERO.scales.health,
+              field: DESIGN.HERO.scales.health.name,
               value: DESIGN.EFFECTS.green.health,
             });
             this.setScale({
@@ -376,21 +417,24 @@ export default {
           break;
 
         case 52: // 4
-          if (!this.isPause && this.purple > 0) {
-            this.setScale({
-              field: DESIGN.FLOWERS.purple,
-              value: -1,
-            });
-            this.setScale({
-              field: DESIGN.HERO.scales.health.name,
-              value: DESIGN.EFFECTS.purple.health,
-            });
-            this.setScale({
-              field: 'isGain',
-              value: true,
-            });
-            this.events.messagesByIdDispatchHelper(this, 1, 'startGain');
-            this.events.heroOnUpgradeDispatchHelper(this);
+          if (!this.isPause
+              && this.purple > 0) {
+            if (this.ammo > 0) {
+              this.setScale({
+                field: DESIGN.FLOWERS.purple,
+                value: -1,
+              });
+              this.setScale({
+                field: DESIGN.HERO.scales.health.name,
+                value: DESIGN.EFFECTS.purple.health,
+              });
+              this.setScale({
+                field: 'isGain',
+                value: true,
+              });
+              this.events.messagesByIdDispatchHelper(this, 1, 'startGain');
+              this.events.heroOnUpgradeDispatchHelper(this);
+            } else this.events.messagesByIdDispatchHelper(this, 1, 'noWine');
           }
           break;
       }
@@ -507,7 +551,10 @@ export default {
     },
 
     isGameOver(value) {
-      if (value) this.controls.unlock();
+      if (value) {
+        this.controls.unlock();
+        this.audio.toggle();
+      }
     },
   },
 };

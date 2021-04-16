@@ -3,9 +3,7 @@ import * as Three from 'three';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
-import {
-  loaderDispatchHelper,
-} from '@/utils/utilities';
+import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Leader() {
   this.init = (scope) => {

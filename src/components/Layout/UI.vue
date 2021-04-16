@@ -111,6 +111,9 @@
             {{ $t(`messages.message${message[1]}.${message[2]}`) }}
             {{ $t(`objects.screen.declination`) }}
           </span>
+          <span v-if="message[2] ==='stop'">
+            {{ $t(`messages.message${message[1]}.${message[2]}`) }}
+          </span>
         </div>
 
         <!-- Нумерованные сообщения связанные с положением в мире и врагами  -->
@@ -156,10 +159,10 @@
                 >
               </div>
             </div>
-            <span v-html="$t(`modals.level${level}.modal${modalId}.text1`)" />
+            <span v-html="$t(`texts.level${level}.modal${modalId}.text1`)" />
           </div>
           <div class="ui__modal--right">
-            <span v-html="$t(`modals.level${level}.modal${modalId}.text2`)" />
+            <span v-html="$t(`texts.level${level}.modal${modalId}.text2`)" />
             <div class="ui__image-wrapper">
               <div class="ui__image-wrapper-wrapper">
                 <img
@@ -175,15 +178,16 @@
       <button
         class="button"
         type="button"
-        v-if="isGameOver"
-        @click.prevent.stop="reload()"
+        v-if="isGameOver && !isWin"
+        @click.prevent.stop="levelReload"
       >{{ $t('layout.gameovebuttonStart') }}</button>
-      <!-- <button
+      <!-- Для перехода из песочницы -->
+      <button
         class="button"
         type="button"
-        v-if="isGameOver"
-        @click.prevent.stop="reload()"
-      >{{ $t('layout.gameovebuttonNext') }}</button> -->
+        v-if="isGameOver && isWin && level === 0"
+        @click.prevent.stop="levelReload(level + 1, 0)"
+      >{{ $t('layout.gameovebuttonNext') }}</button>
     </div>
   </div>
 </template>
@@ -193,13 +197,16 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
-import { getNotPartOfName } from '@/utils/utilities';
+import common from "./mixins";
 
+import { getNotPartOfName } from '@/utils/utilities';
 
 import Scale from '@/components/Layout/Scale.vue';
 
 export default {
   name: 'UI',
+
+  mixins: [common],
 
   components: {
     Scale,
@@ -252,14 +259,11 @@ export default {
   methods: {
     ...mapActions({
       setModal: 'layout/setModal',
+
       setGameOver: 'layout/setGameOver',
 
       setScale: 'hero/setScale',
     }),
-
-    reload() {
-      window.location.reload();
-    },
 
     flower(value) {
       return value < 10 ? `0${value}` : value;
@@ -300,7 +304,7 @@ export default {
     },
 
     modalSrc(modal) {
-      return `/images/modals/level1/modal${this.modalId}__${modal}.jpg`;
+      return `/images/texts/level1/modal${this.modalId}__${modal}.jpg`;
     },
   },
 
@@ -416,6 +420,10 @@ export default {
 
       .button {
         margin-bottom: 0;
+
+        & + .button {
+          margin-top: $gutter;
+        }
       }
     }
   }

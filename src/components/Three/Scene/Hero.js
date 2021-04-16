@@ -12,8 +12,8 @@ import {
   loaderDispatchHelper,
   messagesByViewDispatchHelper,
   getNotPartOfName,
+  updateHeroEnemiesOctree,
 } from '@/utils/utilities';
-import Doors from './World/Doors';
 
 function Hero() {
   let playerCollider;
@@ -67,6 +67,9 @@ function Hero() {
   let isFireOff = false;
   let fireScale = 0;
 
+  const updateClock = new Three.Clock(false);
+  let updateTime = 0;
+
   this.weapon = null;
 
   const getForwardVector = (scope) => {
@@ -95,14 +98,12 @@ function Hero() {
     if (scope.camera.getWorldDirection(scope.direction).y > -1) {
       if (scope.isOptical) {
         scope.weaponOptical.setRotationFromMatrix(scope.camera.matrix);
-        scope.weaponOptical.rotateY(Math.PI / -2);
         scope.weaponOptical.position.copy(weaponPosition);
         scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.5));
         scope.weaponOptical.visible = true;
         scope.weapon.visible = false;
       } else {
         scope.weapon.setRotationFromMatrix(scope.camera.matrix);
-        scope.weapon.rotateY(Math.PI / -2);
 
         weaponVelocity.addScaledVector(weaponVelocity, scope.damping);
         weaponUpVelocity.addScaledVector(weaponUpVelocity, scope.damping);
@@ -112,12 +113,11 @@ function Hero() {
           scope.weapon.position.add(getSideVector(scope).multiplyScalar(0.25)).add(getForwardVector(scope).multiplyScalar(0.25));
         } else {
           scope.weapon.position.copy(weaponPosition).add(weaponUpVelocity);
-          scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.15));
+          scope.weapon.position.add(getForwardVector(scope).multiplyScalar(0.2));
         }
 
         scope.weaponOptical.visible = false;
         scope.weapon.visible = true;
-
       }
     } else {
       scope.weapon.visible = false;
@@ -137,7 +137,13 @@ function Hero() {
     }
   };
 
-  this.init = (scope) => {
+  this.init = (
+    scope,
+    fireMaterial,
+    fireTexture,
+    metallDarkMaterial,
+    metallTexture,
+  ) => {
     audioLoader.load('./audio/pick.mp3', (buffer) => {
       scope.audio.addAudioToHero(scope, buffer, 'pick', DESIGN.VOLUME.hero.pick, false);
       loaderDispatchHelper(scope.$store, 'isPickLoaded');
@@ -174,32 +180,7 @@ function Hero() {
       loaderDispatchHelper(scope.$store, 'isShotLoaded');
     });
 
-    const metallWeaponTexture = new Three.TextureLoader().load(
-      './images/textures/metall.jpg',
-      () => {
-        scope.render();
-        loaderDispatchHelper(scope.$store, 'isMetall4Loaded');
-      },
-    );
-    const metallWeaponMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark });
     const glasslMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.blue, transparent: true, opacity: 0.25 });
-
-    const fireTexture = new Three.TextureLoader().load(
-      './images/textures/fire.jpg',
-      () => {
-        loaderDispatchHelper(scope.$store, 'isFire1Loaded');
-        scope.render();
-      },
-    );
-    const fireMaterial = new Three.MeshPhongMaterial({
-      map: fireTexture,
-      color: DESIGN.COLORS.white,
-      transparent: true,
-      opacity: 0,
-    });
-    fireMaterial.map.repeat.set(4, 4);
-    fireMaterial.map.wrapS = fireMaterial.map.wrapT = Three.RepeatWrapping;
-    fireMaterial.map.encoding = Three.sRGBEncoding;
 
     new GLTFLoader().load(
       './images/models/Objects/Vinomet.glb',
@@ -211,11 +192,8 @@ function Hero() {
         scope.weapon.traverse((child) => {
           if (child.isMesh) {
             if (child.name.includes('metall')) {
-              child.material = metallWeaponMaterial;
-              child.material.map = metallWeaponTexture;
-              child.material.map.repeat.set(2, 2);
-              child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
-              child.material.map.encoding = Three.sRGBEncoding;
+              child.material = metallDarkMaterial;
+              child.material.map = metallTexture;
             } else if (child.name.includes('fire')) {
               child.material = fireMaterial;
               child.material.map = fireTexture;
@@ -251,8 +229,8 @@ function Hero() {
               weaponOpticalFire = child;
               weaponOpticalFire.visible = false;
             } else {
-              child.material = metallWeaponMaterial;
-              child.material.map = metallWeaponTexture;
+              child.material = metallDarkMaterial;
+              child.material.map = metallTexture;
               child.material.map.repeat.set(2, 2);
               child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
               child.material.map.encoding = Three.sRGBEncoding;
@@ -269,20 +247,39 @@ function Hero() {
       },
     );
 
-    playerCollider = new Capsule(
-      new Three.Vector3(
-        DESIGN.HERO.START[scope.l].x,
-        DESIGN.HERO.START[scope.l].y + DESIGN.HERO.HEIGHT / 2,
-        DESIGN.HERO.START[scope.l].z,
-      ),
-      new Three.Vector3(
-        DESIGN.HERO.START[scope.l].x,
-        DESIGN.HERO.START[scope.l].y + DESIGN.HERO.HEIGHT,
-        DESIGN.HERO.START[scope.l].z,
-      ),
-      DESIGN.HERO.HEIGHT / 2,
-    );
-    playerDirection.copy(scope.startDirection);
+    if (scope.levelFrom && scope.levelFrom > scope.level) {
+      console.log(scope.levelFrom);
+      playerCollider = new Capsule(
+        new Three.Vector3(
+          DESIGN.HERO.START[scope.l].end.x,
+          DESIGN.HERO.START[scope.l].end.y + DESIGN.HERO.HEIGHT / 2,
+          DESIGN.HERO.START[scope.l].end.z,
+        ),
+        new Three.Vector3(
+          DESIGN.HERO.START[scope.l].end.x,
+          DESIGN.HERO.START[scope.l].end.y + DESIGN.HERO.HEIGHT,
+          DESIGN.HERO.START[scope.l].end.z,
+        ),
+        DESIGN.HERO.HEIGHT / 2,
+      );
+    } else {
+      playerCollider = new Capsule(
+        new Three.Vector3(
+          DESIGN.HERO.START[scope.l].start.x,
+          DESIGN.HERO.START[scope.l].start.y + DESIGN.HERO.HEIGHT / 2,
+          DESIGN.HERO.START[scope.l].start.z,
+        ),
+        new Three.Vector3(
+          DESIGN.HERO.START[scope.l].start.x,
+          DESIGN.HERO.START[scope.l].start.y + DESIGN.HERO.HEIGHT,
+          DESIGN.HERO.START[scope.l].start.z,
+        ),
+        DESIGN.HERO.HEIGHT / 2,
+      );
+    }
+
+    playerDirection.copy(scope.directionStore);
+
     playerVelocity = new Three.Vector3();
     weaponVelocity = new Three.Vector3();
     weaponUpVelocity = new Three.Vector3();
@@ -300,6 +297,10 @@ function Hero() {
     setWeaponData(scope);
 
     this.animate(scope);
+  };
+
+  this.getHeroDirection = () => {
+    return playerDirection;
   };
 
   this.setHidden = (scope, isHidden) => {
@@ -438,12 +439,14 @@ function Hero() {
 
     if (scope.result) {
       playerOnFloor = scope.result.normal.y > 0;
+
       if (!playerOnFloor) {
         playerVelocity.addScaledVector(scope.result.normal, -scope.result.normal.dot(playerVelocity));
       }
 
       playerCollider.translate(scope.result.normal.multiplyScalar(scope.result.depth));
     }
+
     if (scope.playerOnFloor !== playerOnFloor) {
       if (!playerOnFloor) jumpStart = playerCollider.end.y;
       else {
@@ -457,11 +460,21 @@ function Hero() {
     }
     scope.playerOnFloor = playerOnFloor;
 
-    scope.resultMutable = scope.octreeMutable.capsuleIntersect(playerCollider);
+    scope.resultDoors = scope.octreeDoors.capsuleIntersect(playerCollider);
 
-    if (scope.resultMutable) {
-      playerCollider.translate(scope.resultMutable.normal.multiplyScalar(scope.resultMutable.depth));
+    if (scope.resultDoors) {
+      playerCollider.translate(scope.resultDoors.normal.multiplyScalar(scope.resultDoors.depth));
     }
+
+    scope.resultEnemies = scope.octreeHeroEnemies.capsuleIntersect(playerCollider);
+
+    if (scope.resultEnemies) {
+      playerCollider.translate(scope.resultEnemies.normal.multiplyScalar(scope.resultEnemies.depth));
+    }
+  };
+
+  this.onShot = (scope, direction) => {
+    playerVelocity.add(direction.multiplyScalar(-1 * DESIGN.HERO.recoil.shot * scope.delta));
   };
 
   this.animate = (scope) => {
@@ -470,11 +483,6 @@ function Hero() {
     if (isFire) redrawFire(scope);
 
     // Raycasting
-
-    scope.raycaster = new Three.Raycaster(
-      new Three.Vector3(),
-      new Three.Vector3(0, 0, -1), 0, 3,
-    );
 
     // Forward ray
     scope.direction = scope.camera.getWorldDirection(scope.direction);
@@ -558,14 +566,19 @@ function Hero() {
             messagesByViewDispatchHelper(scope, 2, 'open');
 
             if (scope.keyStates['KeyE']) {
-              scope.world.doors.openDoor(scope, scope.object.id);
+              if (scope.object.name.includes('Prev') || scope.object.name.includes('Next')) {
+                if (scope.object.name.includes('Prev')) scope.levelReload(scope.level - 1, scope.level);
+                else scope.levelReload(scope.level + 1, scope.level);
+              } else {
+                scope.world.doors.openDoor(scope, scope.object.id);
 
-              // Победа на уровне
-              if (scope.object.name.includes('Out')) {
-                scope.events.delayDispatchHelper(scope, 3, () => {
-                  scope.setWin();
-                  scope.setGameOver();
-                });
+                // Победа на уровне
+                if (scope.object.name.includes('Out')) {
+                  scope.events.delayDispatchHelper(scope, 3, () => {
+                    scope.setWin();
+                    scope.setGameOver();
+                  });
+                }
               }
             }
           }
@@ -730,12 +743,29 @@ function Hero() {
 
     playerCollitions(scope);
 
-    scope.camera.position.copy(playerCollider.end);
+    if (!scope.camera.position.equals(playerCollider.end)) {
+      scope.camera.position.copy(playerCollider.end);
+      // console.log(scope.camera.position.y);
+
+      if (scope.world.enemies) scope.world.enemies.setScales(scope);
+
+      if (scope.toruch && scope.isToruch) scope.toruch.position.copy(playerCollider.end);
+
+      // Пересчитываем октодерево если двинулись и давно не было
+      if (!updateClock.running) {
+        updateHeroEnemiesOctree(scope);
+        if (!updateClock.running) updateClock.start();
+      }
+
+      // Не делаем этого еще полторы секунды
+      updateTime += updateClock.getDelta();
+      if (updateTime > DESIGN.OCTREE_UPDATE_TIMEOUT && updateClock.running) {
+        updateClock.stop();
+        updateTime = 0;
+      }
+    }
 
     animateWeapon(scope);
-
-    if (scope.toruch && scope.isToruch) scope.toruch.position.copy(playerCollider.end);
-    // console.log(scope.camera.position.y);
   };
 }
 

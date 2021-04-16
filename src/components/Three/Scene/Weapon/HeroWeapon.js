@@ -2,7 +2,10 @@ import * as Three from 'three';
 
 import { DESIGN } from '@/utils/constants';
 
-import { loaderDispatchHelper } from '@/utils/utilities';
+import {
+  loaderDispatchHelper,
+  isSphereHeroCollitions,
+} from '@/utils/utilities';
 
 function HeroWeapon() {
   const ammos = [];
@@ -10,14 +13,12 @@ function HeroWeapon() {
   let ammo;
 
   let weapon;
-  let result;
 
   this.init = (scope) => {
     const fireTexture = new Three.TextureLoader().load(
       './images/textures/purple.jpg',
       () => {
         loaderDispatchHelper(scope.$store, 'isPurpleLoaded');
-        scope.render();
       },
     );
 
@@ -75,13 +76,13 @@ function HeroWeapon() {
   };
 
   const fly = (scope, ammo) => {
-    ammo.collider.center.addScaledVector(ammo.velocity, scope.delta * 2.5);
+    ammo.collider.center.addScaledVector(ammo.velocity, scope.delta * DESIGN.WEAPON.speed);
 
     ammo.mesh.position.copy(ammo.collider.center);
 
     ammo.mesh.rotateX(scope.delta * 3);
-    ammo.mesh.rotateZ(scope.delta * 3);
     ammo.mesh.rotateY(scope.delta * 3);
+    ammo.mesh.rotateZ(scope.delta * 3);
   };
 
   const remove = (scope, ammo) => {
@@ -89,22 +90,15 @@ function HeroWeapon() {
     ammo.removed = true;
   };
 
-  const isAmmoCollitions = (scope, сollider) => {
-    scope.result = scope.octree.sphereIntersect(сollider);
-    scope.resultMutable = scope.octreeMutable.sphereIntersect(сollider);
-    if (scope.result || scope.resultMutable) return true;
-    return false;
-  };
-
   this.animate = (scope) => {
     ammos.filter(ammo => !ammo.removed).forEach((ammo) => {
       fly(scope, ammo);
 
-      result = isAmmoCollitions(scope, ammo.collider);
+      scope.boolean = isSphereHeroCollitions(scope, ammo.collider);
 
       // Улетело
-      if (ammo.mesh.position.distanceTo(ammo.start) > DESIGN.WORLD_SIZE / 2 || result) {
-        if (result) scope.world.explosions.addExplosionToBus(scope, ammo.collider.center, 0.5, 5);
+      if (ammo.mesh.position.distanceTo(ammo.start) > DESIGN.WORLD_SIZE[scope.l] / 2 || scope.boolean) {
+        if (scope.boolean) scope.world.explosions.addExplosionToBus(scope, ammo.collider.center, 0.5, 5, true, ammo.velocity);
         remove(scope, ammo);
       }
     });

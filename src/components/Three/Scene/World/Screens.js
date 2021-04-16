@@ -15,32 +15,21 @@ function Screens() {
   let room;
   let box;
 
-  this.init = (scope, rooms) => {
-    const glassTexture = new Three.TextureLoader().load(
-      './images/textures/glass.jpg',
-      () => {
-        scope.render();
-        loaderDispatchHelper(scope.$store, 'isGlassLoaded');
-      },
-    );
-
+  this.init = (
+    scope,
+    rooms,
+    glassMaterial,
+  ) => {
     const screensGeometry = new Three.PlaneGeometry(20, 6);
-    const screensMaterial = new Three.MeshBasicMaterial({
-      color: DESIGN.COLORS.gray,
-      map: glassTexture,
-    });
+    const material = glassMaterial.clone();
 
-    const screen = new Three.Mesh(screensGeometry, screensMaterial);
+    const screen = new Three.Mesh(screensGeometry, material);
     let screenClone;
 
     box = new Three.Box3();
 
     for (let i = 0; i < OBJECTS.SCREENS[scope.l].data.length; i++) {
       screenClone = screen.clone();
-
-      screenClone.material.map.repeat.set(2, 2);
-      screenClone.material.map.wrapS = screenClone.material.map.wrapT = Three.RepeatWrapping;
-      screenClone.material.map.encoding = Three.sRGBEncoding;
 
       screenClone.position.set(
         OBJECTS.SCREENS[scope.l].data[i].x,
@@ -56,7 +45,7 @@ function Screens() {
 
       scope.screens.push({
         id: screenClone.id,
-        modalId: OBJECTS.SCREENS[scope.l].data[i].modalId,
+        modalId: room.id,
         mode: DESIGN.STAFF.mode.idle,
         pseudo: screenClone,
         room: room.room,
@@ -80,7 +69,7 @@ function Screens() {
 
   this.isHeroInRoomWithScreen = (scope, screen) => {
     box.copy(screen.room.geometry.boundingBox).applyMatrix4(screen.room.matrixWorld);
-    if (box.containsPoint(scope.controls.getObject().position)) return true;
+    if (box.containsPoint(scope.camera.position)) return true;
     return false;
   };
 

@@ -3,16 +3,14 @@
 import storage from '@/utils/storage';
 
 // eslint-disable-next-line import/no-cycle
-import { LOCALSTORAGE } from '@/utils/constants';
+import { DESIGN, LOCALSTORAGE } from '@/utils/constants';
 
-const AUTO_LEVEL = localStorage.getItem(LOCALSTORAGE.LEVEL) || null;
-if (!AUTO_LEVEL) {
-  storage.rememberLevel(1);
-}
+console.log('AAAAAAAAA', DESIGN, LOCALSTORAGE);
 
 const initialState = {
   language: null,
-  level: localStorage.getItem(LOCALSTORAGE.LEVEL) || 1,
+  level: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || DESIGN.LEVELS.start,
+  levelFrom: Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) || null,
 
   isPause: true,
 
@@ -31,6 +29,7 @@ const state = initialState;
 const getters = {
   language: state => state.language,
   level: state => state.level,
+  levelFrom: state => state.levelFrom,
 
   isPause: state => state.isPause,
 
@@ -53,9 +52,9 @@ const actions = {
     storage.rememberLanguage(language);
   },
 
-  setLevel: ({ commit }, level) => {
-    commit('setLevel', level);
-    storage.rememberLevel(level);
+  // eslint-disable-next-line no-unused-vars
+  setLevel: ({ commit }, { level, levelFrom }) => {
+    storage.rememberLevel(level, levelFrom);
   },
 
   togglePause: ({ commit }, isPause) => {
@@ -81,7 +80,6 @@ const actions = {
   setModal: ({ commit }, { isModal, modalId }) => {
     commit('setModal', { isModal, modalId });
   },
-
 
   setGameOver: ({ commit }) => {
     commit('setGameOver');

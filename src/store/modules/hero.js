@@ -1,10 +1,10 @@
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, LOCALSTORAGE } from '@/utils/constants';
 
 const initialState = {
   // scales
   health: DESIGN.HERO.scales.health.start,
   endurance: DESIGN.HERO.scales.endurance.start,
-  ammo: DESIGN.HERO.scales.ammo.start,
+  ammo: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === 0 ? 1000 : DESIGN.HERO.scales.ammo.start,
 
   red: 0,
   orange: 0,
@@ -12,7 +12,7 @@ const initialState = {
   purple: 0,
 
   // passes: [],
-  passes: ['red', 'orange', 'green', 'purple'],
+  passes: ['red', 'orange', 'green', 'purple', 'blue'], // for test levels
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,
@@ -27,6 +27,10 @@ const initialState = {
   isNotTired: false,
   isTimeMachine: false,
   isGain: false,
+
+  directionX: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONX)) || DESIGN.HERO.START.direction.x,
+  directionY: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONY)) || DESIGN.HERO.START.direction.y,
+  directionZ: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONZ)) || DESIGN.HERO.START.direction.z,
 };
 
 const state = initialState;
@@ -55,22 +59,25 @@ const getters = {
   isNotTired: state => state.isNotTired,
   isTimeMachine: state => state.isTimeMachine,
   isGain: state => state.isGain,
+
+  directionX: state => state.directionX,
+  directionY: state => state.directionY,
+  directionZ: state => state.directionZ,
 };
 
 const arrayFields = [
   'passes',
 ];
 
-const notIncrementFields = [
-  'isHeroOnUpgrade',
-  'setHeroOnDamage',
-  'isHeroOnHit',
-  'isHeroTired',
-  'isNotDamaged',
-  'isNotTired',
-  'isTimeMachine',
-  'isGain',
-  'isOptical',
+const incrementFields = [
+  'health',
+  'endurance',
+  'ammo',
+
+  'red',
+  'orange',
+  'green',
+  'purple',
 ];
 
 const actions = {
@@ -90,10 +97,10 @@ const mutations = {
       state.isHeroTired = false;
     } else if (arrayFields.includes(payload.field)) {
       if (!state[payload.field].includes(payload.value)) state[payload.field].push(payload.value);
-    } else if (notIncrementFields.includes(payload.field)) {
-      state[payload.field] = payload.value;
+    } else if (incrementFields.includes(payload.field)) {
       // eslint-disable-next-line operator-assignment
-    } else state[payload.field] = state[payload.field] + payload.value;
+      state[payload.field] = state[payload.field] + payload.value;
+    } else state[payload.field] = payload.value;
   },
 };
 
