@@ -348,7 +348,9 @@ export default {
           break;
 
         case 49: // 1
-          if (!this.isPause && this.red > 0 && !this.isNotDamaged) {
+          if (!this.isPause
+              && !this.isNotDamaged
+              && this.red > 0) {
             this.setScale({
               field: DESIGN.FLOWERS.red,
               value: -1,
@@ -371,7 +373,9 @@ export default {
           break;
 
         case 50: // 2
-          if (!this.isPause && this.orange > 0 && !this.isNotTired) {
+          if (!this.isPause
+            && !this.isNotTired
+            && this.orange > 0) {
             this.setScale({
               field: DESIGN.FLOWERS.orange,
               value: -1,
@@ -400,7 +404,9 @@ export default {
           break;
 
         case 51: // 3
-          if (!this.isPause && this.green > 0) {
+          if (!this.isPause
+              && !this.isTimeMachine
+              && this.green > 0) {
             this.setScale({
               field: DESIGN.FLOWERS.green,
               value: -1,
@@ -424,6 +430,7 @@ export default {
 
         case 52: // 4
           if (!this.isPause
+              && !this.isGain
               && this.purple > 0) {
             if (this.ammo > 0) {
               this.setScale({
