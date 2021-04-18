@@ -11,7 +11,6 @@ function HeroWeapon() {
   const ammos = [];
   let ammoIndex;
   let ammo;
-
   let weapon;
 
   this.init = (scope) => {
@@ -38,8 +37,8 @@ function HeroWeapon() {
       ammos.push({
         mesh: ammo,
         collider: new Three.Sphere(new Three.Vector3(0, 0, 0), DESIGN.HERO.weapon.radius),
-        velocity: new Three.Vector3(),
         start: new Three.Vector3(),
+        velocity: new Three.Vector3(),
         removed: true,
       });
     }
@@ -61,8 +60,7 @@ function HeroWeapon() {
     ammo.start.set(weapon.position.x, weapon.position.y, weapon.position.z);
     ammo.collider.center.copy(ammo.start);
 
-    scope.camera.getWorldDirection(scope.direction);
-    ammo.velocity.copy(scope.direction).multiplyScalar(30);
+    scope.camera.getWorldDirection(ammo.velocity).normalize();
 
     scope.scene.add(ammo.mesh);
 
@@ -76,7 +74,7 @@ function HeroWeapon() {
   };
 
   const fly = (scope, ammo) => {
-    ammo.collider.center.addScaledVector(ammo.velocity, scope.delta * DESIGN.WEAPON.speed);
+    ammo.collider.center.addScaledVector(ammo.velocity, scope.delta * DESIGN.HERO.weapon.speed);
 
     ammo.mesh.position.copy(ammo.collider.center);
 
@@ -97,7 +95,7 @@ function HeroWeapon() {
       scope.boolean = isSphereHeroCollitions(scope, ammo.collider);
 
       // Улетело
-      if (ammo.mesh.position.distanceTo(ammo.start) > DESIGN.WORLD_SIZE[scope.l] / 2 || scope.boolean) {
+      if (ammo.mesh.position.distanceTo(ammo.start) > DESIGN.WORLD_SIZE[scope.l] || scope.boolean) {
         if (scope.boolean) scope.world.explosions.addExplosionToBus(scope, ammo.collider.center, 0.5, 5, true, ammo.velocity);
         remove(scope, ammo);
       }

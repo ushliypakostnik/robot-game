@@ -1,18 +1,32 @@
 import { DESIGN, LOCALSTORAGE } from '@/utils/constants';
 
+const passes = ['red', 'orange', 'green', 'purple', 'blue'];
+
+const getPassesFromStorage = () => {
+  const passesNow = [];
+
+  if (Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === 0) return ['blue']; // for sandbox
+  else {
+    passes.forEach((pass) => {
+      if (Number(localStorage.getItem(LOCALSTORAGE[`PASS${pass.toUpperCase()}`])) === 1) passesNow.push(pass);
+    });
+  }
+  return passesNow;
+};
+
 const initialState = {
   // scales
-  health: DESIGN.HERO.scales.health.start,
-  endurance: DESIGN.HERO.scales.endurance.start,
-  ammo: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === 0 ? 1000 : DESIGN.HERO.scales.ammo.start,
+  health: Number(localStorage.getItem(LOCALSTORAGE.HEALTH)) || DESIGN.HERO.scales.health.start,
+  endurance: Number(localStorage.getItem(LOCALSTORAGE.ENDURANCE)) || DESIGN.HERO.scales.endurance.start,
+  ammo: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === 0 ? 1000 : Number(localStorage.getItem(LOCALSTORAGE.AMMO)) || DESIGN.HERO.scales.ammo.start,
+  weight: Number(localStorage.getItem(LOCALSTORAGE.WEIGHT)) || DESIGN.HERO.scales.weight.start,
 
-  red: 0,
-  orange: 0,
-  green: 0,
-  purple: 0,
+  red: Number(localStorage.getItem(LOCALSTORAGE.RED)) || 0,
+  orange: Number(localStorage.getItem(LOCALSTORAGE.ORANGE)) || 0,
+  green: Number(localStorage.getItem(LOCALSTORAGE.GREEN)) || 0,
+  purple: Number(localStorage.getItem(LOCALSTORAGE.PURPLE)) || 0,
 
-  // passes: [],
-  passes: ['red', 'orange', 'green', 'purple', 'blue'], // for test levels
+  passes: getPassesFromStorage(),
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,
@@ -28,9 +42,9 @@ const initialState = {
   isTimeMachine: false,
   isGain: false,
 
-  directionX: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONX)) || DESIGN.HERO.START.direction.x,
-  directionY: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONY)) || DESIGN.HERO.START.direction.y,
-  directionZ: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONZ)) || DESIGN.HERO.START.direction.z,
+  directionX: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONX)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.x,
+  directionY: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONY)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.y,
+  directionZ: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONZ)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.z,
 };
 
 const state = initialState;
@@ -39,6 +53,7 @@ const getters = {
   health: state => state.health,
   endurance: state => state.endurance,
   ammo: state => state.ammo,
+  weight: state => state.weight,
 
   red: state => state.red,
   orange: state => state.orange,
@@ -73,6 +88,7 @@ const incrementFields = [
   'health',
   'endurance',
   'ammo',
+  'weight',
 
   'red',
   'orange',

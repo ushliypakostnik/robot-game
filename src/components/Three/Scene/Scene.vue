@@ -22,8 +22,12 @@ import Stats from '@/components/Three/Modules/Utils/Stats';
 // Config
 import { DESIGN } from '@/utils/constants';
 
+// Utils
+import storage from '@/utils/storage';
+
 // Mixins
-import common from "@/components/Layout/mixins";
+import layout from '@/components/Layout/layout';
+import hero from '@/components/Layout/hero';
 
 // Modules
 import AudioBus from '@/components/Three/Scene/AudioBus';
@@ -33,7 +37,10 @@ import World from '@/components/Three/Scene/World';
 export default {
   name: 'Scene',
 
-  mixins: [common],
+  mixins: [
+    layout,
+    hero,
+  ],
 
   data() {
     return {
@@ -51,6 +58,7 @@ export default {
       listener: null,
 
       // hero
+
       directionStore: null,
       keyStates: {},
       isRun: false,
@@ -58,6 +66,7 @@ export default {
       isToruch: true,
 
       // world
+
       octree: null,
       octreeDoors: null,
       octreeEnemies: null,
@@ -66,6 +75,7 @@ export default {
       toruch: null,
 
       // modules
+
       audio: null,
       events: null,
 
@@ -171,29 +181,6 @@ export default {
 
       isWin: 'layout/isWin',
       isGameOver: 'layout/isGameOver',
-
-      health: 'hero/health',
-      endurance: 'hero/endurance',
-      ammo: 'hero/ammo',
-
-      red: 'hero/red',
-      orange: 'hero/orange',
-      green: 'hero/green',
-      purple: 'hero/purple',
-
-      passes: 'hero/passes',
-
-      isHeroTired: 'hero/isHeroTired',
-
-      isOptical: 'hero/isOptical',
-
-      isHeroOnDamage: 'hero/isHeroOnDamage',
-      isHeroOnHit: 'hero/isHeroOnHit',
-
-      isNotDamaged: 'hero/isNotDamaged',
-      isNotTired: 'hero/isNotTired',
-      isTimeMachine: 'hero/isTimeMachine',
-      isGain: 'hero/isGain',
 
       directionX: 'hero/directionX',
       directionY: 'hero/directionY',
@@ -349,8 +336,15 @@ export default {
       this.keyStates[event.code] = true;
 
       switch (event.keyCode) {
+        case 116: // F5
+          storage.saveHero(this, true);
+          break;
+
         case 16: // Shift
-          if (!this.isPause && !this.isRun && !this.isHeroTired) this.isRun = true;
+          if (!this.isPause
+              && !this.isRun
+              && !this.isHidden
+              && !this.isHeroTired) this.isRun = true;
           break;
 
         case 49: // 1
@@ -366,6 +360,10 @@ export default {
             this.setScale({
               field: 'isNotDamaged',
               value: true,
+            });
+            this.setScale({
+              field: 'weight',
+              value: -1 * DESIGN.EFFECTS.red.weight
             });
             this.events.messagesByIdDispatchHelper(this, 1, 'startNoDamaged');
             this.events.heroOnUpgradeDispatchHelper(this);
@@ -392,6 +390,10 @@ export default {
               field: 'isNotTired',
               value: true,
             });
+            this.setScale({
+              field: 'weight',
+              value: -1 * DESIGN.EFFECTS.orange.weight
+            });
             this.events.messagesByIdDispatchHelper(this, 1, 'startNoTired');
             this.events.heroOnUpgradeDispatchHelper(this);
           }
@@ -410,6 +412,10 @@ export default {
             this.setScale({
               field: 'isTimeMachine',
               value: true,
+            });
+            this.setScale({
+              field: 'weight',
+              value: -1 * DESIGN.EFFECTS.green.weight
             });
             this.events.messagesByIdDispatchHelper(this, 1, 'startTimeMachine');
             this.events.heroOnUpgradeDispatchHelper(this);
@@ -431,6 +437,10 @@ export default {
               this.setScale({
                 field: 'isGain',
                 value: true,
+              });
+              this.setScale({
+                field: 'weight',
+                value: -1 * DESIGN.EFFECTS.purple.weight
               });
               this.events.messagesByIdDispatchHelper(this, 1, 'startGain');
               this.events.heroOnUpgradeDispatchHelper(this);
@@ -548,6 +558,10 @@ export default {
 
     isHeroOnDamage(value) {
       this.hero.setHeroOnDamage(this, value);
+    },
+
+    isTimeMachine() {
+      this.audio.toggleTime();
     },
 
     isGameOver(value) {

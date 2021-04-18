@@ -247,8 +247,9 @@ function Hero() {
       },
     );
 
-    if (scope.levelFrom && scope.levelFrom > scope.level) {
-      console.log(scope.levelFrom);
+    if (scope.level !== 0
+        && scope.levelFrom
+        && scope.levelFrom > scope.level) {
       playerCollider = new Capsule(
         new Three.Vector3(
           DESIGN.HERO.START[scope.l].end.x,
@@ -512,46 +513,68 @@ function Hero() {
           || scope.object.name.includes(OBJECTS.BOTTLES.name)) {
         object = scope.things.find(thing => thing.id === scope.object.id && !thing.isPicked);
 
-        if (object) messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
+        if (object) {
+          if (!scope.object.name.includes(OBJECTS.PASSES.name)) {
+            if (scope.object.name.includes(OBJECTS.FLOWERS.name)) name = getNotPartOfName(scope.object.name, OBJECTS.FLOWERS.name);
+            else if (scope.object.name.includes(OBJECTS.BOTTLES.name)) name = OBJECTS.BOTTLES.name;
 
-        if (object && scope.keyStates['KeyE']) {
-          const { group } = object;
+            if (scope.weight + DESIGN.EFFECTS[name].weight > DESIGN.HERO.MAXWEIGHT) messagesByViewDispatchHelper(scope, 2, 'full');
+            else messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
+          } else messagesByViewDispatchHelper(scope, 2, 'cast', scope.object.name);
+        }
 
-          scope.hideMessageByView(2);
+        if (object
+            && scope.keyStates['KeyE']) {
+          if (((scope.object.name.includes(OBJECTS.FLOWERS.name)
+            || scope.object.name.includes(OBJECTS.BOTTLES.name))
+            && scope.weight + DESIGN.EFFECTS[name].weight <= DESIGN.HERO.MAXWEIGHT)
+            || scope.object.name.includes(OBJECTS.PASSES.name)) {
+            const {group} = object;
 
-          object.isPicked = true;
-          group.visible = false;
-          // Не надо удалять объекты со сцены для того чтобы не было проблем с их дальнейшей идентификацией,
-          // Но если что-то вдруг надо удалить:
-          // scope.scene.remove(group);
-          // scope.objects.splice(scope.objects.indexOf(scope.object), 1);
-          // scope.things.splice(scope.things.indexOf(group), 1);
+            scope.hideMessageByView(2);
 
-          // Sound
-          scope.audio.replayHeroSound('pick');
+            object.isPicked = true;
+            group.visible = false;
+            // Не надо удалять объекты со сцены для того чтобы не было проблем с их дальнейшей идентификацией,
+            // Но если что-то вдруг надо удалить:
+            // scope.scene.remove(group);
+            // scope.objects.splice(scope.objects.indexOf(scope.object), 1);
+            // scope.things.splice(scope.things.indexOf(group), 1);
 
-          // Effect
-          if (scope.object.name.includes(OBJECTS.PASSES.name)) {
-            name = getNotPartOfName(scope.object.name, OBJECTS.PASSES.name);
-            scope.setScale({
-              field: 'passes',
-              value: name,
-            });
-          } else if (scope.object.name.includes(OBJECTS.FLOWERS.name)) {
-            name = getNotPartOfName(scope.object.name, OBJECTS.FLOWERS.name);
-            scope.setScale({
-              field: DESIGN.FLOWERS[name],
-              value: 1,
-            });
-          } else if (scope.object.name.includes(OBJECTS.BOTTLES.name)) {
-            scope.setScale({
-              field: DESIGN.HERO.scales.ammo.name,
-              value: DESIGN.EFFECTS.bottle.ammo,
-            });
+            // Sound
+            scope.audio.replayHeroSound('pick');
+
+            // Effect
+            if (scope.object.name.includes(OBJECTS.PASSES.name)) {
+              name = getNotPartOfName(scope.object.name, OBJECTS.PASSES.name);
+              scope.setScale({
+                field: 'passes',
+                value: name,
+              });
+            } else if (scope.object.name.includes(OBJECTS.FLOWERS.name)) {
+              name = getNotPartOfName(scope.object.name, OBJECTS.FLOWERS.name);
+              scope.setScale({
+                field: DESIGN.FLOWERS[name],
+                value: 1,
+              });
+            } else if (scope.object.name.includes(OBJECTS.BOTTLES.name)) {
+              scope.setScale({
+                field: DESIGN.HERO.scales.ammo.name,
+                value: DESIGN.EFFECTS.bottle.ammo,
+              });
+            }
+
+            if (scope.object.name.includes(OBJECTS.FLOWERS.name)
+              || scope.object.name.includes(OBJECTS.BOTTLES.name)) {
+              scope.setScale({
+                field: 'weight',
+                value: DESIGN.EFFECTS[name].weight,
+              });
+            }
+
+            scope.events.heroOnUpgradeDispatchHelper(scope);
+            scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', scope.object.name);
           }
-
-          scope.events.heroOnUpgradeDispatchHelper(scope);
-          scope.events.messagesByIdDispatchHelper(scope, 1, 'pick', scope.object.name);
         }
       }
 
@@ -745,7 +768,7 @@ function Hero() {
 
     if (!scope.camera.position.equals(playerCollider.end)) {
       scope.camera.position.copy(playerCollider.end);
-      // console.log(scope.camera.position.y);
+      console.log(playerDirection);
 
       if (scope.world.enemies) scope.world.enemies.setScales(scope);
 

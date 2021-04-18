@@ -6,6 +6,23 @@ export const LOCALSTORAGE = {
   LANGUAGE: 'language',
   LEVEL: 'level',
   LEVELFROM: 'levelFrom',
+
+  HEALTH: 'health',
+  ENDURANCE: 'endurance',
+  AMMO: 'ammo',
+  WEIGHT: 'weight',
+
+  RED: 'red',
+  ORANGE: 'orange',
+  GREEN: 'green',
+  PURPLE: 'purple',
+
+  PASSRED: 'passRed',
+  PASSORANGE: 'passOrange',
+  PASSGREEN: 'passGreen',
+  PASSPURPLE: 'passPurple',
+  PASSBLUE: 'passBlue',
+
   DIRECTIONX: 'directionX',
   DIRECTIONY: 'directionY',
   DIRECTIONZ: 'directionZ',
@@ -26,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.32',
+  V: '2.4',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -58,14 +75,17 @@ export const DESIGN = {
 
     sun: 0xffff99,
   },
-  OCTREE_UPDATE_TIMEOUT: 1,
   LEVELS: {
-    start: 0,
+    start: 1,
   },
+  // размер клетки
   WORLD_SIZE: {
-    level0: 200, // размер клетки 200
-    level1: 200, // размер клетки 200
-    level2: 200, // размер клетки 200
+    level0: 200,
+    level1: 200,
+    level2: 200,
+    level3: 200,
+    level4: 200,
+    level5: 200,
   },
   CAMERA: {
     fov: 80,
@@ -96,12 +116,13 @@ export const DESIGN = {
   GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
   ANIMATION_TIMEOUT: 300,
+  OCTREE_UPDATE_TIMEOUT: 1,
   CHECK: 10,
   WEAPON: {
     speed: 2.5,
     damage: {
-      shot: 7.5,
-      explosion: 15,
+      shot: 10,
+      explosion: 20,
     },
   },
   SCALES: {
@@ -113,14 +134,15 @@ export const DESIGN = {
     SPEED: 30,
     JUMP: 25,
     CAST: 10,
+    MAXWEIGHT: 25,
     START: {
-      direction: {
-        x: -0.7071067758832469,
-        y: 0,
-        z: 0.7071067864898483,
-      },
       level0: {
         start: {
+          direction: {
+            x: -0.7071067758832469,
+            y: 0,
+            z: 0.7071067864898483,
+          },
           x: 0,
           y: 0,
           z: 150,
@@ -128,11 +150,21 @@ export const DESIGN = {
       },
       level1: {
         start: {
+          direction: {
+            x: -0.7071067758832469,
+            y: 0,
+            z: 0.7071067864898483,
+          },
           x: 0,
           y: 0,
           z: 0,
         },
         end: {
+          direction: {
+            x: -0.0010486213482048862,
+            y: 0,
+            z: -0.24999780077686298,
+          },
           x: -90,
           y: 0,
           z: 19,
@@ -140,28 +172,95 @@ export const DESIGN = {
       },
       level2: {
         start: {
+          direction: {
+            x: 0.019630233032196392,
+            y: 0,
+            z: 0.24922811629329,
+          },
           x: -90,
           y: 0,
           z: 25,
         },
         end: {
-          x: -90,
+          direction: {
+            x: 0.24943954600815713,
+            y: 0,
+            z: -0.01673059733674977,
+          },
+          x: 15,
           y: 0,
-          z: 25,
+          z: 68,
+        },
+      },
+      level3: {
+        start: {
+          direction: {
+            x: 0.24801200940632864,
+            y: 0,
+            z: 0.031464951775509994,
+          },
+          x: 21,
+          y: 0,
+          z: 68,
+        },
+        end: {
+          direction: {
+            x: -0.004645598369382121,
+            y: 0,
+            z: 0.24995683310481914,
+          },
+          x: 168,
+          y: 0,
+          z: 51,
+        },
+      },
+      level4: {
+        start: {
+          direction: {
+            x: -0.007251280496195885,
+            y: 0,
+            z: -0.24989481573487168,
+          },
+          x: 168,
+          y: 0,
+          z: 45,
+        },
+        end: {
+          direction: {
+            x: -0.007251280496195885,
+            y: 0,
+            z: -0.24989481573487168,
+          },
+          x: 168,
+          y: 0,
+          z: -70,
+        },
+      },
+      level5: {
+        start: {
+          direction: {
+            x: -0.007251280496195885,
+            y: 0,
+            z: -0.24989481573487168,
+          },
+          x: 168,
+          y: 0,
+          z: -77,
         },
       },
     },
     weapon: {
       radius: 0.5,
       quantity: 20,
-      damage: 0.33,
+      damage: 0.75,
+      speed: 75,
     },
     recoil: {
       player: 50,
-      weapon: 3,
+      weapon: 2,
       optical: 100,
       shot: 50,
-      enemies: 2,
+      enemies: 10,
     },
     scales: {
       health: {
@@ -176,6 +275,10 @@ export const DESIGN = {
         name: 'ammo',
         start: 0,
         objects: ammo,
+      },
+      weight: {
+        name: 'weight',
+        start: 0,
       },
     },
   },
@@ -201,18 +304,23 @@ export const DESIGN = {
     },
     red: {
       health: 30,
+      weight: 3,
     },
     orange: {
-      health: 50,
+      health: 60,
+      weight: 1,
     },
     green: {
-      health: 60,
+      health: 50,
+      weight: 2,
     },
     purple: {
       health: 40,
+      weight: 3,
     },
     bottle: {
       ammo: ammo * 8,
+      weight: 1,
     },
   },
   STAFF: {
@@ -226,11 +334,11 @@ export const DESIGN = {
   ENEMIES: {
     spider: {
       decision: {
-        enjoy: 50,
+        enjoy: 60,
         rotate: 10,
-        shot: 27,
+        shot: 20,
         jump: 75,
-        speed: 30,
+        speed: 20,
         bend: 30,
       },
     },
@@ -264,8 +372,8 @@ export const OBJECTS = {
   SPIDERS: {
     name: 'spider',
     size: 4,
-    speed: 5,
-    distance: 7, // дистанция ближе которой не двигаются на героя
+    speed: 3,
+    distance: 12, // дистанция ближе которой не двигаются на героя
     jump: 25,
   },
 };
@@ -281,27 +389,30 @@ export const LOCALES = {
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
       gameover: 'GAME OVER',
       win: `MISSION<br />COMPLETED`,
-      gameovebuttonStart: 'Start over',
+      gameovebuttonStart: 'Start location',
+      gameovebuttonStartFirst: 'First location',
       gameovebuttonNext: 'Next level',
       author: 'Author: ',
       authorlink: 'ushliypakostnik',
 
       controls: 'Controls',
-      control1: 'Shot: Mouse click',
+      control1: 'Shot: Left mouse button',
       control2: 'Move: WASD / Arrows',
       control3: 'Jump: Space + WASD / Arrows',
       control4: 'Run: Shift + W',
       control5: 'Hidden movement: C or Alt',
       control6: 'Look: Mouse',
       control7: 'Take a thing / Open door : E',
-      control8: 'Apply flower: 1234',
-      control9: 'Tourch: T',
-      control10: 'Pause: P',
+      control8: 'Optical sight: Right mouse button',
+      control9: 'Apply flower: 1234',
+      control10: 'Tourch: T',
+      control11: 'Pause: P',
 
       legend: 'Legend',
       legendtext: `Earth, distant future. People a long time ago killed each other in nuclear wars, finding out who is right, who is left, who white, and who is red and so on. Several races bred on unbombed atolls in the Pacific Ocean humanoid robots. For example, more human-like, imitating organic, bisexual and personal relationships Drinking companions, which transform animals and vegetation into life force and special effects. Inside them, through thin strong tubes, a special a fermented organic mix similar to human wine, setting them in motion. Or more machine-like same-sex Cyber ​​Dancers preaching meditative Zen-Noise. Gender and religious differences between cultures, of course, raged a fierce war.<br /><br />A couple of young drinking buddies set off on a honeymoon trip across the ocean. But the boat suddenly started leaking and they barely made it to the nearest atoll. The island, beautiful at first glance, turned out to be a dangerous trap, as it had long been chosen for meditation by the Dancers.<br /><br />The Robot Drinker wakes up on the floor of the torture chamber of the same-sex prison ... The tanks are empty ... His tormentors apparently decided that he was no longer a tenant and left him to die ... On the wall there is a portrait of the legendary Last President - the ideological forerunner and idol of the Dancers - a man who once unleashed the last war in the history of mankind ...`,
 
       rules: 'Rules',
+      weight: 'Backpack capacity: ',
     },
     messages: {
       message1: {
@@ -331,6 +442,7 @@ export const LOCALES = {
         },
         cast: 'Pick up: ',
         look: 'Look at: ',
+        full: 'Backpack is full!!!',
       },
       message3: {
         enemiesBeside: `Enemies spotted nearby!<br />The robot should be careful!`,
@@ -356,29 +468,29 @@ export const LOCALES = {
         name: ' flower',
         red: {
           name: 'red',
-          text: `: gives up to ${DESIGN.EFFECTS.red.health}% health<br />and ${DESIGN.EFFECTS.time.health} seconds the robot is invulnerable.`,
+          text: `: gives up to ${DESIGN.EFFECTS.red.health}% health<br />and ${DESIGN.EFFECTS.time.health} seconds the robot is invulnerable.<br />Weight: ${DESIGN.EFFECTS.red.weight}`,
         },
         orange: {
           name: 'orange',
-          text: `: gives up to ${DESIGN.EFFECTS.orange.health}% health,<br />and increases jump height. ${DESIGN.EFFECTS.time.endurance} seconds<br />the robot does not get tired of running.`,
+          text: `: gives up to ${DESIGN.EFFECTS.orange.health}% health,<br />and increases jump height. ${DESIGN.EFFECTS.time.endurance} seconds<br />the robot does not get tired of running.<br />Weight: ${DESIGN.EFFECTS.orange.weight}`,
         },
         green: {
           name: 'green',
-          text: `: grants up to ${DESIGN.EFFECTS.green.health}% health<br />and activates the Portable Time Machine<br />for ${DESIGN.EFFECTS.time.machine} seconds.`,
+          text: `: grants up to ${DESIGN.EFFECTS.green.health}% health<br />and activates the Portable Time Machine<br />for ${DESIGN.EFFECTS.time.machine} seconds.<br />Weight: ${DESIGN.EFFECTS.green.weight}`,
         },
         purple: {
           name: 'purple',
-          text: `: Gives up to ${DESIGN.EFFECTS.purple.health}% health<br />and increases damage power for ${DESIGN.EFFECTS.time.gain} seconds.`,
+          text: `: Gives up to ${DESIGN.EFFECTS.purple.health}% health<br />and increases damage power for ${DESIGN.EFFECTS.time.gain} seconds.<br />Weight: ${DESIGN.EFFECTS.purple.weight}`,
         },
       },
       bottle: {
         name: 'bottle',
         declination: 'bottle',
-        text: `: contains ${DESIGN.EFFECTS.bottle.ammo} drops`,
+        text: `: contains ${DESIGN.EFFECTS.bottle.ammo} drops..<br />Weight: ${DESIGN.EFFECTS.bottle.weight}`,
       },
       spider: {
-        name: 'spaucodron',
-        declination: 'spaucodron',
+        name: 'spaucodron democrat',
+        declination: 'spaucodron democrat',
       },
     },
     texts: {
@@ -387,7 +499,7 @@ export const LOCALES = {
         subheader: 'Test arena',
       },
       level1: {
-        header: '1: Prison Break Democracy',
+        header: 'Prison Break Democracy',
         subheader: 'Location 1',
         modal1: {
           text1: 'The United States carried its understanding of freedom and democracy to all peoples, more and more rudely, persistently and mercilessly. Trampling on sovereign governments, devouring industry and resources, leaving behind mountains of corpses and rivers of blood, devastation, civil war, famine, many thousands of refugees, broken destinies of generations ...<br /><br />One fine day, the ruling Democratic Party\'s congress was unanimous decision banned Republicans by declaring President for Life ...',
@@ -395,7 +507,7 @@ export const LOCALES = {
         },
       },
       level2: {
-        header: '1: Prison Break Democracy',
+        header: 'Prison Break Democracy',
         subheader: 'Location 2',
         modal1: {
           text1: 'In fact, the Western BigTech-corporations, long before the catastrophe, learned to control not only the life or economic situation of most people. Gadgets and social networks, proprietary software shaped user habits, lifestyle, and worldview of the participants in the capitalist system. Many voluntarily paid for the procedure of their own chipping simply in order to «have faster Internet right in their heads.»',
@@ -403,7 +515,7 @@ export const LOCALES = {
         },
       },
       level3: {
-        header: '1: Prison Break Democracy',
+        header: 'Prison Break Democracy',
         subheader: 'Location 3',
         modal1: {
           text1: 'Following the doctrine of Dehumanization, the government of the Global Liberal Democracy allowed corporations to replace any part of the user\'s body at their discretion by implanting nanoscale chips into the brain and nervous system. An unchipped real person who does not use a gadget and proprietary software not only turned out to be an outcast doomed to hunger and loneliness, but was completely outlawed, they were hunted until they were quickly finished off. The government valued only the brains of outstanding bloggers - it was cloned, pumped and installed to control large robotic commanders.',
@@ -411,12 +523,16 @@ export const LOCALES = {
         },
       },
       level4: {
-        header: '1: Prison Break Democracy',
+        header: 'Prison Break Democracy',
         subheader: 'Location 4',
         modal1: {
           text1: 'There was not enough space on the ships and many Helpers remained on free software. These humanoid robots began to yearn for their developers. They tried to be like people in everything, designing and changing their device. They even became addicted to alcohol, producing it from organic food. Also, this culture tightly stitched the "gender" when a new unit was conceived.',
           text2: 'People in Democracy have long ended, therefore, after the departure of free Russians, Drink Companions have already become the main enemies and victims of the Dehumanization Program. Led by bloggers, armed gangs of ferocious same-sex democrats sought to completely destroy everything that even a little reminded of a real person, the good old world before nuclear explosions ... <br /> <br /> Which technology and culture will be more viable?',
         },
+      },
+      level5: {
+        header: 'Prison Break Democracy',
+        subheader: 'Location 5',
       },
     },
   },
@@ -430,27 +546,30 @@ export const LOCALES = {
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',
       gameover: 'КОНЕЦ ИГРЫ',
       win: `МИССИЯ<br />ВЫПОЛНЕННА`,
-      gameovebuttonStart: 'Начать сначала',
+      gameovebuttonStart: 'С локации',
+      gameovebuttonStartFirst: 'С первой локации',
       gameovebuttonNext: 'След. уровень',
       author: 'Автор: ',
       authorlink: 'ushliypakostnik',
 
       controls: 'Управление',
-      control1: 'Выстрел: Кнопки мыши',
+      control1: 'Выстрел: Левая кнопка мыши',
       control2: 'Движение: WASD / Стрелки',
       control3: 'Прыжок: Space + WASD / Стрелки',
       control4: 'Бежать: Shift + W',
       control5: 'Cкрытное передвижение: C или Alt',
       control6: 'Осмотреться: Мышь',
       control7: 'Взять предмет / Открыть дверь: Е',
-      control8: 'Применить цветок: 1234',
-      control9: 'Фонарик: T',
-      control10: 'Пауза: P',
+      control8: 'Оптический прицел: Правая кнопка мыши',
+      control9: 'Применить цветок: 1234',
+      control10: 'Фонарик: T',
+      control11: 'Пауза: P',
 
       legend: 'Легенда',
       legendtext: `Земля, далекое будущее. Люди давным-давно перебили друг-друга в ядерных войнах, выясняя кто правый, кто левый, кто белый, а кто красный и прочее. На не затронутых бомбардировками атоллах в Тихом Океане размножилось несколько рас человекоподобных роботов. Например, более человекоподобные, имитирующие органику, двуполость и личные отношения Собутыльники, которые перерабатывают животных и растительность в жизненную силу и спецэффекты. Внутри них, по тонким крепким трубкам, течет специальный сброженный органический микс, схожий с человеческим вином, приводя их в движение. Или более машиноподбные однополые Кибер-Танцоры, проповедующие медитативный Дзинь-Нойз. На почве гендерных и религиозных разногласий между культурами, конечно же, понеслась жестокая война.<br /><br />Пара молодых Собутыльников отправились в свадебное путешествие по океану. Но катер внезапно дал течь и они с трудом дотянули до ближайшего атолла. Прекрасный на первый взгляд остров оказался опасной ловушкой, так как был давно облюбован для медитаций Танцорами.<br /><br />Робот-Собутыльник приходит в себя на полу пыточной камеры тюрьмы Однополых... Баки пусты... Его мучители, видимо, решили что он уже не жилец, и оставили подыхать... На стене висит портрет легендарного Последнего Президента - идеологического предтечи и кумира Танцоров - человека, когда-то развязавшего последнюю в истории человечества войну...`,
 
       rules: 'Правила',
+      weight: 'Вместимость рюкзака: ',
     },
     messages: {
       message1: {
@@ -480,6 +599,7 @@ export const LOCALES = {
         },
         cast: 'Подобрать: ',
         look: 'Смотреть: ',
+        full: 'Рюкзак переполнен!!!',
       },
       message3: {
         enemiesBeside: `Рядом замечены враги!<br/>Роботу стоит быть осторожнее!`,
@@ -505,29 +625,29 @@ export const LOCALES = {
         name: ' цветок',
         red: {
           name: 'красный',
-          text: `: дает до  ${DESIGN.EFFECTS.red.health}% здоровья<br />и ${DESIGN.EFFECTS.time.health} cекунд робот неуязвим.`,
+          text: `: дает до  ${DESIGN.EFFECTS.red.health}% здоровья<br />и ${DESIGN.EFFECTS.time.health} cекунд робот неуязвим.<br />Вес предмета: ${DESIGN.EFFECTS.red.weight}`,
         },
         orange: {
           name: 'оранжевый',
-          text: `: дает до ${DESIGN.EFFECTS.orange.health}% здоровья,<br />и увеличивает высоту прыжка.<br .>${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега.`,
+          text: `: дает до ${DESIGN.EFFECTS.orange.health}% здоровья,<br />и увеличивает высоту прыжка.<br .>${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега.<br />Вес предмета: ${DESIGN.EFFECTS.orange.weight}`,
         },
         green: {
           name: 'зеленый',
-          text: `: дает до ${DESIGN.EFFECTS.green.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.machine} секунд включает портативную машину времени.`,
+          text: `: дает до ${DESIGN.EFFECTS.green.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.machine} секунд включает портативную машину времени.<br />Вес предмета: ${DESIGN.EFFECTS.green.weight}`,
         },
         purple: {
           name: 'фиолетовый',
-          text: `: дает до ${DESIGN.EFFECTS.purple.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.gain} секунд увеличивает силу урона.`,
+          text: `: дает до ${DESIGN.EFFECTS.purple.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.gain} секунд увеличивает силу урона.<br />Вес предмета: ${DESIGN.EFFECTS.purple.weight}`,
         },
       },
       bottle: {
         name: 'бутылка вина',
         declination: 'бутылку вина',
-        text: `: cодержит ${DESIGN.EFFECTS.bottle.ammo} капель`,
+        text: `: cодержит ${DESIGN.EFFECTS.bottle.ammo} капель.<br />Вес предмета: ${DESIGN.EFFECTS.bottle.weight}`,
       },
       spider: {
         name: 'дрон-паук',
-        declination: 'дрона-паука',
+        declination: 'дрона-паука-демократа',
       },
     },
     texts: {
@@ -536,7 +656,7 @@ export const LOCALES = {
         subheader: 'Тестовая арена',
       },
       level1: {
-        header: '1: Побег из тюрьмы Демократии',
+        header: 'Побег из тюрьмы Демократии',
         subheader: 'Локация 1',
         modal1: {
           text1: 'США несли свое понимание свободы и демократии всем народам, все более грубо, настойчиво и беспощадно. Топча суверенные правительства, пожирая промышленность и ресурсы, оставляя после себя горы трупов и реки крови, разруху, гражданскую войну, голод, многие тысячи беженцев, поломанные судьбы поколений…<br /><br />В один прекрасный день съезд правящей Демократической Партии единогласным решением запретил Республиканцев, объявив Пожизненного Президента...',
@@ -544,7 +664,7 @@ export const LOCALES = {
         },
       },
       level2: {
-        header: '1: Побег из тюрьмы Демократии',
+        header: 'Побег из тюрьмы Демократии',
         subheader: 'Локация 2',
         modal1: {
           text1: 'На самом деле, западные BigTech-корпорации уже задолго до катастрофы научились контролировать не только быт или экономическое положение большинства людей. Гаджеты и социальные сети, проприетарное ПО формировали пользовательские привычки, образ жизни, мировозрение участников капиталистической системы. Многие добровольно оплачивали процедуру собственного чипирования просто для того «чтобы иметь более быстрый интернет прямо у себя в голове».',
@@ -552,7 +672,7 @@ export const LOCALES = {
         },
       },
       level3: {
-        header: '1: Побег из тюрьмы Демократии',
+        header: 'Побег из тюрьмы Демократии',
         subheader: 'Локация 3',
         modal1: {
           text1: 'Следуя доктрине Расчеловечивания, правительство Глобальной Либеральной Демократии разрешило корпорациям по своему усмотрению заменять любую часть тела пользователя, вживляя наночипы в мозг и нервную систему. Нечипированный настоящий человек не пользующийся гаджетом и проприетарным ПО не просто оказался обреченным на голод и одиночество изгоем, а был объявлен полностью вне закона, на таких охотились пока быстро всех не перебили. Правительство ценило только мозг выдающихся блогеров - его прокачивали и устанавливали для управления крупными роботами-командирами.',
@@ -560,11 +680,15 @@ export const LOCALES = {
         },
       },
       level4: {
-        header: '1: Побег из тюрьмы Демократии',
+        header: 'Побег из тюрьмы Демократии',
         subheader: 'Локация 4',
         modal1: {
           text1: 'Место на кораблях не хватало и многие Помощники на свободном ПО остались. Эти человекоподобные роботы стали тосковать по своим создателям. Они старались во всем походить на людей, перепроектируя и меняя свое устройство. И они даже пристрастились к алкоголю, вырабатывая его из органической пищи и сделав неким подобием человеческой крови в своих телах. Также эта культура намертво прошивала «пол» при зачатии нового юнита.',
           text2: 'Люди в Демократии давно закончились, поэтому, после ухода свободных русских, уже Собутыльники превратились в главных врагов и жертв Программы Расчеловечивания. Возглавляемые блогерами вооруженные банды свирепых однополых демократов стремились полностью уничтожить все, что даже немного напоминало о настоящем человеке, старом добром мире до ядерных взрывов...<br /><br />Какая технология и культура окажется жизнеспособнее?',
+        },
+        level5: {
+          header: 'Побег из тюрьмы Демократии',
+          subheader: 'Локация 5',
         },
       },
     },

@@ -38,6 +38,8 @@ function World() {
 
   const rooms = [];
 
+  let counter = 0;
+
   this.init = (scope) => {
     // Level objects
     // eslint-disable-next-line guard-for-in,no-restricted-syntax
@@ -158,9 +160,27 @@ function World() {
       transparent: true,
       opacity: 0.33,
     });
-    glassTransparentMaterial.map.repeat.set(2, 2);
+    glassTransparentMaterial.map.repeat.set(8, 8);
     glassTransparentMaterial.map.wrapS = glassTransparentMaterial.map.wrapT = Three.RepeatWrapping;
     glassTransparentMaterial.map.encoding = Three.sRGBEncoding;
+
+    const glassTransparentLargeTexture = new Three.TextureLoader().load(
+      './images/textures/glass.jpg',
+      () => {
+        scope.render();
+        loaderDispatchHelper(scope.$store, 'isGlassTransparentLargeLoaded');
+      },
+    );
+    const glassTransparentLargeMaterial = new Three.MeshPhongMaterial({
+      map: glassTransparentLargeTexture,
+      color: DESIGN.COLORS.grayLight,
+      transparent: true,
+      opacity: 0.33,
+    });
+    glassTransparentLargeMaterial.map.repeat.set(0.5, 0.5);
+    glassTransparentLargeMaterial.map.wrapS = glassTransparentLargeMaterial.map.wrapT = Three.RepeatWrapping;
+    glassTransparentLargeMaterial.map.encoding = Three.sRGBEncoding;
+
 
     const floorMaterial = new Three.MeshStandardMaterial({
       color: DESIGN.COLORS.grayDark,
@@ -209,8 +229,10 @@ function World() {
               child.material.map = wallsHightTexture;
               child.material.map.anisotropy = 8;
               child.material.map.repeat.set(0.75, 0.5);
-            } else if (child.name.includes('glass')) {
+            } else if (child.name.includes('glAss')) {
               child.material = glassTransparentMaterial;
+            } else if (child.name.includes('glass')) {
+              child.material = glassTransparentLargeMaterial;
             } else if (child.name.includes('rod')) {
               child.material = metallLightMaterial;
               child.material.map = metallRodsTexture;
@@ -414,6 +436,25 @@ function World() {
         scope.render();
 
 
+        const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.HEIGHT / 2,  4, 4);
+        const pseudoMaterial = new Three.MeshStandardMaterial({
+          color: DESIGN.COLORS.white,
+          side: Three.DoubleSide,
+        });
+
+
+        // Enemies
+        this.enemies = new Enemies();
+        this.enemies.init(
+          scope,
+          metallDarkMaterial,
+          metallTexture,
+          holeMaterial,
+          glassMaterial,
+          pseudoMaterial,
+        );
+
+
         // Special objects
 
         this.doors = new Doors();
@@ -429,12 +470,6 @@ function World() {
 
         // Things
         scope.things = [];
-
-        const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.HEIGHT / 2,  4, 4);
-        const pseudoMaterial = new Three.MeshStandardMaterial({
-          color: DESIGN.COLORS.white,
-          side: Three.DoubleSide,
-        });
 
         new Bottles().init(scope, pseudoGeometry, pseudoMaterial);
         new Flowers().init(
@@ -477,29 +512,25 @@ function World() {
 
         this.shots = new Shots();
         this.shots.init(scope);
-
-
-        // Enemies
-        this.enemies = new Enemies();
-        this.enemies.init(
-          scope,
-          metallDarkMaterial,
-          metallTexture,
-          holeMaterial,
-          glassMaterial,
-          pseudoMaterial,
-        );
       },
     );
   };
 
-  this.animate = (scope) => {
+  const animateList = (scope) => {
     this.doors.animate(scope);
     this.screens.animate(scope);
     this.atmosphere.animate(scope);
     this.explosions.animate(scope);
     this.shots.animate(scope);
     this.enemies.animate(scope);
+  };
+
+  this.animate = (scope) => {
+    if (scope.isTimeMachine) {
+      if (counter === 0) animateList(scope);
+      ++counter;
+      if (counter > 1) counter = 0;
+    } else animateList(scope);
   };
 }
 

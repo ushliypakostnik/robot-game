@@ -6,7 +6,7 @@
     <swiper-slide>
       <div class="instructions">
         <h1>{{ $t('layout.title') }} {{ version }}</h1>
-        <h3>{{ $t('layout.level') }} {{ $t(`texts.level${level}.header`) }}</h3>
+        <h3>{{ $t(`texts.level${level}.header`) }}</h3>
         <h5>{{ $t(`texts.level${level}.subheader`) }}</h5>
         <div class="switch__wrapper">
           <LangSwitch />
@@ -33,6 +33,7 @@
         <h4>{{ $t('layout.control8') }}</h4>
         <h4>{{ $t('layout.control9') }}</h4>
         <h4>{{ $t('layout.control10') }}</h4>
+        <h4>{{ $t('layout.control11') }}</h4>
       </div>
     </swiper-slide>
     <swiper-slide>
@@ -45,6 +46,7 @@
     <swiper-slide>
       <div class="instructions">
         <h3>{{ $t('layout.rules') }}</h3>
+        <h4>{{ $t('layout.weight') }}{{ maxWeight }}</h4>
         <div class="instructions__block instructions--red">
           <div class="instructions__circle" />
           <div class="instructions__text">
@@ -135,6 +137,10 @@ export default {
     version() {
       return DESIGN.V;
     },
+
+    maxWeight() {
+      return DESIGN.HERO.MAXWEIGHT;
+    },
   },
 };
 </script>
@@ -161,11 +167,11 @@ export default {
 
   &__text {
     max-width: 40vw;
-    @include text($font-size--xsmall);
+    @include text($font-size--xsmall * 0.85);
   }
 
   &__circle {
-    $size: $gutter;
+    $size: $gutter / 2;
 
     margin: 0 auto $gutter / 4;
     min-width: $size;
@@ -211,6 +217,10 @@ export default {
 h3,
 h4 {
   margin: 0;
+}
+
+h4 {
+  margin-bottom: $gutter / 2;
 }
 
 h3 {

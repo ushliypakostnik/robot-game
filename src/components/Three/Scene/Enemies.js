@@ -93,7 +93,7 @@ function Enemies() {
       enemy.collider.translate(scope.resultDoors.normal.multiplyScalar(scope.resultDoors.depth));
     }
 
-    // Делаем октодерево из всех ПНС без этого, если давно не делали
+    // Делаем октодерево из всех NPS без этого, если давно не делали
     if (scope.enemies.length > 1 && !enemy.updateClock.running) {
       if (!enemy.updateClock.running) enemy.updateClock.start();
 
@@ -155,8 +155,10 @@ function Enemies() {
   };
 
   this.onShot = (scope, enemy, direction) => {
-    scope.cooeficient = scope.isGain ? 2 : 1;
-    enemy.velocity.add(direction.multiplyScalar(DESIGN.HERO.recoil.enemies * scope.delta * scope.cooeficient));
+    if (direction) {
+      scope.cooeficient = scope.isGain ? 2 : 1;
+      enemy.velocity.add(direction.multiplyScalar(DESIGN.HERO.recoil.enemies * scope.delta * scope.cooeficient));
+    }
   };
 
   this.animate = (scope) => {
@@ -229,7 +231,8 @@ function Enemies() {
           } else {
             if (enemy.distanceToHero > enemy.distance) {
               // Решение на прыжок
-              if (!enemy.isOnJump) {
+              if (!enemy.isOnJump
+                  && enemy.distanceToHero > enemy.distance * 1.5) {
                 scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.jump) === 1;
                 if (scope.decision) {
                   enemy.velocity.y = enemy.jump;
@@ -262,7 +265,6 @@ function Enemies() {
           enemy.scale.position.set(enemy.mesh.position.x, enemy.mesh.position.y + enemy.height / 2, enemy.mesh.position.z);
         }
       }
-
       enemy.distanceToHero = scope.dictance;
     });
   };

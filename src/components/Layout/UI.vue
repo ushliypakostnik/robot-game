@@ -25,6 +25,10 @@
       <div class="ui__thing ui__thing--purple">
         <div class="ui__thing-circle" />{{ flower(purple) }}
       </div>
+
+      <div class="ui__weight">
+        ({{ stringWeight }}/{{ maxWeight }})
+      </div>
     </div>
 
     <div class="ui__passes">
@@ -111,7 +115,7 @@
             {{ $t(`messages.message${message[1]}.${message[2]}`) }}
             {{ $t(`objects.screen.declination`) }}
           </span>
-          <span v-if="message[2] ==='stop'">
+          <span v-if="message[2] ==='full'">
             {{ $t(`messages.message${message[1]}.${message[2]}`) }}
           </span>
         </div>
@@ -132,8 +136,8 @@
       :class="[
         (isHeroOnDamage || isHeroOnHit)
         && !isNotDamaged && !isGameOver && `ui__overlay--damage damage`,
-        isHeroOnUpgrade && `ui__overlay--upgrade upgrade`,
-        isTimeMachine && `ui__overlay--effect effect`,
+        isHeroOnUpgrade && !isGameOver &&`ui__overlay--upgrade upgrade`,
+        isTimeMachine && !isGameOver && `ui__overlay--effect effect`,
         isModal && `ui__overlay--modal fadeOn`,
         isGameOver && !isWin && `ui__overlay--gameover ui__overlay--fail`,
         isGameOver && isWin && `ui__overlay--gameover ui__overlay--win`,
@@ -178,15 +182,23 @@
       <button
         class="button"
         type="button"
-        v-if="isGameOver && !isWin"
-        @click.prevent.stop="levelReload(null, null)"
+        v-if="isGameOver"
+        @click.prevent.stop="reloadToStart(isWin)"
       >{{ $t('layout.gameovebuttonStart') }}</button>
+
+      <button
+        class="button"
+        type="button"
+        v-if="isGameOver && isWin && level !== 0"
+        @click.prevent.stop="reloadToStartFirst"
+      >{{ $t('layout.gameovebuttonStartFirst') }}</button>
+
       <!-- Для перехода из песочницы -->
       <button
         class="button"
         type="button"
         v-if="isGameOver && isWin && level === 0"
-        @click.prevent.stop="levelReload(level + 1, 0)"
+        @click.prevent.stop="reloadToStartFromSandbox"
       >{{ $t('layout.gameovebuttonNext') }}</button>
     </div>
   </div>
@@ -197,7 +209,8 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
-import common from './mixins';
+import layout from './layout';
+import hero from './hero';
 
 import { getNotPartOfName } from '@/utils/utilities';
 
@@ -206,39 +219,27 @@ import Scale from '@/components/Layout/Scale.vue';
 export default {
   name: 'UI',
 
-  mixins: [common],
+  mixins: [
+    layout,
+    hero,
+  ],
 
   components: {
     Scale,
   },
 
+  data() {
+    return {
+      lastMagazine: null,
+    };
+  },
+
+  mounted() {
+    this.lastMagazine = this.magazine;
+  },
+
   computed: {
     ...mapGetters({
-      health: 'hero/health',
-      endurance: 'hero/endurance',
-      ammo: 'hero/ammo',
-
-      red: 'hero/red',
-      orange: 'hero/orange',
-      green: 'hero/green',
-      purple: 'hero/purple',
-
-      passes: 'hero/passes',
-
-      isHeroOnUpgrade: 'hero/isHeroOnUpgrade',
-
-      isHeroTired: 'hero/isHeroTired',
-
-      isOptical: 'hero/isOptical',
-
-      isHeroOnDamage: 'hero/isHeroOnDamage',
-      isHeroOnHit: 'hero/isHeroOnHit',
-
-      isNotDamaged: 'hero/isNotDamaged',
-      isNotTired: 'hero/isNotTired',
-      isTimeMachine: 'hero/isTimeMachine',
-      isGain: 'hero/isGain',
-
       level: 'layout/level',
 
       messages: 'layout/messages',
@@ -250,9 +251,20 @@ export default {
       isWin: 'layout/isWin',
     }),
 
+    magazine() {
+      return Math.floor((this.ammo - 1) / DESIGN.EFFECTS.bottle.ammo) + 1;
+    },
+
     ammoMagazine() {
-      const magazine = Math.floor((this.ammo - 1) / DESIGN.EFFECTS.bottle.ammo) + 1;
-      return magazine < 10 ? `0${magazine}` : magazine;
+      return this.magazine < 10 ? `0${this.magazine}` : this.magazine;
+    },
+
+    maxWeight() {
+      return DESIGN.HERO.MAXWEIGHT;
+    },
+
+    stringWeight() {
+      return this.weight < 10 ? `0${this.weight}` : this.weight;
     },
   },
 
@@ -304,7 +316,7 @@ export default {
     },
 
     modalSrc(modal) {
-      return `/images/texts/level1/modal${this.modalId}__${modal}.jpg`;
+      return `/images/modals/level${this.level}/modal${this.modalId}__${modal}.jpg`;
     },
   },
 
@@ -320,6 +332,16 @@ export default {
           value: true,
         });
       }
+    },
+
+    magazine(value) {
+      if (value < this.lastMagazine) {
+        this.setScale({
+          field: 'weight',
+          value: -1 * DESIGN.EFFECTS.bottle.weight,
+        });
+      }
+      this.lastMagazine = value;
     },
   },
 };
@@ -530,6 +552,12 @@ export default {
     top: $gutter / 2;
     left: $gutter / 2;
     display: flex;
+  }
+
+  &__weight {
+    color: $colors__white;
+    text-shadow: 1px 2px 3px $colors__shadows;
+    @include text($font-size--normal);
   }
 
   &__thing {

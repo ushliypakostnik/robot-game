@@ -12,8 +12,11 @@ function AudioBus() {
   let isPlay;
   let record;
 
+  let isTime;
+
   this.init = (scope) => {
     isPlay = scope.isPause;
+    isTime = scope.isTimeMachine;
   };
 
   const addAudioToBus = (scope, id, audio, name, isLoop) => {
@@ -94,6 +97,10 @@ function AudioBus() {
     return bus.find(record => record.id === id && record.name === name);
   };
 
+  const setSpeed = (audio) => {
+    if (isTime) audio.setPlaybackRate(0.5);
+    else audio.setPlaybackRate(1);
+  };
 
   this.replayHeroSound = (name) => {
     record = getRecordByName(name);
@@ -108,9 +115,12 @@ function AudioBus() {
     if (record && record.audio && !record.audio.isPlaying) record.audio.play();
   };
 
-  this.startObjectSound = (id, name, test) => {
+  this.startObjectSound = (id, name) => {
     record = getRecordByIdAndName(id, name);
-    if (record && record.audio && !record.audio.isPlaying) record.audio.play();
+    if (record && record.audio && !record.audio.isPlaying) {
+      setSpeed(record.audio);
+      record.audio.play();
+    }
   };
 
   this.stopObjectSound = (id, name) => {
@@ -126,7 +136,10 @@ function AudioBus() {
   this.replayObjectSound = (id, name) => {
     record = getRecordByIdAndName(id, name);
     if (record && record.audio) {
-      if (!record.audio.isPlaying) record.audio.play();
+      if (!record.audio.isPlaying) {
+        setSpeed(record.audio);
+        record.audio.play();
+      }
       else {
         record.audio.stop();
         record.audio.play();
@@ -134,17 +147,30 @@ function AudioBus() {
     }
   };
 
+  this.toggleTime = () => {
+    isTime = !isTime;
+    if (isTime) {
+      bus.filter(record => record.audio.isPlaying).forEach((record) => {
+        record.audio.setPlaybackRate(0.5);
+      });
+    } else {
+      bus.filter(record => record.isStopped).forEach((record) => {
+        record.audio.setPlaybackRate(1);
+      });
+    }
+  };
+
   this.toggle = () => {
     isPlay = !isPlay;
     if (isPlay) {
-      bus.filter(audio => audio.audio.isPlaying).forEach((audio) => {
-        audio.isStopped = true;
-        audio.audio.pause();
+      bus.filter(record => record.audio.isPlaying).forEach((record) => {
+        record.isStopped = true;
+        record.audio.pause();
       });
     } else {
-      bus.filter(audio => audio.isStopped).forEach((audio) => {
-        audio.isStopped = false;
-        audio.audio.play();
+      bus.filter(record => record.isStopped).forEach((record) => {
+        record.isStopped = false;
+        record.audio.play();
       });
     }
   };

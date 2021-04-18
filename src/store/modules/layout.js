@@ -5,6 +5,9 @@ import storage from '@/utils/storage';
 // eslint-disable-next-line import/no-cycle
 import { DESIGN, LOCALSTORAGE } from '@/utils/constants';
 
+const autoLevel = Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || null;
+if (!autoLevel) localStorage.setItem(LOCALSTORAGE.LEVEL, DESIGN.LEVELS.start);
+
 const initialState = {
   language: null,
   level: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || DESIGN.LEVELS.start,
@@ -91,10 +94,6 @@ const actions = {
 const mutations = {
   changeLanguage: (state, language) => {
     state.language = language;
-  },
-
-  setLevel: (state, level) => {
-    state.level = level;
   },
 
   togglePause: (state, isPause) => {

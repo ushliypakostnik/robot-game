@@ -50,6 +50,7 @@ function Shots() {
       directionX: direction.x,
       directionY: direction.y,
       directionZ: direction.z,
+      gravity: 0,
       collider: new Three.Sphere(center, radius),
     });
 
@@ -64,7 +65,11 @@ function Shots() {
 
   this.animate = (scope) => {
     bus.forEach((record) => {
-      velocity = new Three.Vector3(record.directionX, record.directionY + -0.15 * Math.random(), record.directionZ);
+      if (record.gravity === 0 && record.mesh.position.distanceTo(record.start) > 5) {
+        record.gravity = -0.125 * Math.random() - 0.1;
+      }
+
+      velocity = new Three.Vector3(record.directionX, record.directionY + record.gravity, record.directionZ);
       record.mesh.position.add(velocity);
       record.collider.translate(velocity);
 
@@ -83,8 +88,10 @@ function Shots() {
       }
 
       // Улетело
-      if (record.collider.center.distanceTo(record.start) > DESIGN.WORLD_SIZE[scope.l] / 2 || scope.boolean) {
-        if (scope.boolean) scope.world.explosions.addExplosionToBus(scope, record.collider.center, 0.5, 5, false);
+      if (scope.boolean
+          && (record.collider.center.distanceTo(record.start) > DESIGN.WORLD_SIZE[scope.l] / 2
+          || record.mesh.position.distanceTo(record.start) > 5)) {
+        scope.world.explosions.addExplosionToBus(scope, record.collider.center, 0.5, 5, false, velocity);
         removeShotFromBus(scope, record.id);
       }
     });

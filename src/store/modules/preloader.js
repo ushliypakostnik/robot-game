@@ -16,6 +16,7 @@ const initialState = {
   isGreenLoaded: false,
   isGlassLoaded: false,
   isGlassTransparentLoaded: false,
+  isGlassTransparentLargeLoaded: false,
 
   // Models
   isBottleLoaded: false,

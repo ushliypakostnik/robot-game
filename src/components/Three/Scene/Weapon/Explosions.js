@@ -77,28 +77,25 @@ function Explosions() {
       record.mesh.rotateZ(scope.delta * -3);
 
       // Урон персонажу
-      if (!record.isHero
-          && !scope.isNotDamaged
+      if (!scope.isNotDamaged
           && record.mesh.position.distanceTo(scope.camera.position) < DESIGN.HERO.HEIGHT + record.radius * record.size) {
         scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 5);
       }
 
-      // Урон ПНС
-      if (record.isHero) {
-        scope.enemies
-          .filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dies && enemy.mode !== DESIGN.STAFF.mode.dead)
-          .filter(enemy => record.mesh.position.distanceTo(enemy.collider.center) < enemy.height + record.radius * record.size)
-          .forEach((enemy) => {
-            scope.cooeficient = scope.isGain ? 2 : 1;
-            enemy.health -= DESIGN.HERO.weapon.damage * scope.cooeficient;
-            enemy.scale.scale.set(enemy.health / 100, 1, enemy.health / 100);
+      // Урон NPS
+      scope.enemies
+        .filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dies && enemy.mode !== DESIGN.STAFF.mode.dead)
+        .filter(enemy => record.mesh.position.distanceTo(enemy.collider.center) < enemy.height + record.radius * record.size)
+        .forEach((enemy) => {
+          scope.cooeficient = scope.isGain ? 2 : 1;
+          enemy.health -= DESIGN.HERO.weapon.damage * scope.cooeficient;
+          enemy.scale.scale.set(enemy.health / 100, 1, enemy.health / 100);
 
-            if (enemy.health <= 0) scope.world.enemies.toDead(scope, enemy);
-            else scope.world.enemies.onShot(scope, enemy, record.velocity);
+          if (enemy.health <= 0) scope.world.enemies.toDead(scope, enemy);
+          else scope.world.enemies.onShot(scope, enemy, record.velocity);
 
-            if (enemy.mode === DESIGN.STAFF.mode.idle) enemyToActiveMode(scope, enemy);
-          });
-      }
+          if (enemy.mode === DESIGN.STAFF.mode.idle) enemyToActiveMode(scope, enemy);
+        });
 
       if (record.scale < 0) this.removeExplosionFromBus(scope, record.id);
     });

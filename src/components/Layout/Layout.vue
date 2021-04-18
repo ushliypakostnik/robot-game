@@ -21,11 +21,13 @@
             type="button"
             @click.prevent.stop="play"
           >{{ $t('layout.startbutton') }}</button>
+
+          <!-- Для перехода из песочницы -->
           <button
             class="layout__button button"
             type="button"
             v-if="level === 0"
-            @click.prevent.stop="levelReload(1, 0)"
+            @click.prevent.stop="reloadToStartFromSandbox"
           >{{ $t('layout.gameovebuttonNext') }}</button>
         </div>
       </div>
@@ -47,7 +49,7 @@ import { mapGetters, mapActions } from 'vuex';
 
 import ScreenHelper from '@/utils/screen-helper';
 
-import common from './mixins';
+import layout from './layout';
 
 import Gate from '@/components/Layout/Gate.vue';
 import Preloader from '@/components/Layout/Preloader.vue';
@@ -58,7 +60,7 @@ import Instructions from '@/components/Layout/Instructions.vue';
 export default {
   name: 'Layout',
 
-  mixins: [common],
+  mixins: [layout],
 
   components: {
     Gate,
