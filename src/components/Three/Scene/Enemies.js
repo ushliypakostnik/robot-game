@@ -266,6 +266,8 @@ function Enemies() {
         }
       }
       enemy.distanceToHero = scope.dictance;
+
+      console.log(enemy.mesh.position.y);
     });
   };
 }
