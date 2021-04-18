@@ -768,7 +768,7 @@ function Hero() {
 
     if (!scope.camera.position.equals(playerCollider.end)) {
       scope.camera.position.copy(playerCollider.end);
-      console.log(playerDirection);
+      // console.log(playerDirection);
 
       if (scope.world.enemies) scope.world.enemies.setScales(scope);
 

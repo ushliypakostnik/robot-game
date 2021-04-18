@@ -259,15 +259,15 @@ function Enemies() {
 
           enemyCollitions(scope, enemy);
 
-          enemy.mesh.position.set(enemy.collider.center.x, enemy.collider.center.y, enemy.collider.center.z);
-          enemy.pseudo.position.set(enemy.mesh.position.x, enemy.mesh.position.y - enemy.height / 4, enemy.mesh.position.z);
-          enemy.pseudoLarge.position.set(enemy.mesh.position.x, enemy.mesh.position.y, enemy.mesh.position.z);
-          enemy.scale.position.set(enemy.mesh.position.x, enemy.mesh.position.y + enemy.height / 2, enemy.mesh.position.z);
+          scope.number = enemy.collider.center.y > 0 ? enemy.collider.center.y : 0;
+
+          enemy.mesh.position.set(enemy.collider.center.x, scope.number, enemy.collider.center.z);
+          enemy.pseudo.position.set(enemy.mesh.position.x, scope.number - enemy.height / 4, enemy.mesh.position.z);
+          enemy.pseudoLarge.position.set(enemy.mesh.position.x, scope.number, enemy.mesh.position.z);
+          enemy.scale.position.set(enemy.mesh.position.x, scope.number + enemy.height / 2, enemy.mesh.position.z);
         }
       }
       enemy.distanceToHero = scope.dictance;
-
-      console.log(enemy.mesh.position.y);
     });
   };
 }
