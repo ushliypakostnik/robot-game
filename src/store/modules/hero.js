@@ -26,7 +26,7 @@ const initialState = {
   green: Number(localStorage.getItem(LOCALSTORAGE.GREEN)) || 0,
   purple: Number(localStorage.getItem(LOCALSTORAGE.PURPLE)) || 0,
 
-  passes: getPassesFromStorage(),
+  passes: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start ? [] : getPassesFromStorage(),
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,
