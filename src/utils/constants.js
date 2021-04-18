@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.45',
+  V: '2.451',
   BREAKPOINTS: {
     desktop: 1025,
   },

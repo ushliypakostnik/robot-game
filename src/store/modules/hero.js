@@ -26,9 +26,12 @@ const initialState = {
   green: Number(localStorage.getItem(LOCALSTORAGE.GREEN)) || 0,
   purple: Number(localStorage.getItem(LOCALSTORAGE.PURPLE)) || 0,
 
-  passes: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start
+  passes: (Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start
           // eslint-disable-next-line no-self-compare
-          && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) <= Number(localStorage.getItem(LOCALSTORAGE.LEVEL))
+          && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) <= Number(localStorage.getItem(LOCALSTORAGE.LEVEL)))
+          || (Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start
+              && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) === DESIGN.LEVELS.start
+              && Number(localStorage.getItem(LOCALSTORAGE.PASSRED)) === 1
     ? []
     : getPassesFromStorage(),
 
