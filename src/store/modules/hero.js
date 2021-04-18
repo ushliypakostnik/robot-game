@@ -28,7 +28,7 @@ const initialState = {
 
   passes: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start
           // eslint-disable-next-line no-self-compare
-          && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) <= Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM))
+          && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) <= Number(localStorage.getItem(LOCALSTORAGE.LEVEL))
     ? []
     : getPassesFromStorage(),
 
