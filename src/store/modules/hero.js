@@ -31,7 +31,7 @@ const initialState = {
           && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) <= Number(localStorage.getItem(LOCALSTORAGE.LEVEL)))
           || (Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start
               && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) === DESIGN.LEVELS.start
-              && Number(localStorage.getItem(LOCALSTORAGE.PASSRED)) === 1
+              && Number(localStorage.getItem(LOCALSTORAGE.PASSRED)) === 1)
     ? []
     : getPassesFromStorage(),
 
