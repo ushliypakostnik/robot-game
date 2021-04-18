@@ -11,6 +11,7 @@ const getPassesFromStorage = () => {
       if (Number(localStorage.getItem(LOCALSTORAGE[`PASS${pass.toUpperCase()}`])) === 1) passesNow.push(pass);
     });
   }
+  console.log('getPassesFromStorage: ', passesNow);
   return passesNow;
 };
 
@@ -26,14 +27,7 @@ const initialState = {
   green: Number(localStorage.getItem(LOCALSTORAGE.GREEN)) || 0,
   purple: Number(localStorage.getItem(LOCALSTORAGE.PURPLE)) || 0,
 
-  passes: (Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start
-          // eslint-disable-next-line no-self-compare
-          && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) <= Number(localStorage.getItem(LOCALSTORAGE.LEVEL)))
-          || (Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === DESIGN.LEVELS.start
-              && Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) === DESIGN.LEVELS.start
-              && Number(localStorage.getItem(LOCALSTORAGE.PASSRED)) === 1)
-    ? []
-    : getPassesFromStorage(),
+  passes: getPassesFromStorage(),
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,
@@ -53,6 +47,8 @@ const initialState = {
   directionY: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONY)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.y,
   directionZ: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONZ)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.z,
 };
+
+console.log(initialState.passes);
 
 const state = initialState;
 
