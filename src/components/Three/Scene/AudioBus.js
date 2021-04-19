@@ -151,11 +151,11 @@ function AudioBus() {
   this.toggleTime = () => {
     isTime = !isTime;
     if (isTime) {
-      bus.filter(record => record.audio.isPlaying).forEach((record) => {
+      bus.forEach((record) => {
         record.audio.setPlaybackRate(0.5);
       });
     } else {
-      bus.filter(record => record.isStopped).forEach((record) => {
+      bus.forEach((record) => {
         record.audio.setPlaybackRate(1);
       });
     }
