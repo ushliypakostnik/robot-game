@@ -19,6 +19,7 @@ function Drones() {
   let scaleClone;
 
   let height;
+  let rotate;
 
   this.init = (
     scope,
@@ -88,7 +89,10 @@ function Drones() {
           pseudoLargeClone.position.copy(droneClone.position);
           pseudoLargeClone.visible = false;
 
-          droneClone.rotateY(degreesToRadians(randomInteger(-1, 360)));
+          rotate = degreesToRadians(randomInteger(-1, 360));
+          droneClone.rotateY(rotate);
+          pseudoClone.rotateY(rotate);
+          pseudoLargeClone.rotateY(rotate);
 
           scope.enemies.push({
             id: droneClone.id,

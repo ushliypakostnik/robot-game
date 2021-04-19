@@ -19,6 +19,7 @@ function Spiders() {
   let scaleClone;
 
   let height;
+  let rotate;
 
   this.init = (
     scope,
@@ -88,7 +89,10 @@ function Spiders() {
           pseudoLargeClone.position.copy(spiderClone.position);
           pseudoLargeClone.visible = false;
 
-          spiderClone.rotateY(degreesToRadians(randomInteger(-1, 360)));
+          rotate = degreesToRadians(randomInteger(-1, 360));
+          spiderClone.rotateY(rotate);
+          pseudoClone.rotateY(rotate);
+          pseudoLargeClone.rotateY(rotate);
 
           scope.enemies.push({
             id: spiderClone.id,

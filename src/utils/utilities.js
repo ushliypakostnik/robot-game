@@ -154,7 +154,7 @@ export const setNewEnemy = (name) => {
     isEnjoy: false,
     isOnJump: false,
     isOnFloor: true,
-    health: 100,
+    health: DESIGN.ENEMIES[name.toLowerCase().substring(0, name.length - 1)].health,
     speedCooeficient: 1,
     bend: plusOrMinus(),
     fly: plusOrMinus(),

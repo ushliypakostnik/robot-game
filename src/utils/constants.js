@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.462',
+  V: '2.463',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -76,7 +76,7 @@ export const DESIGN = {
     sun: 0xffff99,
   },
   LEVELS: {
-    start: 1,
+    start: 0,
   },
   // размер клетки
   WORLD_SIZE: {
@@ -254,7 +254,7 @@ export const DESIGN = {
     weapon: {
       radius: 0.5,
       quantity: 20,
-      damage: 0.75,
+      damage: 0.9,
       speed: 75,
     },
     recoil: {
@@ -335,6 +335,7 @@ export const DESIGN = {
   },
   ENEMIES: {
     spider: {
+      health: 75,
       decision: {
         enjoy: 60,
         rotate: 10,
@@ -345,9 +346,10 @@ export const DESIGN = {
       },
     },
     drone: {
+      health: 100,
       decision: {
         enjoy: 50,
-        rotate: 10,
+        rotate: 15,
         shot: 20,
         fly: 40,
         speed: 15,
