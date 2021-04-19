@@ -130,6 +130,7 @@ function AudioBus() {
 
   this.pauseObjectSound = (id, name) => {
     record = getRecordByIdAndName(id, name);
+    console.log('pauseObjectSound', id, record, name);
     if (record && record.audio && record.audio.isPlaying) record.audio.pause();
   };
 

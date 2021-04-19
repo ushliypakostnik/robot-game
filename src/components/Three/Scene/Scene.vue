@@ -96,6 +96,7 @@ export default {
       cooeficient: null,
       boolean: null,
       number: null,
+      array: [],
       result: null,
       resultDoors: null,
       resultEnemies: null,

@@ -249,6 +249,14 @@ function World() {
               });
 
               places.push(child);
+            } else if (child.name.includes(OBJECTS.DRONES.name)) {
+              OBJECTS.DRONES[scope.l].data.push({
+                x: child.position.x,
+                y: child.position.y,
+                z: child.position.z,
+              });
+
+              places.push(child);
             } else if (child.name.includes(OBJECTS.LEADER.name)) {
               let rotate;
               if (child.name.includes('Z')) {
@@ -402,6 +410,7 @@ function World() {
                 && !child.name.includes(OBJECTS.BOTTLES.name)
                 && !child.name.includes(OBJECTS.FLOWERS.name)
                 && !child.name.includes(OBJECTS.SPIDERS.name)
+                && !child.name.includes(OBJECTS.DRONES.name)
                 && !child.name.includes('room')) {
               child.material.map.wrapS = child.material.map.wrapT = Three.RepeatWrapping;
               child.material.map.encoding = Three.sRGBEncoding;
@@ -442,6 +451,13 @@ function World() {
           side: Three.DoubleSide,
         });
 
+        const scaleGeometry = new Three.PlaneBufferGeometry(DESIGN.SCALES.width, DESIGN.SCALES.height);
+        const scaleMaterial = new Three.MeshStandardMaterial({
+          color: DESIGN.COLORS.redDark,
+          transparent: true,
+          opacity: 0.5,
+        });
+
 
         // Enemies
         this.enemies = new Enemies();
@@ -452,6 +468,8 @@ function World() {
           holeMaterial,
           glassMaterial,
           pseudoMaterial,
+          scaleGeometry,
+          scaleMaterial,
         );
 
 

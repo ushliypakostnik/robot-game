@@ -1,7 +1,7 @@
 /* eslint-disable dot-notation,prefer-destructuring */
 import * as Three from 'three';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import {
   loaderDispatchHelper,
@@ -99,16 +99,17 @@ function Atmosphere() {
             || (scope.distance > DESIGN.CHECK * 5
                 && enemy.mode === DESIGN.STAFF.mode.active)) {
           if (enemy.mode === DESIGN.STAFF.mode.active) enemy.mode = DESIGN.STAFF.mode.idle;
+          console.log('Попускает: ', enemy.id, enemy.name, enemy.isPlay);
           if (enemy.isPlay) {
             enemy.isPlay = false;
-            scope.audio.pauseObjectSound(enemy.id, 'mechanism');
+            if (enemy.name !== OBJECTS.DRONES.name) scope.audio.pauseObjectSound(enemy.id, 'mechanism');
+            else scope.audio.pauseObjectSound(enemy.id, 'fly');
           }
         }
 
         // если нет преград: 20 метров - если скрытое передвижение, 40 если нет!
-        if (
-          !isToHeroRayIntersectWorld(scope, enemy.collider)
-          && ((scope.distance < DESIGN.CHECK * 4
+        if (!isToHeroRayIntersectWorld(scope, enemy.collider)
+            && ((scope.distance < DESIGN.CHECK * 4
               && !scope.isHidden
               && enemy.mode === DESIGN.STAFF.mode.idle)
               || (scope.distance < DESIGN.CHECK * 2

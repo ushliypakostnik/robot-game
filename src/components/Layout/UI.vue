@@ -264,7 +264,7 @@ export default {
     },
 
     stringWeight() {
-      return this.weight < 10 ? `0${this.weight}` : this.weight;
+      return this.weight < 0 ? 0 : this.weight < 10 ? `0${this.weight}` : this.weight;
     },
   },
 

@@ -12,8 +12,8 @@ import {
   setNewEnemy,
 } from '@/utils/utilities';
 
-function Spiders() {
-  let spiderClone;
+function Drones() {
+  let droneClone;
   let pseudoClone;
   let pseudoLargeClone;
   let scaleClone;
@@ -30,7 +30,7 @@ function Spiders() {
     scaleGeometry,
     scaleMaterial,
   ) => {
-    height = OBJECTS.SPIDERS.size;
+    height = OBJECTS.DRONES.size;
 
     const pseudoGeometry = new Three.BoxBufferGeometry(
       height / 1.25,
@@ -38,14 +38,14 @@ function Spiders() {
       height / 1.25,
     );
     const pseudoLargeGeometry = pseudoGeometry.clone();
-    pseudoLargeGeometry.scale(2, 2, 2);
+    pseudoLargeGeometry.scale(2, 2, 2)
 
     new GLTFLoader().load(
-      './images/models/Objects/Spider.glb',
-      (spider) => {
-        loaderDispatchHelper(scope.$store, 'isSpiderLoaded');
+      './images/models/Objects/Drone.glb',
+      (drone) => {
+        loaderDispatchHelper(scope.$store, 'isDroneLoaded');
 
-        spider.scene.traverse((child) => {
+        drone.scene.traverse((child) => {
           if (child.isMesh) {
             if (child.name.includes('metall')) {
               child.material = metallDarkMaterial;
@@ -63,50 +63,50 @@ function Spiders() {
         const pseudoLarge = new Three.Mesh(pseudoLargeGeometry, pseudoMaterial);
         const scale = new Three.Mesh(scaleGeometry, scaleMaterial);
 
-        for (let i = 0; i < OBJECTS.SPIDERS[scope.l].data.length; i++) {
-          spiderClone = spider.scene.clone();
+        for (let i = 0; i < OBJECTS.DRONES[scope.l].data.length; i++) {
+          droneClone = drone.scene.clone();
           pseudoClone = pseudo.clone();
           pseudoLargeClone = pseudoLarge.clone();
           scaleClone = scale.clone();
 
-          spiderClone.name = OBJECTS.SPIDERS.name;
+          droneClone.name = OBJECTS.DRONES.name;
 
-          spiderClone.position.set(
-            OBJECTS.SPIDERS[scope.l].data[i].x,
-            OBJECTS.SPIDERS[scope.l].data[i].y + height / 2,
-            OBJECTS.SPIDERS[scope.l].data[i].z,
+          droneClone.position.set(
+            OBJECTS.DRONES[scope.l].data[i].x,
+            OBJECTS.DRONES[scope.l].data[i].y + height / 2,
+            OBJECTS.DRONES[scope.l].data[i].z,
           );
 
           scaleClone.position.set(
-            OBJECTS.SPIDERS[scope.l].data[i].x,
-            OBJECTS.SPIDERS[scope.l].data[i].y + height,
-            OBJECTS.SPIDERS[scope.l].data[i].z,
+            OBJECTS.DRONES[scope.l].data[i].x,
+            OBJECTS.DRONES[scope.l].data[i].y + height,
+            OBJECTS.DRONES[scope.l].data[i].z,
           );
 
-          pseudoClone.position.copy(spiderClone.position);
+          pseudoClone.position.copy(droneClone.position);
           pseudoClone.visible = false;
-          pseudoLargeClone.position.copy(spiderClone.position);
+          pseudoLargeClone.position.copy(droneClone.position);
           pseudoLargeClone.visible = false;
 
-          spiderClone.rotateY(degreesToRadians(randomInteger(-1, 360)));
+          droneClone.rotateY(degreesToRadians(randomInteger(-1, 360)));
 
           scope.enemies.push({
-            id: spiderClone.id,
-            mesh: spiderClone,
+            id: droneClone.id,
+            mesh: droneClone,
             pseudo: pseudoClone,
             pseudoLarge: pseudoLargeClone,
-            collider: new Three.Sphere(spiderClone.position, height / 2),
+            collider: new Three.Sphere(droneClone.position, height / 2),
             scale: scaleClone,
-            name: OBJECTS.SPIDERS.name,
-            ...setNewEnemy('SPIDERS'),
+            name: OBJECTS.DRONES.name,
+            ...setNewEnemy('DRONES'),
           });
 
-          scope.scene.add(spiderClone);
+          scope.scene.add(droneClone);
           scope.scene.add(pseudoClone);
           scope.scene.add(pseudoLargeClone);
           scope.scene.add(scaleClone);
         }
-        loaderDispatchHelper(scope.$store, 'isSpidersBuilt');
+        loaderDispatchHelper(scope.$store, 'isDronesBuilt');
 
         updateEnemiesOctree(scope);
         scope.world.enemies.setScales(scope);
@@ -115,4 +115,4 @@ function Spiders() {
   };
 }
 
-export default Spiders;
+export default Drones;

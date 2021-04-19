@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import {
   randomInteger,
@@ -8,14 +8,17 @@ import {
   loaderDispatchHelper,
   updateEnemiesPersonalOctree,
   plusOrMinus,
+  distance2D,
 } from "@/utils/utilities";
 
 import Spiders from './Enemies/Spiders';
+import Drones from './Enemies/Drones';
 
 function Enemies() {
   const audioLoader = new Three.AudioLoader();
 
   this.spiders = null;
+  this.drones = null;
 
   let result;
 
@@ -29,6 +32,8 @@ function Enemies() {
     holeMaterial,
     glassMaterial,
     pseudoMaterial,
+    scaleGeometry,
+    scaleMaterial,
   ) => {
     deadMaterial = holeMaterial;
 
@@ -40,6 +45,20 @@ function Enemies() {
       holeMaterial,
       glassMaterial,
       pseudoMaterial,
+      scaleGeometry,
+      scaleMaterial,
+    );
+
+    this.drones = new Drones();
+    this.drones.init(
+      scope,
+      metallDarkMaterial,
+      metallTexture,
+      holeMaterial,
+      glassMaterial,
+      pseudoMaterial,
+      scaleGeometry,
+      scaleMaterial,
     );
 
     dead2material = glassMaterial;
@@ -47,13 +66,23 @@ function Enemies() {
     audioLoader.load('./audio/mechanism.mp3', (buffer) => {
       loaderDispatchHelper(scope.$store, 'isMechanismLoaded');
 
-      scope.audio.addAudioToObjects(scope, scope.enemies, buffer, 'mesh', 'mechanism', DESIGN.VOLUME.enemies, true);
+      scope.array = scope.enemies.filter(enemy => enemy.name !== OBJECTS.DRONES.name);
+
+      scope.audio.addAudioToObjects(scope, scope.array, buffer, 'mesh', 'mechanism', DESIGN.VOLUME.mechanism, true);
+    });
+
+    audioLoader.load('./audio/fly.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isFlyLoaded');
+
+      scope.array = scope.enemies.filter(enemy => enemy.name === OBJECTS.DRONES.name);
+
+      scope.audio.addAudioToObjects(scope, scope.array, buffer, 'mesh', 'fly', DESIGN.VOLUME.fly, true);
     });
 
     audioLoader.load('./audio/dead.mp3', (buffer) => {
       loaderDispatchHelper(scope.$store, 'isDeadLoaded');
 
-      scope.audio.addAudioToObjects(scope, scope.enemies, buffer, 'mesh', 'dead', DESIGN.VOLUME.enemies, false);
+      scope.audio.addAudioToObjects(scope, scope.enemies, buffer, 'mesh', 'dead', DESIGN.VOLUME.dead, false);
     });
   };
 
@@ -130,12 +159,17 @@ function Enemies() {
     scope.events.messagesByIdDispatchHelper(scope, 3, 'destroyed', enemy.mesh.name);
     if (enemy.isPlay) {
       enemy.isPlay = false;
-      scope.audio.stopObjectSound(enemy.id, 'mechanism');
+      if (enemy.name !== OBJECTS.DRONES.name) scope.audio.stopObjectSound(enemy.id, 'mechanism');
+      else scope.audio.stopObjectSound(enemy.id, 'fly');
     }
     scope.audio.startObjectSound(enemy.id, 'dead');
     scope.world.explosions.addExplosionToBus(
       scope,
-      new Three.Vector3(enemy.collider.center.x, enemy.collider.center.y - enemy.height / 2, enemy.collider.center.z),
+      new Three.Vector3(
+        enemy.collider.center.x,
+        enemy.collider.center.y - enemy.height / 2,
+        enemy.collider.center.z
+      ),
       1,
       10,
       true,
@@ -161,113 +195,167 @@ function Enemies() {
     }
   };
 
+  const move = (scope, enemy) => {
+    enemy.collider.translate(enemy.velocity.clone().multiplyScalar(scope.delta));
+
+    enemyCollitions(scope, enemy);
+
+    scope.number = enemy.collider.center.y > 0 ? enemy.collider.center.y : 0;
+
+    enemy.mesh.position.set(enemy.collider.center.x, scope.number, enemy.collider.center.z);
+    enemy.pseudo.position.set(enemy.mesh.position.x, scope.number - enemy.height / 4, enemy.mesh.position.z);
+    enemy.pseudoLarge.position.set(enemy.mesh.position.x, scope.number, enemy.mesh.position.z);
+    enemy.scale.position.set(enemy.mesh.position.x, scope.number + enemy.height / 2, enemy.mesh.position.z);
+  };
+
   this.animate = (scope) => {
     scope.enemies.filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dead).forEach((enemy) => {
-      // Решение на отдых
-      if (!enemy.enjoyClock.running
+      if (enemy.mode !== DESIGN.STAFF.mode.dies) {
+        // Решение на отдых
+        if (!enemy.enjoyClock.running
           && !enemy.isOnJump) scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.enjoy) === 1;
 
-      if (enemy.enjoyClock.running) enemy.enjoyTime += enemy.enjoyClock.getDelta();
+        if (enemy.enjoyClock.running) enemy.enjoyTime += enemy.enjoyClock.getDelta();
 
-      if (scope.decision && !enemy.isOnJump) {
-        enemy.isEnjoy = true;
-        enemy.enjoyClock.start();
+        if (scope.decision && !enemy.isOnJump) {
+          enemy.isEnjoy = true;
+          enemy.enjoyClock.start();
 
-        if (enemy.isPlay) {
-          enemy.isPlay = false;
-          scope.audio.pauseObjectSound(enemy.id, 'mechanism');
-        }
-      }
-
-      if (enemy.enjoyTime > 2 && enemy.enjoyClock.running) {
-        enemy.enjoyClock.stop();
-        enemy.enjoyTime = 0;
-        enemy.isEnjoy = false;
-
-        if (enemy.mode === DESIGN.STAFF.mode.active && enemy.isPlay) {
-          enemy.isPlay = true;
-          scope.audio.startObjectSound(enemy.id, 'mechanism');
-        }
-      }
-
-      scope.dictance = scope.controls.getObject().position.distanceTo(enemy.mesh.position);
-      scope.directionOnHero.subVectors(scope.controls.getObject().position, enemy.mesh.position).normalize();
-      scope.directionOnHero.y = 0;
-
-      scope.direction.copy(enemy.mesh.getWorldDirection(scope.direction).normalize());
-      scope.direction.y = 0;
-
-      // Решение на поворот
-      scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
-      if (scope.decision) {
-        switch (enemy.mode) {
-          case DESIGN.STAFF.mode.idle:
-
-            scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
-            if (scope.decision) enemy.bend = plusOrMinus();
-            scope.rotate = enemy.bend * enemy.speed;
-            break;
-
-          case DESIGN.STAFF.mode.active:
-            scope.cooeficient = scope.dictance - enemy.distanceToHero < 1 ? scope.dictance * 10 / enemy.distanceToHero : 2.5;
-
-            scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
-            if (radiansToDegrees(scope.angle) > 95 || radiansToDegrees(scope.angle) < 85) {
-              scope.rotate = scope.angle - Math.PI / 2 <= 0 ? scope.cooeficient : -1 * scope.cooeficient;
-            }
-            break;
-        }
-        enemy.mesh.rotateY(scope.rotate * scope.delta);
-      } else {
-        if (enemy.isEnjoy) {
-          // Решение на выстрел
-          if (enemy.mode === DESIGN.STAFF.mode.active) {
-            scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot) === 1;
-            if (scope.decision) scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, 0.25);
+          if (enemy.isPlay) {
+            enemy.isPlay = false;
+            if (enemy.name !== OBJECTS.DRONES.name) scope.audio.pauseObjectSound(enemy.id, 'mechanism');
+            else scope.audio.pauseObjectSound(enemy.id, 'fly');
           }
-        } else {
-          if (!enemy.isOnFloor) {
-            enemy.velocity.y -= DESIGN.GRAVITY * scope.delta;
-          } else {
-            if (enemy.distanceToHero > enemy.distance) {
-              // Решение на прыжок
-              if (!enemy.isOnJump
-                  && enemy.distanceToHero > enemy.distance * 1.5) {
-                scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.jump) === 1;
-                if (scope.decision) {
-                  enemy.velocity.y = enemy.jump;
-                  enemy.isOnJump = true;
+        }
 
-                  if (enemy.mode === DESIGN.STAFF.mode.active && enemy.isPlay) {
-                    enemy.isPlay = false;
-                    scope.audio.pauseObjectSound(enemy.id, 'mechanism');
-                  }
-                } else {
-                  // Решение на изменение скорости
-                  scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.speed) === 1;
-                  if (scope.decision) enemy.speedCooeficient = (Math.random() + 1) * 5;
+        if (enemy.enjoyTime > 2 && enemy.enjoyClock.running) {
+          enemy.enjoyClock.stop();
+          enemy.enjoyTime = 0;
+          enemy.isEnjoy = false;
+
+          if (enemy.mode === DESIGN.STAFF.mode.active
+              && !enemy.isPlay) {
+            enemy.isPlay = true;
+            if (enemy.name !== OBJECTS.DRONES.name) scope.audio.startObjectSound(enemy.id, 'mechanism');
+            else scope.audio.startObjectSound(enemy.id, 'fly');
+          }
+        }
+
+        scope.dictance = scope.controls.getObject().position.distanceTo(enemy.mesh.position);
+        scope.directionOnHero.subVectors(scope.controls.getObject().position, enemy.mesh.position).normalize();
+        scope.directionOnHero.y = 0;
+
+        scope.direction.copy(enemy.mesh.getWorldDirection(scope.direction).normalize());
+        scope.direction.y = 0;
+
+        // Решение на поворот
+        scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
+        if (scope.decision) {
+          switch (enemy.mode) {
+            case DESIGN.STAFF.mode.idle:
+
+              scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
+              if (scope.decision) enemy.bend = plusOrMinus();
+              scope.rotate = enemy.bend * enemy.speed;
+              break;
+
+            case DESIGN.STAFF.mode.active:
+              scope.cooeficient = scope.dictance - enemy.distanceToHero < 1 ? scope.dictance * 10 / enemy.distanceToHero : 2.5;
+
+              scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
+              if (radiansToDegrees(scope.angle) > 92 || radiansToDegrees(scope.angle) < 88) {
+                scope.rotate = scope.angle - Math.PI / 2 <= 0 ? scope.cooeficient : -1 * scope.cooeficient;
+              }
+              break;
+          }
+          enemy.mesh.rotateY(scope.rotate * scope.delta);
+        } else {
+          if (enemy.isEnjoy) {
+            // Решение на выстрел
+            if (enemy.mode === DESIGN.STAFF.mode.active) {
+              scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot) === 1;
+              if (scope.decision) {
+                switch (enemy.name) {
+                  case OBJECTS.SPIDERS.name:
+                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, 0.25, false);
+                    break;
+
+                  case OBJECTS.DRONES.name:
+                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, 0.25, true);
+                    break;
                 }
               }
+            }
+          } else {
+            // На полу - не летающие юниты
+            if (enemy.name !== OBJECTS.DRONES.name) {
+              if (!enemy.isOnFloor) {
+                // Гравитация
+                if (enemy.name !== OBJECTS.DRONES.name) enemy.velocity.y -= DESIGN.GRAVITY * scope.delta;
+              } else {
+                if ((enemy.mode === DESIGN.STAFF.mode.active
+                    && enemy.distanceToHero > enemy.distance)
+                    || enemy.mode === DESIGN.STAFF.mode.idle) {
+                  // Решение на прыжок
+                  if (!enemy.isOnJump
+                    && enemy.distanceToHero > enemy.distance * 1.5) {
+                    scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.jump) === 1;
+                    if (scope.decision) {
+                      enemy.velocity.y = enemy.jump;
+                      enemy.isOnJump = true;
 
-              enemy.velocity.add(scope.direction.multiplyScalar(enemy.speed * scope.delta * enemy.speedCooeficient));
+                      if (enemy.mode === DESIGN.STAFF.mode.active
+                        && enemy.isPlay) {
+                        enemy.isPlay = false;
+                        scope.audio.pauseObjectSound(enemy.id, 'mechanism');
+                      }
+                    } else {
+                      // Решение на изменение скорости
+                      scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.speed) === 1;
+                      if (scope.decision) enemy.speedCooeficient = (Math.random() + 1) * 5;
+                    }
+                  }
+
+                  enemy.velocity.add(scope.direction.multiplyScalar(enemy.speed * scope.delta * enemy.speedCooeficient));
+                }
+
+                enemy.velocity.addScaledVector(enemy.velocity, scope.damping);
+              }
+            } else {
+              // Летающие юниты
+              if ((enemy.mode === DESIGN.STAFF.mode.active
+                  && distance2D(enemy.collider.center.x, enemy.collider.center.z, scope.camera.position.x, scope.camera.position.z) > enemy.distance)
+                  || enemy.mode === DESIGN.STAFF.mode.idle) {
+                // Решение на изменение скорости
+                scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.speed) === 1;
+                if (scope.decision) enemy.speedCooeficient = (Math.random() + 1) * 5;
+
+                enemy.velocity.add(scope.direction.multiplyScalar(enemy.speed * scope.delta * enemy.speedCooeficient));
+              }
+
+              // Решение на изменение высоты
+              scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.fly) === 1;
+              if (scope.decision) enemy.fly = plusOrMinus();
+
+              if (enemy.fly === -1
+                  && enemy.collider.center.y < DESIGN.HERO.HEIGHT * 3) enemy.fly = 1;
+
+              if (enemy.fly === 1
+                  && enemy.collider.center.y > DESIGN.HERO.JUMP * 1.25) enemy.fly = -1;
+
+              enemy.velocity.y += enemy.fly * enemy.speed * scope.delta * 10;
+              enemy.velocity.addScaledVector(enemy.velocity, scope.damping);
             }
 
-            enemy.velocity.addScaledVector(enemy.velocity, scope.damping);
+            move(scope, enemy);
           }
-
-          enemy.collider.translate(enemy.velocity.clone().multiplyScalar(scope.delta));
-
-          enemyCollitions(scope, enemy);
-
-          scope.number = enemy.collider.center.y > 0 ? enemy.collider.center.y : 0;
-
-          enemy.mesh.position.set(enemy.collider.center.x, scope.number, enemy.collider.center.z);
-          enemy.pseudo.position.set(enemy.mesh.position.x, scope.number - enemy.height / 4, enemy.mesh.position.z);
-          enemy.pseudoLarge.position.set(enemy.mesh.position.x, scope.number, enemy.mesh.position.z);
-          enemy.scale.position.set(enemy.mesh.position.x, scope.number + enemy.height / 2, enemy.mesh.position.z);
         }
+        enemy.distanceToHero = scope.dictance;
+      } else {
+        enemy.velocity.y -= DESIGN.GRAVITY * scope.delta;
+        enemy.velocity.addScaledVector(enemy.velocity, scope.damping);
+        move(scope, enemy);
       }
-      enemy.distanceToHero = scope.dictance;
     });
   };
 }

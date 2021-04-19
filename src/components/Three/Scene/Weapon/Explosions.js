@@ -79,7 +79,7 @@ function Explosions() {
       // Урон персонажу
       if (!scope.isNotDamaged
           && record.mesh.position.distanceTo(scope.camera.position) < DESIGN.HERO.HEIGHT + record.radius * record.size) {
-        scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 5);
+          scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 5);
       }
 
       // Урон NPS

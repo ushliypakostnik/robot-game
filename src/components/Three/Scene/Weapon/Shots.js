@@ -33,7 +33,7 @@ function Shots() {
     fireMaterial.map.encoding = Three.sRGBEncoding;
   };
 
-  this.addShotToBus = (scope, start, direction, radius) => {
+  this.addShotToBus = (scope, start, direction, radius, isFlying) => {
     const geometry = new Three.SphereBufferGeometry(radius, 8, 8);
     shot = new Three.Mesh(geometry, fireMaterial);
 
@@ -51,6 +51,7 @@ function Shots() {
       directionY: direction.y,
       directionZ: direction.z,
       gravity: 0,
+      isFlying,
       collider: new Three.Sphere(center, radius),
     });
 
@@ -65,8 +66,14 @@ function Shots() {
 
   this.animate = (scope) => {
     bus.forEach((record) => {
-      if (record.gravity === 0 && record.mesh.position.distanceTo(record.start) > 5) {
-        record.gravity = -0.125 * Math.random() - 0.1;
+      if (record.gravity === 0) {
+        if (!record.isFlying && record.mesh.position.distanceTo(record.start) > 5) {
+          record.gravity = -0.125 * Math.random() - 0.1;
+        }
+
+        if (record.isFlying && record.mesh.position.distanceTo(record.start) > 3) {
+          record.gravity = -0.5 * Math.random() * Math.sqrt(record.start.y) - 1;
+        }
       }
 
       velocity = new Three.Vector3(record.directionX, record.directionY + record.gravity, record.directionZ);
@@ -88,10 +95,11 @@ function Shots() {
       }
 
       // Улетело
-      if (scope.boolean
+      if ((scope.boolean
           && (record.collider.center.distanceTo(record.start) > DESIGN.WORLD_SIZE[scope.l] / 2
-          || record.mesh.position.distanceTo(record.start) > 5)) {
-        scope.world.explosions.addExplosionToBus(scope, record.collider.center, 0.5, 5, false, velocity);
+          || record.mesh.position.distanceTo(record.start) > 5))
+          || record.mesh.position.y < 0) {
+          scope.world.explosions.addExplosionToBus(scope, record.collider.center, 0.5, 5, false, velocity);
         removeShotFromBus(scope, record.id);
       }
     });

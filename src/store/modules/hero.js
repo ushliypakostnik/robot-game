@@ -11,7 +11,6 @@ const getPassesFromStorage = () => {
       if (Number(localStorage.getItem(LOCALSTORAGE[`PASS${pass.toUpperCase()}`])) === 1) passesNow.push(pass);
     });
   }
-  console.log('getPassesFromStorage: ', passesNow);
   return passesNow;
 };
 
@@ -47,8 +46,6 @@ const initialState = {
   directionY: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONY)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.y,
   directionZ: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONZ)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.z,
 };
-
-console.log(initialState.passes);
 
 const state = initialState;
 

@@ -76,7 +76,7 @@ export const DESIGN = {
     sun: 0xffff99,
   },
   LEVELS: {
-    start: 1,
+    start: 0,
   },
   // размер клетки
   WORLD_SIZE: {
@@ -111,7 +111,9 @@ export const DESIGN = {
     doors: 0.9,
     screen: 0.3,
     explosion: 1,
-    enemies: 0.4,
+    mechanism: 0.4,
+    fly: 0.8,
+    dead: 0.6,
   },
   GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
@@ -121,8 +123,8 @@ export const DESIGN = {
   WEAPON: {
     speed: 2.5,
     damage: {
-      shot: 10,
-      explosion: 20,
+      shot: 15,
+      explosion: 10,
     },
   },
   SCALES: {
@@ -304,7 +306,7 @@ export const DESIGN = {
     },
     red: {
       health: 30,
-      weight: 3,
+      weight: 4,
     },
     orange: {
       health: 60,
@@ -342,6 +344,16 @@ export const DESIGN = {
         bend: 30,
       },
     },
+    drone: {
+      decision: {
+        enjoy: 50,
+        rotate: 10,
+        shot: 20,
+        fly: 40,
+        speed: 15,
+        bend: 25,
+      },
+    },
   },
 };
 
@@ -375,6 +387,12 @@ export const OBJECTS = {
     speed: 3,
     distance: 12, // дистанция ближе которой не двигаются на героя
     jump: 25,
+  },
+  DRONES: {
+    name: 'drone',
+    size: 4,
+    speed: 6,
+    distance: 20, // дистанция ближе которой не двигаются на героя
   },
 };
 
@@ -492,6 +510,10 @@ export const LOCALES = {
         name: 'spaucodron democrat',
         declination: 'spaucodron democrat',
       },
+      drone: {
+        name: 'democracy drone',
+        declination: 'democracy drone',
+      },
     },
     texts: {
       level0: {
@@ -605,7 +627,7 @@ export const LOCALES = {
         enemiesBeside: `Рядом замечены враги!<br/>Роботу стоит быть осторожнее!`,
         notEnemiesBeside: 'Рядом никого...',
         discovered: 'Робот потревожил',
-        destroyed: 'Робот уничтожил ',
+        destroyed: 'Робот уничтожил',
       },
     },
     objects: {
@@ -646,8 +668,12 @@ export const LOCALES = {
         text: `: cодержит ${DESIGN.EFFECTS.bottle.ammo} капель.<br />Вес предмета: ${DESIGN.EFFECTS.bottle.weight}`,
       },
       spider: {
-        name: 'дрон-паук',
+        name: 'дрон-паук-демократ',
         declination: 'дрона-паука-демократа',
+      },
+      drone: {
+        name: 'демократический дрон',
+        declination: 'демократический дрон',
       },
     },
     texts: {

@@ -132,7 +132,9 @@ export const enemyToActiveMode = (scope, enemy) => {
   scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', enemy.mesh.name);
   if (!enemy.isPlay) {
     enemy.isPlay = true;
-    scope.audio.startObjectSound(enemy.id, 'mechanism');
+    if (enemy.name !== OBJECTS.DRONES.name) scope.audio.startObjectSound(enemy.id, 'mechanism');
+    else scope.audio.startObjectSound(enemy.id, 'fly');
+    console.log('enemyToActiveMode: ', enemy.id, enemy.isPlay);
   }
 };
 
@@ -155,6 +157,7 @@ export const setNewEnemy = (name) => {
     health: 100,
     speedCooeficient: 1,
     bend: plusOrMinus(),
+    fly: plusOrMinus(),
     isPlay: false,
   };
 };

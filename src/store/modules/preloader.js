@@ -25,6 +25,7 @@ const initialState = {
   isVinometLoaded: false,
   isVinometOpticalLoaded: false,
   isSpiderLoaded: false,
+  isDroneLoaded: false,
 
   // Audio
   isPickLoaded: false,
@@ -38,6 +39,7 @@ const initialState = {
   isShotLoaded: false,
   isExplosionLoaded: false,
   isMechanismLoaded: false,
+  isFlyLoaded: false,
   isDeadLoaded: false,
 
   // World build
@@ -48,6 +50,7 @@ const initialState = {
   isBottlesBuilt: false,
   isFlowersBuilt: false,
   isSpidersBuilt: false,
+  isDronesBuilt: false,
 };
 
 const state = initialState;
