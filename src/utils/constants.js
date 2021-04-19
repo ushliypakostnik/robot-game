@@ -76,7 +76,7 @@ export const DESIGN = {
     sun: 0xffff99,
   },
   LEVELS: {
-    start: 0,
+    start: 1,
   },
   // размер клетки
   WORLD_SIZE: {
