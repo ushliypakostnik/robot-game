@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.464',
+  V: '2.465',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -118,7 +118,7 @@ export const DESIGN = {
   GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
   ANIMATION_TIMEOUT: 300,
-  OCTREE_UPDATE_TIMEOUT: 1,
+  OCTREE_UPDATE_TIMEOUT: 2,
   CHECK: 10,
   WEAPON: {
     speed: 2.5,
