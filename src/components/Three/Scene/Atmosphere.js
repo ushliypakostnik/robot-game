@@ -89,14 +89,14 @@ function Atmosphere() {
       objects.forEach((enemy) => {
         scope.distance = enemy.mesh.position.distanceTo(scope.camera.position);
 
-        // 60 метров - предупреждении что рядом враги или никого!
+        // 70 метров - предупреждении что рядом враги или никого!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-          && scope.distance < DESIGN.CHECK * 6
+          && scope.distance < DESIGN.CHECK * 7
           && !isBesideNew) isBesideNew = true;
 
-        // 50 метров или преграда - напуганных врагов попускает
+        // 60 метров или преграда - напуганных врагов попускает
         if (isToHeroRayIntersectWorld(scope, enemy.collider)
-            || (scope.distance > DESIGN.CHECK * 5
+            || (scope.distance > DESIGN.CHECK * 6
                 && enemy.mode === DESIGN.STAFF.mode.active)) {
           if (enemy.mode === DESIGN.STAFF.mode.active) {
             enemy.mode = DESIGN.STAFF.mode.idle;
@@ -109,12 +109,12 @@ function Atmosphere() {
           }
         }
 
-        // если нет преград: 20 метров - если скрытое передвижение, 40 если нет!
+        // если нет преград: 25 метров - если скрытое передвижение, 50 если нет!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-          && ((scope.distance < DESIGN.CHECK * 4
+          && ((scope.distance < DESIGN.CHECK * 5
             && !scope.isHidden
             && enemy.mode === DESIGN.STAFF.mode.idle)
-            || (scope.distance < DESIGN.CHECK * 2
+            || (scope.distance < DESIGN.CHECK * 2.5
               && scope.isHidden
               && enemy.mode === DESIGN.STAFF.mode.idle))
         ) enemyToActiveMode(scope, enemy);
