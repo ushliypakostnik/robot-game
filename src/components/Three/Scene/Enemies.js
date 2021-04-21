@@ -196,10 +196,10 @@ function Enemies() {
   };
 
   const move = (scope, enemy) => {
-    if (enemy.collider.center.x < DESIGN.LEVELS.drones[scope.l].minX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].minX;
-    if (enemy.collider.center.x > DESIGN.LEVELS.drones[scope.l].maxX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].maxX;
-    if (enemy.collider.center.z < DESIGN.LEVELS.drones[scope.l].minZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].minZ;
-    if (enemy.collider.center.z > DESIGN.LEVELS.drones[scope.l].maxZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].maxZ;
+    if (enemy.collider.center.x < DESIGN.LEVELS.place[scope.l].minX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].minX;
+    if (enemy.collider.center.x > DESIGN.LEVELS.place[scope.l].maxX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].maxX;
+    if (enemy.collider.center.z < DESIGN.LEVELS.place[scope.l].minZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].minZ;
+    if (enemy.collider.center.z > DESIGN.LEVELS.place[scope.l].maxZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].maxZ;
 
     enemy.collider.translate(enemy.velocity.clone().multiplyScalar(scope.delta));
 
