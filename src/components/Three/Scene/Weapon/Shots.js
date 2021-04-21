@@ -12,8 +12,9 @@ function Shots() {
   this.id = 0;
 
   let fireMaterial;
-
+  const geometry = new Three.SphereBufferGeometry(0.25, 8, 8);
   let shot;
+  let shotClone;
   let center;
   let velocity;
 
@@ -31,37 +32,41 @@ function Shots() {
     fireMaterial.map.repeat.set(4, 4);
     fireMaterial.map.wrapS = fireMaterial.map.wrapT = Three.RepeatWrapping;
     fireMaterial.map.encoding = Three.sRGBEncoding;
+
+    shot = new Three.Mesh(geometry, fireMaterial);
   };
 
-  this.addShotToBus = (scope, start, direction, radius, isFlying) => {
-    const geometry = new Three.SphereBufferGeometry(radius, 8, 8);
-    shot = new Three.Mesh(geometry, fireMaterial);
+  this.addShotToBus = (scope, start, direction, isFlying) => {
+    shotClone = shot.clone();
 
     center = new Three.Vector3(start.x, start.y - 1, start.z);
     center.add(direction.multiplyScalar(2));
 
-    shot.position.copy(center);
+    shotClone.position.copy(center);
 
     ++this.id;
     bus.push({
       id: this.id,
-      mesh: shot,
+      mesh: shotClone,
       start,
       directionX: direction.x,
       directionY: direction.y,
       directionZ: direction.z,
       gravity: 0,
       isFlying,
-      collider: new Three.Sphere(center, radius),
+      collider: new Three.Sphere(center, 0.25),
     });
 
-    scope.scene.add(shot);
+    scope.scene.add(shotClone);
   };
 
   const removeShotFromBus = (scope, id) => {
-    shot = bus.find(record => record.id === id);
+    scope.object = bus.find(record => record.id === id);
     bus = bus.filter(record => record.id !== id);
-    scope.scene.remove(shot.mesh);
+    scope.scene.remove(scope.object.mesh);
+    // scope.object.mesh.geometry.dispose();
+    // scope.object.mesh.material.dispose();
+    // scope.object.mesh.material.map.dispose();
   };
 
   this.animate = (scope) => {
@@ -99,7 +104,7 @@ function Shots() {
           && (record.collider.center.distanceTo(record.start) > DESIGN.WORLD_SIZE[scope.l] / 2
           || record.mesh.position.distanceTo(record.start) > 5))
           || record.mesh.position.y < 0) {
-          scope.world.explosions.addExplosionToBus(scope, record.collider.center, 0.5, 5, false, velocity);
+          scope.world.explosions.addExplosionToBus(scope, record.collider.center, 5, false, velocity);
         removeShotFromBus(scope, record.id);
       }
     });

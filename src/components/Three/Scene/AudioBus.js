@@ -17,6 +17,10 @@ function AudioBus() {
   this.init = (scope) => {
     isPlay = scope.isPause;
     isTime = scope.isTimeMachine;
+
+    heroSound.visible = false;
+
+    scope.scene.add(heroSound);
   };
 
   const addAudioToBus = (scope, id, audio, name, isLoop) => {
@@ -44,9 +48,6 @@ function AudioBus() {
     addAudioToBus(scope, heroSound.id, record, name, isLoop);
 
     heroSound.add(record);
-    heroSound.visible = false;
-
-    scope.scene.add(heroSound);
 
     return record;
   };
@@ -130,7 +131,6 @@ function AudioBus() {
 
   this.pauseObjectSound = (id, name) => {
     record = getRecordByIdAndName(id, name);
-    console.log('pauseObjectSound', id, record, name);
     if (record && record.audio && record.audio.isPlaying) record.audio.pause();
   };
 
@@ -151,11 +151,11 @@ function AudioBus() {
   this.toggleTime = () => {
     isTime = !isTime;
     if (isTime) {
-      bus.forEach((record) => {
+      bus.filter(record => record.id !== heroSound.id).forEach((record) => {
         record.audio.setPlaybackRate(0.5);
       });
     } else {
-      bus.forEach((record) => {
+      bus.filter(record => record.id !== heroSound.id).forEach((record) => {
         record.audio.setPlaybackRate(1);
       });
     }

@@ -458,7 +458,6 @@ function World() {
           opacity: 0.5,
         });
 
-
         // Enemies
         this.enemies = new Enemies();
         this.enemies.init(

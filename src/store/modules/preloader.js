@@ -19,11 +19,11 @@ const initialState = {
   isGlassTransparentLargeLoaded: false,
 
   // Models
+  isVinometLoaded: false,
+  isVinometOpticalLoaded: false,
   isBottleLoaded: false,
   isPotLoaded: false,
   isFlowerLoaded: false,
-  isVinometLoaded: false,
-  isVinometOpticalLoaded: false,
   isSpiderLoaded: false,
   isDroneLoaded: false,
 
@@ -32,12 +32,12 @@ const initialState = {
   isStepsLoaded: false,
   isDamageLoaded: false,
   isHitLoaded: false,
-  isDoorsSoundLoaded: false,
   isJumpStartLoaded: false,
   isJumpEndLoaded: false,
-  isScreensSoundLoaded: false,
   isShotLoaded: false,
   isExplosionLoaded: false,
+  isDoorsSoundLoaded: false,
+  isScreensSoundLoaded: false,
   isMechanismLoaded: false,
   isFlyLoaded: false,
   isDeadLoaded: false,

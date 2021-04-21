@@ -91,15 +91,17 @@ function Atmosphere() {
 
         // 60 метров - предупреждении что рядом враги или никого!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-            && scope.distance < DESIGN.CHECK * 6
-            && !isBesideNew) isBesideNew = true;
+          && scope.distance < DESIGN.CHECK * 6
+          && !isBesideNew) isBesideNew = true;
 
         // 50 метров или преграда - напуганных врагов попускает
         if (isToHeroRayIntersectWorld(scope, enemy.collider)
             || (scope.distance > DESIGN.CHECK * 5
                 && enemy.mode === DESIGN.STAFF.mode.active)) {
-          if (enemy.mode === DESIGN.STAFF.mode.active) enemy.mode = DESIGN.STAFF.mode.idle;
-          console.log('Попускает: ', enemy.id, enemy.name, enemy.isPlay);
+          if (enemy.mode === DESIGN.STAFF.mode.active) {
+            enemy.mode = DESIGN.STAFF.mode.idle;
+          }
+
           if (enemy.isPlay) {
             enemy.isPlay = false;
             if (enemy.name !== OBJECTS.DRONES.name) scope.audio.pauseObjectSound(enemy.id, 'mechanism');
@@ -109,12 +111,12 @@ function Atmosphere() {
 
         // если нет преград: 20 метров - если скрытое передвижение, 40 если нет!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-            && ((scope.distance < DESIGN.CHECK * 4
-              && !scope.isHidden
-              && enemy.mode === DESIGN.STAFF.mode.idle)
-              || (scope.distance < DESIGN.CHECK * 2
-                  && scope.isHidden
-                  && enemy.mode === DESIGN.STAFF.mode.idle))
+          && ((scope.distance < DESIGN.CHECK * 4
+            && !scope.isHidden
+            && enemy.mode === DESIGN.STAFF.mode.idle)
+            || (scope.distance < DESIGN.CHECK * 2
+              && scope.isHidden
+              && enemy.mode === DESIGN.STAFF.mode.idle))
         ) enemyToActiveMode(scope, enemy);
       });
 

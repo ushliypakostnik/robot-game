@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.467',
+  V: '2.5',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -77,6 +77,38 @@ export const DESIGN = {
   },
   LEVELS: {
     start: 1,
+    drones: {
+      level1: {
+        minX: -196,
+        maxX: -24,
+        minZ: -196,
+        maxZ: 20,
+      },
+      level2: {
+        minX: -196,
+        maxX: -24,
+        minZ: 16,
+        maxZ: 196,
+      },
+      level3: {
+        minX: 20,
+        maxX: 196,
+        minZ: 16,
+        maxZ: 196,
+      },
+      level4: {
+        minX: 0,
+        maxX: 0,
+        minZ: 0,
+        maxZ: 0,
+      },
+      level5: {
+        minX: 20,
+        maxX: 196,
+        minZ: -196,
+        maxZ: -24,
+      },
+    },
   },
   // размер клетки
   WORLD_SIZE: {
@@ -118,7 +150,7 @@ export const DESIGN = {
   GRAVITY: 35,
   MESSAGES_TIMEOUT: 3000,
   ANIMATION_TIMEOUT: 300,
-  OCTREE_UPDATE_TIMEOUT: 1,
+  OCTREE_UPDATE_TIMEOUT: 0.5,
   CHECK: 10,
   WEAPON: {
     speed: 2.5,
@@ -386,14 +418,14 @@ export const OBJECTS = {
   SPIDERS: {
     name: 'spider',
     size: 4,
-    speed: 3,
+    speed: 2,
     distance: 12, // дистанция ближе которой не двигаются на героя
     jump: 25,
   },
   DRONES: {
     name: 'drone',
     size: 4,
-    speed: 6,
+    speed: 4,
     distance: 20, // дистанция ближе которой не двигаются на героя
   },
 };

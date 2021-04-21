@@ -520,6 +520,7 @@ export default {
 
     render() {
       this.renderer.render(this.scene, this.camera);
+      // console.log('Renderer info: ', this.renderer.info.memory.geometries, this.renderer.info.memory.textures, this.renderer.info.render);
     },
   },
 

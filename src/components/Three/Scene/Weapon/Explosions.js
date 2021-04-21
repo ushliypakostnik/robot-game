@@ -11,9 +11,10 @@ function Explosions() {
   let bus = [];
   this.id = 0;
 
-  let explosion;
-
   let material = null;
+  const geometry = new Three.SphereBufferGeometry(0.5, 8, 8);
+  let explosion;
+  let explosionClone;
 
   const audioLoader = new Three.AudioLoader();
   let boom;
@@ -24,25 +25,25 @@ function Explosions() {
   ) => {
     material = fireMaterial;
 
+    explosion = new Three.Mesh(geometry, material);
+
     audioLoader.load('./audio/explosion.mp3', (buffer) => {
       loaderDispatchHelper(scope.$store, 'isExplosionLoaded');
       boom = buffer;
     });
   };
 
-  this.addExplosionToBus = (scope, position, radius, size, isHero, velocity) => {
-    const geometry = new Three.SphereBufferGeometry(radius, 8, 8);
-    explosion = new Three.Mesh(geometry, material);
+  this.addExplosionToBus = (scope, position, size, isHero, velocity) => {
+    explosionClone = explosion.clone();
 
-    explosion.position.copy(position);
+    explosionClone.position.copy(position);
 
-    scope.audio.playAudioAndRemoveObject(scope, explosion, boom, 'boom', DESIGN.VOLUME.explosion);
+    scope.audio.playAudioAndRemoveObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion);
 
     ++this.id;
     bus.push({
       id: this.id,
-      mesh: explosion,
-      radius,
+      mesh: explosionClone,
       size,
       isHero,
       velocity,
@@ -50,13 +51,13 @@ function Explosions() {
       isOff: false,
     });
 
-    scope.scene.add(explosion);
+    scope.scene.add(explosionClone);
   };
 
   this.removeExplosionFromBus = (scope, id) => {
-    explosion = bus.find(record => record.id === id);
+    scope.object = bus.find(record => record.id === id);
     bus = bus.filter(record => record.id !== id);
-    explosion.mesh.visible = false;
+    scope.scene.remove(scope.object.mesh);
   };
 
   this.animate = (scope) => {
@@ -78,14 +79,14 @@ function Explosions() {
 
       // Урон персонажу
       if (!scope.isNotDamaged
-          && record.mesh.position.distanceTo(scope.camera.position) < DESIGN.HERO.HEIGHT + record.radius * record.size) {
+          && record.mesh.position.distanceTo(scope.camera.position) < DESIGN.HERO.HEIGHT + record.size) {
           scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 5);
       }
 
       // Урон NPS
       scope.enemies
         .filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dies && enemy.mode !== DESIGN.STAFF.mode.dead)
-        .filter(enemy => record.mesh.position.distanceTo(enemy.collider.center) < enemy.height + record.radius * record.size)
+        .filter(enemy => record.mesh.position.distanceTo(enemy.collider.center) < enemy.height + record.size)
         .forEach((enemy) => {
           scope.cooeficient = scope.isGain ? 2 : 1;
           enemy.health -= DESIGN.HERO.weapon.damage * scope.cooeficient;

@@ -134,7 +134,6 @@ export const enemyToActiveMode = (scope, enemy) => {
     enemy.isPlay = true;
     if (enemy.name !== OBJECTS.DRONES.name) scope.audio.startObjectSound(enemy.id, 'mechanism');
     else scope.audio.startObjectSound(enemy.id, 'fly');
-    console.log('enemyToActiveMode: ', enemy.id, enemy.isPlay);
   }
 };
 

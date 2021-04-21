@@ -123,7 +123,8 @@ function Enemies() {
     }
 
     // Делаем октодерево из всех NPS без этого, если давно не делали
-    if (scope.enemies.length > 1 && !enemy.updateClock.running) {
+    if (scope.enemies.length > 1
+        && !enemy.updateClock.running) {
       if (!enemy.updateClock.running) enemy.updateClock.start();
 
       updateEnemiesPersonalOctree(scope, enemy.id);
@@ -170,7 +171,6 @@ function Enemies() {
         enemy.collider.center.y - enemy.height / 2,
         enemy.collider.center.z
       ),
-      1,
       10,
       true,
     );
@@ -196,6 +196,14 @@ function Enemies() {
   };
 
   const move = (scope, enemy) => {
+    if (enemy.name === OBJECTS.DRONES.name) {
+      if (enemy.collider.center.x < DESIGN.LEVELS.drones[scope.l].minX) enemy.collider.center.x = DESIGN.LEVELS.drones[scope.l].minX;
+      if (enemy.collider.center.x > DESIGN.LEVELS.drones[scope.l].maxX) enemy.collider.center.x = DESIGN.LEVELS.drones[scope.l].maxX;
+      if (enemy.collider.center.z < DESIGN.LEVELS.drones[scope.l].minZ) enemy.collider.center.z = DESIGN.LEVELS.drones[scope.l].minZ;
+      if (enemy.collider.center.z > DESIGN.LEVELS.drones[scope.l].maxZ) enemy.collider.center.z = DESIGN.LEVELS.drones[scope.l].maxZ;
+    }
+
+
     enemy.collider.translate(enemy.velocity.clone().multiplyScalar(scope.delta));
 
     enemyCollitions(scope, enemy);
@@ -221,10 +229,10 @@ function Enemies() {
           enemy.isEnjoy = true;
           enemy.enjoyClock.start();
 
-          if (enemy.isPlay) {
+          if (enemy.isPlay
+              && enemy.name !== OBJECTS.DRONES.name) {
             enemy.isPlay = false;
-            if (enemy.name !== OBJECTS.DRONES.name) scope.audio.pauseObjectSound(enemy.id, 'mechanism');
-            else scope.audio.pauseObjectSound(enemy.id, 'fly');
+            scope.audio.pauseObjectSound(enemy.id, 'mechanism');
           }
         }
 
@@ -234,10 +242,10 @@ function Enemies() {
           enemy.isEnjoy = false;
 
           if (enemy.mode === DESIGN.STAFF.mode.active
+              && enemy.name !== OBJECTS.DRONES.name
               && !enemy.isPlay) {
             enemy.isPlay = true;
             if (enemy.name !== OBJECTS.DRONES.name) scope.audio.startObjectSound(enemy.id, 'mechanism');
-            else scope.audio.startObjectSound(enemy.id, 'fly');
           }
         }
 
@@ -277,11 +285,11 @@ function Enemies() {
               if (scope.decision) {
                 switch (enemy.name) {
                   case OBJECTS.SPIDERS.name:
-                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, 0.25, false);
+                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, false);
                     break;
 
                   case OBJECTS.DRONES.name:
-                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, 0.25, true);
+                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, true);
                     break;
                 }
               }
