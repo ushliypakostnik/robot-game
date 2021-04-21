@@ -77,7 +77,7 @@ export const DESIGN = {
   },
   LEVELS: {
     start: 1,
-    drones: {
+    place: {
       level1: {
         minX: -196,
         maxX: -24,
