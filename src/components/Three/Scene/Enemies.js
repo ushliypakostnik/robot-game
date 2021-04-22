@@ -214,7 +214,16 @@ function Enemies() {
   };
 
   this.animate = (scope) => {
-    scope.enemies.filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dead).forEach((enemy) => {
+    scope.enemies.filter(enemy => enemy.mode === DESIGN.STAFF.mode.idle).forEach((enemy) => {
+      scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
+      if (scope.decision) enemy.bend = plusOrMinus();
+      scope.rotate = enemy.bend * enemy.speed;
+      enemy.mesh.rotateY(scope.rotate * 0.25 * scope.delta);
+    });
+
+    scope.enemies.filter(enemy => enemy.mode === DESIGN.STAFF.mode.active
+                        || enemy.mode === DESIGN.STAFF.mode.dies
+                        || (enemy.mode === DESIGN.STAFF.mode.idle && enemy.isOnJump)).forEach((enemy) => {
       if (enemy.mode !== DESIGN.STAFF.mode.dies) {
         // Решение на отдых
         if (!enemy.enjoyClock.running
@@ -256,22 +265,18 @@ function Enemies() {
         // Решение на поворот
         scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
         if (scope.decision) {
-          switch (enemy.mode) {
+          /* switch (enemy.mode) {
             case DESIGN.STAFF.mode.idle:
-
-              scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
-              if (scope.decision) enemy.bend = plusOrMinus();
-              scope.rotate = enemy.bend * enemy.speed;
               break;
 
             case DESIGN.STAFF.mode.active:
-              scope.cooeficient = scope.dictance - enemy.distanceToHero < 1 ? scope.dictance * 10 / enemy.distanceToHero : 2.5;
-
-              scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
-              if (radiansToDegrees(scope.angle) > 92 || radiansToDegrees(scope.angle) < 88) {
-                scope.rotate = scope.angle - Math.PI / 2 <= 0 ? scope.cooeficient : -1 * scope.cooeficient;
-              }
               break;
+          } */
+          scope.cooeficient = scope.dictance - enemy.distanceToHero < 1 ? scope.dictance * 10 / enemy.distanceToHero : 2.5;
+
+          scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
+          if (radiansToDegrees(scope.angle) > 92 || radiansToDegrees(scope.angle) < 88) {
+            scope.rotate = scope.angle - Math.PI / 2 <= 0 ? scope.cooeficient : -1 * scope.cooeficient;
           }
           enemy.mesh.rotateY(scope.rotate * scope.delta);
         } else {
