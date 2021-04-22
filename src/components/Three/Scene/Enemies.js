@@ -336,7 +336,7 @@ function Enemies() {
         if (scope.number) {
           idleClock.start();
           idleId = scope.array[scope.number].id;
-          idleStop = randomInteger(2, 5);
+          idleStop = 2 + Math.random() * 30;
         }
       } else {
         idleTime += idleClock.getDelta();
