@@ -169,7 +169,7 @@ function Enemies() {
       new Three.Vector3(
         enemy.collider.center.x,
         enemy.collider.center.y - enemy.height / 2,
-        enemy.collider.center.z
+        enemy.collider.center.z,
       ),
       10,
       true,
@@ -280,15 +280,16 @@ function Enemies() {
             if (enemy.mode === DESIGN.STAFF.mode.active) {
               scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot) === 1;
               if (scope.decision) {
+                scope.boolean = enemy.name === OBJECTS.DRONES.name;
+                scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, scope.boolean);
+                /*
                 switch (enemy.name) {
                   case OBJECTS.SPIDERS.name:
-                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, false);
                     break;
 
                   case OBJECTS.DRONES.name:
-                    scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, true);
                     break;
-                }
+                } */
               }
             }
           } else {
