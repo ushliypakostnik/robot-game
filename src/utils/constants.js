@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.55',
+  V: '2.56',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -367,7 +367,7 @@ export const DESIGN = {
   },
   ENEMIES: {
     spider: {
-      health: 75,
+      health: 70,
       decision: {
         enjoy: 60,
         rotate: 10,
@@ -418,7 +418,7 @@ export const OBJECTS = {
   SPIDERS: {
     name: 'spider',
     size: 4,
-    speed: 2,
+    speed: 3,
     distance: 12, // дистанция ближе которой не двигаются на героя
     jump: 25,
   },
