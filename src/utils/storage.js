@@ -2,12 +2,6 @@ import { LOCALSTORAGE, DESIGN } from '@/utils/constants';
 
 import i18n from './i18n'; // eslint-disable-line import/no-cycle
 
-const savePassesToStorage = (passes) => {
-  passes.forEach((pass) => {
-    localStorage.setItem(LOCALSTORAGE[`PASS${pass.toUpperCase()}`], 1);
-  });
-};
-
 export default ({
   rememberLanguage: (language) => {
     i18n.i18next.changeLanguage(language);
@@ -29,7 +23,9 @@ export default ({
     localStorage.setItem(LOCALSTORAGE.GREEN, scope.green);
     localStorage.setItem(LOCALSTORAGE.PURPLE, scope.purple);
 
-    savePassesToStorage(scope.passes);
+    scope.passes.forEach((pass) => {
+      localStorage.setItem(LOCALSTORAGE[`PASS${pass.toUpperCase()}`], 1);
+    });
 
     if (!isF5 && !isWin) {
       localStorage.setItem(LOCALSTORAGE.DIRECTIONX, scope.hero.getHeroDirection().x);

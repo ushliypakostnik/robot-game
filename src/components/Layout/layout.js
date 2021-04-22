@@ -24,6 +24,9 @@ export default {
       this.setLevel({ level: this.level, levelFrom: this.level });
 
       window.location.reload();
+      /* setTimeout(() => {
+        window.location.reload();
+      }, 3000); */
     },
 
     reloadToStartFirst() {
@@ -41,9 +44,6 @@ export default {
       this.setLevel({ level, levelFrom });
 
       window.location.reload();
-      /* setTimeout(() => {
-        window.location.reload();
-      }, 3000); */
     },
   },
 };

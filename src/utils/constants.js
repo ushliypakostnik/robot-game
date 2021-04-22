@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.58',
+  V: '2.581',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -156,7 +156,7 @@ export const DESIGN = {
     speed: 2.5,
     damage: {
       shot: 15,
-      explosion: 10,
+      explosion: 7,
     },
   },
   SCALES: {
@@ -418,14 +418,14 @@ export const OBJECTS = {
   SPIDERS: {
     name: 'spider',
     size: 4,
-    speed: 3,
+    speed: 6,
     distance: 12, // дистанция ближе которой не двигаются на героя
     jump: 25,
   },
   DRONES: {
     name: 'drone',
     size: 4,
-    speed: 4,
+    speed: 8,
     distance: 20, // дистанция ближе которой не двигаются на героя
   },
 };

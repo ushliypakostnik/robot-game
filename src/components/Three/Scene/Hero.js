@@ -4,7 +4,11 @@ import * as Three from 'three';
 import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 import { Capsule } from '../Modules/Math/Capsule';
 
-import { DESIGN, OBJECTS } from '@/utils/constants';
+import {
+  LOCALSTORAGE,
+  DESIGN,
+  OBJECTS
+} from '@/utils/constants';
 
 import HeroWeapon from './Weapon/HeroWeapon';
 
@@ -547,6 +551,7 @@ function Hero() {
             // Effect
             if (scope.object.name.includes(OBJECTS.PASSES.name)) {
               name = getNotPartOfName(scope.object.name, OBJECTS.PASSES.name);
+              localStorage.setItem(LOCALSTORAGE[`PASS${name.toUpperCase()}`], 1);
               scope.setScale({
                 field: 'passes',
                 value: name,
@@ -565,7 +570,7 @@ function Hero() {
             }
 
             if (scope.object.name.includes(OBJECTS.FLOWERS.name)
-              || scope.object.name.includes(OBJECTS.BOTTLES.name)) {
+                || scope.object.name.includes(OBJECTS.BOTTLES.name)) {
               scope.setScale({
                 field: 'weight',
                 value: DESIGN.EFFECTS[name].weight,
