@@ -74,14 +74,6 @@ function World() {
       },
     );
 
-    const wallsHightTexture = new Three.TextureLoader().load(
-      './images/textures/concrete2.jpg',
-      () => {
-        scope.render();
-        loaderDispatchHelper(scope.$store, 'isConcrete4Loaded');
-      },
-    );
-
     const metallTexture = new Three.TextureLoader().load(
       './images/textures/metall.jpg',
       () => {
@@ -188,7 +180,6 @@ function World() {
     });
     const wallsNormalMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const wallsLargeMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
-    const wallsHightMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const metallDarkMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark });
     const metallLightMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.gray });
     const doorsMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayLight });
@@ -224,11 +215,6 @@ function World() {
               child.material.map = wallsLargeTexture;
               child.material.map.repeat.set(0.25, 2);
               child.material.map.anisotropy = 8;
-            } else if (child.name.includes('Hight')) {
-              child.material = wallsHightMaterial;
-              child.material.map = wallsHightTexture;
-              child.material.map.anisotropy = 8;
-              child.material.map.repeat.set(0.75, 0.5);
             } else if (child.name.includes('glAss')) {
               child.material = glassTransparentMaterial;
             } else if (child.name.includes('glass')) {

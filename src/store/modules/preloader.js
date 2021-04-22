@@ -5,7 +5,6 @@ const initialState = {
   isConcrete1Loaded: false,
   isConcrete2Loaded: false,
   isConcrete3Loaded: false,
-  isConcrete4Loaded: false,
   isMetall1Loaded: false,
   isMetall2Loaded: false,
   isMetall3Loaded: false,
