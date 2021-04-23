@@ -9,6 +9,7 @@ import {
   updateEnemiesPersonalOctree,
   plusOrMinus,
   distance2D,
+  isEnemyCanShot,
 } from "@/utils/utilities";
 
 import Spiders from './Enemies/Spiders';
@@ -202,7 +203,7 @@ function Enemies() {
     }
   };
 
-  const move = (scope, enemy) => {
+  const position = (scope, enemy) => {
     if (enemy.collider.center.x < DESIGN.LEVELS.place[scope.l].minX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].minX;
     if (enemy.collider.center.x > DESIGN.LEVELS.place[scope.l].maxX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].maxX;
     if (enemy.collider.center.z < DESIGN.LEVELS.place[scope.l].minZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].minZ;
@@ -262,7 +263,13 @@ function Enemies() {
     }
   };
 
-  const checkMove = (scope, enemy) => {
+  const setDistanceToHero = (scope, enemy) => {
+    scope.dictance = scope.controls.getObject().position.distanceTo(enemy.mesh.position);
+    scope.directionOnHero.subVectors(scope.controls.getObject().position, enemy.mesh.position).normalize();
+    scope.directionOnHero.y = 0;
+  };
+
+  const move = (scope, enemy) => {
     scope.direction.copy(enemy.mesh.getWorldDirection(scope.direction).normalize());
     scope.direction.y = 0;
 
@@ -271,6 +278,8 @@ function Enemies() {
         // Гравитация
         if (enemy.name !== OBJECTS.DRONES.name) enemy.velocity.y -= DESIGN.GRAVITY * scope.delta;
       } else {
+        if (enemy.mode === DESIGN.STAFF.mode.active) setDistanceToHero(scope, enemy);
+
         if ((enemy.mode === DESIGN.STAFF.mode.active
             && enemy.distanceToHero > enemy.distance)
             || enemy.mode === DESIGN.STAFF.mode.idle) {
@@ -324,10 +333,10 @@ function Enemies() {
   const gravity = (scope, enemy) => {
     enemy.velocity.y -= DESIGN.GRAVITY * scope.delta;
     enemy.velocity.addScaledVector(enemy.velocity, scope.damping);
-    move(scope, enemy);
+    position(scope, enemy);
   };
 
-  const checkIdleMode = (scope, enemy) => {
+  const idle = (scope, enemy) => {
     if (enemy.isOnJump) gravity(scope, enemy);
     else {
       if (!idleClock.running) {
@@ -354,13 +363,13 @@ function Enemies() {
         scope.rotate = enemy.bend * enemy.speed;
         enemy.mesh.rotateY(scope.rotate * 0.1 * scope.delta);
       } else {
-        checkMove(scope, enemy);
         move(scope, enemy);
+        position(scope, enemy);
       }
     }
   };
 
-  const checkActiveMode = (scope, enemy) => {
+  const active = (scope, enemy) => {
     enjoy(scope, enemy);
 
     scope.direction.copy(enemy.mesh.getWorldDirection(scope.direction).normalize());
@@ -369,9 +378,7 @@ function Enemies() {
     // Решение на поворот
     scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.rotate) === 1;
     if (scope.decision) {
-      scope.dictance = scope.controls.getObject().position.distanceTo(enemy.mesh.position);
-      scope.directionOnHero.subVectors(scope.controls.getObject().position, enemy.mesh.position).normalize();
-      scope.directionOnHero.y = 0;
+      setDistanceToHero(scope, enemy);
       scope.cooeficient = scope.dictance - enemy.distanceToHero < 1 ? scope.dictance * 10 / enemy.distanceToHero : 2.5;
 
       scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
@@ -380,16 +387,19 @@ function Enemies() {
       }
       enemy.mesh.rotateY(scope.rotate * scope.delta);
     } else {
-      if (enemy.isEnjoy) {
+      if (enemy.isEnjoy) { // eslint-disable-line no-lonely-if
         // Решение на выстрел
         scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot) === 1;
         if (scope.decision) {
-          scope.boolean = enemy.name === OBJECTS.DRONES.name;
-          scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, scope.boolean);
+          if (isEnemyCanShot(scope, enemy)) {
+            scope.boolean = enemy.name === OBJECTS.DRONES.name;
+            scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, scope.boolean);
+          }
+          console.log(isEnemyCanShot(scope, enemy));
         }
       } else {
-        checkMove(scope, enemy);
         move(scope, enemy);
+        position(scope, enemy);
       }
     }
     enemy.distanceToHero = scope.dictance;
@@ -399,11 +409,11 @@ function Enemies() {
     scope.enemies.filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dead).forEach((enemy) => {
       switch (enemy.mode) {
         case DESIGN.STAFF.mode.idle:
-          checkIdleMode(scope, enemy);
+          idle(scope, enemy);
           break;
 
         case DESIGN.STAFF.mode.active:
-          checkActiveMode(scope, enemy);
+          active(scope, enemy);
           break;
 
         case DESIGN.STAFF.mode.dies:

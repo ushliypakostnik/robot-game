@@ -83,6 +83,7 @@ function Spiders() {
             OBJECTS.SPIDERS[scope.l].data[i].y + height,
             OBJECTS.SPIDERS[scope.l].data[i].z,
           );
+          scaleClone.scale.set(DESIGN.ENEMIES[OBJECTS.SPIDERS.name].health / 100, 1, DESIGN.ENEMIES[OBJECTS.SPIDERS.name].health / 100);
 
           pseudoClone.position.copy(spiderClone.position);
           pseudoClone.visible = false;

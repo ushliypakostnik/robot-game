@@ -72,11 +72,11 @@ function Shots() {
   this.animate = (scope) => {
     bus.forEach((record) => {
       if (record.gravity === 0) {
-        if (!record.isFlying && record.mesh.position.distanceTo(record.start) > 5) {
+        if (!record.isFlying && record.mesh.position.distanceTo(record.start) > 6) {
           record.gravity = -0.125 * Math.random() - 0.1;
         }
 
-        if (record.isFlying && record.mesh.position.distanceTo(record.start) > 3) {
+        if (record.isFlying && record.mesh.position.distanceTo(record.start) > 4) {
           record.gravity = -0.5 * Math.random() * Math.sqrt(record.start.y) - 1;
         }
       }
@@ -104,7 +104,7 @@ function Shots() {
           && (record.collider.center.distanceTo(record.start) > DESIGN.WORLD_SIZE[scope.l] / 2
           || record.mesh.position.distanceTo(record.start) > 5))
           || record.mesh.position.y < 0) {
-          scope.world.explosions.addExplosionToBus(scope, record.collider.center, 5, false, velocity);
+        scope.world.explosions.addExplosionToBus(scope, record.collider.center, 5, false, velocity);
         removeShotFromBus(scope, record.id);
       }
     });

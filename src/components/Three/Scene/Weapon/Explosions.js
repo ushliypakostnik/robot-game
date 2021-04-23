@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import {
   loaderDispatchHelper,
@@ -80,7 +80,8 @@ function Explosions() {
       // Урон персонажу
       if (!scope.isNotDamaged
           && record.mesh.position.distanceTo(scope.camera.position) < DESIGN.HERO.HEIGHT + record.size) {
-          scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 5);
+        scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 10);
+        // console.log('Damage: ', DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 10);
       }
 
       // Урон NPS
@@ -90,7 +91,7 @@ function Explosions() {
         .forEach((enemy) => {
           scope.cooeficient = scope.isGain ? 2 : 1;
           enemy.health -= DESIGN.HERO.weapon.damage * scope.cooeficient;
-          enemy.scale.scale.set(enemy.health / 100, 1, enemy.health / 100);
+          enemy.scale.scale.set(enemy.health / DESIGN.ENEMIES[enemy.name].health, 1, enemy.health / DESIGN.ENEMIES[enemy.name].health);
 
           if (enemy.health <= 0) scope.world.enemies.toDead(scope, enemy);
           else scope.world.enemies.onShot(scope, enemy, record.velocity);
