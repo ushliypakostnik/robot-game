@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 import App from '@/App.vue';
 import store from '@/store';
-import '@/registerServiceWorker';
+// import '@/registerServiceWorker';
 
 import i18n from '@/utils/i18n';
 
