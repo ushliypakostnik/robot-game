@@ -292,8 +292,7 @@ export default {
       document.body.onmousedown = (event) => {
         if (!this.isPause
             && !this.isGameOver
-            && event.button === 0
-            && this.ammo > 0) this.hero.shot(this);
+            && event.button === 0) this.hero.shot(this);
 
         if (!this.isPause
             && !this.isGameOver

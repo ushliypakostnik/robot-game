@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.571',
+  V: '2.573',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -138,6 +138,7 @@ export const DESIGN = {
       jumpstart: 0.7,
       jumpend: 0.2,
       shot: 0.3,
+      zero: 0.9,
     },
     wind: 0.2,
     doors: 0.9,
@@ -286,7 +287,7 @@ export const DESIGN = {
     weapon: {
       radius: 0.5,
       quantity: 20,
-      damage: 0.7,
+      damage: 0.6,
       speed: 75,
     },
     recoil: {

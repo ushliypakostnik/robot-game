@@ -58,6 +58,7 @@ function Hero() {
   let damage;
 
   let shot;
+  let zero;
 
   const weaponDirection = new Three.Vector3();
   const weaponPosition = new Three.Vector3();
@@ -182,6 +183,11 @@ function Hero() {
     audioLoader.load('./audio/shot.mp3', (buffer) => {
       shot = scope.audio.addAudioToHero(scope, buffer, 'shot', DESIGN.VOLUME.hero.shot, false);
       loaderDispatchHelper(scope.$store, 'isShotLoaded');
+    });
+
+    audioLoader.load('./audio/zero.mp3', (buffer) => {
+      zero = scope.audio.addAudioToHero(scope, buffer, 'zero', DESIGN.VOLUME.hero.zero, false);
+      loaderDispatchHelper(scope.$store, 'isZeroLoaded');
     });
 
     const glasslMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.blue, transparent: true, opacity: 0.25 });
@@ -402,18 +408,23 @@ function Hero() {
   };
 
   this.shot = (scope) => {
-    this.weapon.shot(scope);
-    if (shot.isPlaying) shot.stop();
-    shot.play();
+    if (scope.ammo > 0) {
+      this.weapon.shot(scope);
+      if (shot.isPlaying) shot.stop();
+      shot.play();
 
-    updateFire();
-    this.toggleFire(scope.isOptical);
+      updateFire();
+      this.toggleFire(scope.isOptical);
 
-    // recoil
-    if (scope.isOptical) playerVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.optical * scope.delta));
-    else playerVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.player * scope.delta));
-    weaponVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.weapon * scope.delta));
-    weaponUpVelocity.add(scope.camera.getWorldDirection(playerDirection).normalize().multiplyScalar(-1 * DESIGN.HERO.recoil.weapon * scope.delta));
+      // recoil
+      if (scope.isOptical) playerVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.optical * scope.delta));
+      else playerVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.player * scope.delta));
+      weaponVelocity.add(getForwardVector(scope).multiplyScalar(-1 * DESIGN.HERO.recoil.weapon * scope.delta));
+      weaponUpVelocity.add(scope.camera.getWorldDirection(playerDirection).normalize().multiplyScalar(-1 * DESIGN.HERO.recoil.weapon * scope.delta));
+    } else {
+      if (zero.isPlaying) zero.stop();
+      zero.play();
+    }
   };
 
   this.setRun = (scope, isRun) => {
