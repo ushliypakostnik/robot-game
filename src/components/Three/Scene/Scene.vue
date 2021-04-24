@@ -103,6 +103,7 @@ export default {
       group: null,
 
       y: null,
+      yN: null,
 
       ray: null,
       raycaster: null,
@@ -132,6 +133,7 @@ export default {
     this.directionOnHero = new Three.Vector3();
     this.directionStore = new Three.Vector3(this.directionX, this.directionY, this.directionZ);
     this.y = new Three.Vector3(0, 1, 0);
+    this.yN = new Three.Vector3(0, -1, 0);
     this.group = new Three.Group();
 
     this.ray = new Three.Ray(

@@ -77,7 +77,7 @@ function Shots() {
         }
 
         if (record.isFlying && record.mesh.position.distanceTo(record.start) > 4) {
-          record.gravity = -0.5 * Math.random() * Math.sqrt(record.start.y) - 1;
+          record.gravity = -0.5 * Math.random() * Math.sqrt(1.5 * record.start.y) - 1;
         }
       }
 

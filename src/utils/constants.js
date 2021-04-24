@@ -147,7 +147,7 @@ export const DESIGN = {
     fly: 0.8,
     dead: 0.6,
   },
-  GRAVITY: 35,
+  GRAVITY: 40,
   MESSAGES_TIMEOUT: 3000,
   ANIMATION_TIMEOUT: 300,
   OCTREE_UPDATE_TIMEOUT: 0.5,
@@ -286,15 +286,15 @@ export const DESIGN = {
     weapon: {
       radius: 0.5,
       quantity: 20,
-      damage: 0.8,
+      damage: 0.7,
       speed: 75,
     },
     recoil: {
-      player: 50,
-      weapon: 2,
-      optical: 100,
-      shot: 50,
-      enemies: 10,
+      player: 30,
+      weapon: 1,
+      optical: 60,
+      shot: 30,
+      enemies: 7,
     },
     scales: {
       health: {
@@ -370,7 +370,7 @@ export const DESIGN = {
       health: 110,
       decision: {
         enjoy: 60,
-        rotate: 10,
+        rotate: 25,
         shot: 15,
         jump: 50,
         speed: 20,
@@ -381,10 +381,10 @@ export const DESIGN = {
       health: 70,
       decision: {
         enjoy: 50,
-        rotate: 15,
+        rotate: 25,
         shot: 20,
         fly: 40,
-        speed: 15,
+        speed: 20,
         bend: 25,
       },
     },

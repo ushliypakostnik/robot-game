@@ -67,7 +67,7 @@ export const isSphereHeroCollitions = (scope, сollider) => {
   return false;
 };
 
-//let arrowHelper;
+let arrowHelper;
 
 export const isEnemyCanShot = (scope, enemy) => {
   // get ray
@@ -116,6 +116,26 @@ export const isEnemyCanShot = (scope, enemy) => {
 
       return scope.number > 10;
     }
+  }
+  return true;
+};
+
+export const isEnemyCanFlyDown = (scope, enemy) => {
+  scope.ray = new Three.Ray(enemy.collider.center, scope.yN);
+
+  scope.result = scope.octree.rayIntersect(scope.ray);
+  scope.resultEnemies = scope.octreeEnemies.rayIntersect(scope.ray);
+
+  // arrowHelper = new Three.ArrowHelper(scope.yN, enemy.collider.center, 6, 0xffffff);
+  // scope.scene.add(arrowHelper);
+
+  if (scope.result || scope.resultEnemies) {
+    if (scope.result && scope.resultEnemies) {
+      scope.number = Math.min(scope.result.distance, scope.resultEnemies.distance);
+    } else if (scope.result && !scope.resultEnemies) {
+      scope.number = scope.result.distance;
+    } else scope.number = scope.resultEnemies.distance;
+    return scope.number > 6;
   }
   return true;
 };
