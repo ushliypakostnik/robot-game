@@ -409,7 +409,7 @@ function Enemies() {
 
     // eslint-disable-next-line no-lonely-if
     if (enemy.isEnjoy
-        && radiansToDegrees(scope.angle) < 92 && radiansToDegrees(scope.angle) > 88) {
+        && radiansToDegrees(scope.angle) < 100 && radiansToDegrees(scope.angle) > 80) {
       // Решение на выстрел (если отдыхает)
       scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot) === 1;
       if (scope.decision) {
