@@ -73,7 +73,7 @@ function Shots() {
     bus.forEach((record) => {
       if (record.gravity === 0) {
         if (!record.isFlying && record.mesh.position.distanceTo(record.start) > 6) {
-          record.gravity = -0.125 * Math.random() - 0.1;
+          record.gravity = -0.1 * Math.random() - 0.1;
         }
 
         if (record.isFlying && record.mesh.position.distanceTo(record.start) > 4) {

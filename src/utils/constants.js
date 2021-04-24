@@ -371,7 +371,7 @@ export const DESIGN = {
       decision: {
         enjoy: 60,
         rotate: 25,
-        shot: 15,
+        shot: 25,
         jump: 50,
         speed: 20,
         bend: 30,
@@ -382,7 +382,7 @@ export const DESIGN = {
       decision: {
         enjoy: 50,
         rotate: 25,
-        shot: 20,
+        shot: 30,
         fly: 40,
         speed: 20,
         bend: 25,
