@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.582',
+  V: '2.583',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -438,7 +438,7 @@ export const OBJECTS = {
 export const LOCALES = {
   [LANGUAGES[0].name]: {
     layout: {
-      title: 'Drinkin Robot',
+      title: 'Drinking Robot',
       level: 'Level',
       startbutton: 'Play',
       attention: 'Attention!!! It is recommended to play on computers with a powerful video card.',

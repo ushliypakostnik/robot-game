@@ -1,4 +1,4 @@
-Driinking Robot: Browser classic custom FPS Game on Three, Vue and Blender.
+Drinking Robot: Browser classic custom FPS Game on Three, Vue and Blender.
 ===========================================================================
 
 ![First screen](https://github.com/ushliypakostnik/robot-game/raw/master/public/start.jpg)
