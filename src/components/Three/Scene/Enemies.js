@@ -92,6 +92,12 @@ function Enemies() {
       scope.audio.addAudioToObjects(scope, scope.enemies, buffer, 'mesh', 'dead', DESIGN.VOLUME.dead, false);
     });
 
+    audioLoader.load('./audio/shot2.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isShot2Loaded');
+
+      scope.audio.addAudioToObjects(scope, scope.enemies, buffer, 'mesh', 'shot', DESIGN.VOLUME.shot, false);
+    });
+
     idleClock = new Three.Clock(false);
   };
 
@@ -416,6 +422,7 @@ function Enemies() {
         if (isEnemyCanShot(scope, enemy)) {
           scope.boolean = enemy.name === OBJECTS.DRONES.name;
           scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, scope.boolean);
+          scope.audio.replayObjectSound(enemy.id, 'shot');
         }
       }
     } else {

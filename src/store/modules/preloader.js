@@ -34,6 +34,7 @@ const initialState = {
   isJumpStartLoaded: false,
   isJumpEndLoaded: false,
   isShotLoaded: false,
+  isShot2Loaded: false,
   isZeroLoaded: false,
   isExplosionLoaded: false,
   isDoorsSoundLoaded: false,
