@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-import { DESIGN, OBJECTS } from '@/utils/constants';
+import { DESIGN } from '@/utils/constants';
 
 import {
   loaderDispatchHelper,

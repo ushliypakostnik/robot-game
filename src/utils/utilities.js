@@ -22,6 +22,7 @@ export const loaderDispatchHelper = (store, field) => {
 };
 
 export const messagesByViewDispatchHelper = (scope, view, name, data) => {
+  // eslint-disable-next-line object-curly-newline
   if (!scope.messages.some(message => message[1] === view)) scope.showMessage({ id: null, view, name, data });
 };
 
@@ -67,7 +68,7 @@ export const isSphereHeroCollitions = (scope, сollider) => {
   return false;
 };
 
-let arrowHelper;
+// let arrowHelper;
 
 export const isEnemyCanShot = (scope, enemy) => {
   // get ray

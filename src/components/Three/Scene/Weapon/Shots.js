@@ -27,7 +27,7 @@ function Shots() {
     );
     fireMaterial = new Three.MeshPhongMaterial({
       map: fireTexture,
-      color: DESIGN.COLORS.white
+      color: DESIGN.COLORS.white,
     });
     fireMaterial.map.repeat.set(4, 4);
     fireMaterial.map.wrapS = fireMaterial.map.wrapT = Three.RepeatWrapping;
@@ -64,9 +64,6 @@ function Shots() {
     scope.object = bus.find(record => record.id === id);
     bus = bus.filter(record => record.id !== id);
     scope.scene.remove(scope.object.mesh);
-    // scope.object.mesh.geometry.dispose();
-    // scope.object.mesh.material.dispose();
-    // scope.object.mesh.material.map.dispose();
   };
 
   this.animate = (scope) => {

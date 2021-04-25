@@ -550,8 +550,8 @@ function Hero() {
 
             object.isPicked = true;
             group.visible = false;
-            // Не надо удалять объекты со сцены для того чтобы не было проблем с их дальнейшей идентификацией,
-            // Но если что-то вдруг надо удалить:
+            // Мы не удаляем объекты со сцены для того чтобы не было проблем с их дальнейшей идентификацией,
+            // Но если что-то вдруг надо удалить (но нужно использовать uuid, а не id объектов:
             // scope.scene.remove(group);
             // scope.objects.splice(scope.objects.indexOf(scope.object), 1);
             // scope.things.splice(scope.things.indexOf(group), 1);

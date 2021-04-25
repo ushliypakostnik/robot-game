@@ -23,7 +23,6 @@
     "i18next": "^17.0.16",
     "i18next-browser-languagedetector": "^4.0.1",
     "js-cookie": "^2.2.1",
-    "register-service-worker": "^1.6.2",
     "swiper": "^5.4.5",
     "three": "^0.124.0",
     "three-mtl-loader": "^1.0.2",
