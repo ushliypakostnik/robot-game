@@ -515,8 +515,6 @@ function World() {
 
         this.shots = new Shots();
         this.shots.init(scope);
-
-        console.log(scope.objects);
       },
     );
   };
