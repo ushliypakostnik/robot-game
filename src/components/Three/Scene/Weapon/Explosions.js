@@ -86,7 +86,7 @@ function Explosions() {
 
       // Урон NPS
       scope.enemies
-        .filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dies && enemy.mode !== DESIGN.STAFF.mode.dead)
+        .filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.dies && enemy.mode !== DESIGN.ENEMIES.mode.dead)
         .filter(enemy => record.mesh.position.distanceTo(enemy.collider.center) < enemy.height + record.size)
         .forEach((enemy) => {
           scope.cooeficient = scope.isGain ? 2 : 1;
@@ -96,7 +96,7 @@ function Explosions() {
           if (enemy.health <= 0) scope.world.enemies.toDead(scope, enemy);
           else scope.world.enemies.onShot(scope, enemy, record.velocity);
 
-          if (enemy.mode === DESIGN.STAFF.mode.idle) enemyToActiveMode(scope, enemy);
+          if (enemy.mode === DESIGN.ENEMIES.mode.idle) enemyToActiveMode(scope, enemy);
         });
 
       if (record.scale < 0) this.removeExplosionFromBus(scope, record.id);

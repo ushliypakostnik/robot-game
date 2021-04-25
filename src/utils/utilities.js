@@ -200,7 +200,7 @@ export const updateEnemiesPersonalOctree = (scope, id) => {
 };
 
 export const enemyToActiveMode = (scope, enemy) => {
-  enemy.mode = DESIGN.STAFF.mode.active;
+  enemy.mode = DESIGN.ENEMIES.mode.active;
   scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', enemy.mesh.name);
   if (!enemy.isPlay) {
     enemy.isPlay = true;
@@ -211,12 +211,13 @@ export const enemyToActiveMode = (scope, enemy) => {
 
 export const setNewEnemy = (name) => {
   return {
-    height: OBJECTS[name].size,
-    mode: DESIGN.STAFF.mode.idle,
+    mode: DESIGN.ENEMIES.mode.idle,
+    health: DESIGN.ENEMIES[name].health,
+    height: DESIGN.ENEMIES[name].size,
     velocity: new Three.Vector3(),
-    speed: OBJECTS[name].speed,
-    distance: OBJECTS[name].distance,
-    jump: OBJECTS[name].jump,
+    speed: DESIGN.ENEMIES[name].speed,
+    distance: DESIGN.ENEMIES[name].distance,
+    jump: DESIGN.ENEMIES[name].jump ? DESIGN.ENEMIES[name].jump : null,
     distanceToHero: null,
     enjoyClock: new Three.Clock(false),
     enjoyTime: 0,
@@ -225,10 +226,9 @@ export const setNewEnemy = (name) => {
     isEnjoy: false,
     isOnJump: false,
     isOnFloor: true,
-    health: DESIGN.ENEMIES[name.toLowerCase().substring(0, name.length - 1)].health,
     speedCooeficient: 1,
     bend: plusOrMinus(),
-    fly: plusOrMinus(),
+    fly: name === OBJECTS.DRONES.name ? plusOrMinus() : null,
     isPlay: false,
   };
 };

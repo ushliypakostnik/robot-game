@@ -173,10 +173,10 @@ function Doors() {
       }
 
       if (door.isStart || door.isEnd) {
-        door.mesh.position.y += direction * scope.delta * OBJECTS.DOORS.speed;
-        door.marker1.position.y += direction * scope.delta * OBJECTS.DOORS.speed;
-        door.marker2.position.y += direction * scope.delta * OBJECTS.DOORS.speed;
-        door.distance += scope.delta * OBJECTS.DOORS.speed;
+        door.mesh.position.y += direction * scope.delta * DESIGN.STAFF.doors.speed;
+        door.marker1.position.y += direction * scope.delta * DESIGN.STAFF.doors.speed;
+        door.marker2.position.y += direction * scope.delta * DESIGN.STAFF.doors.speed;
+        door.distance += scope.delta * DESIGN.STAFF.doors.speed;
       }
 
       if (door.isStart) {
@@ -195,7 +195,7 @@ function Doors() {
         }
       }
 
-      if (door.isPause && door.time > OBJECTS.DOORS.pause) {
+      if (door.isPause && door.time > DESIGN.STAFF.doors.pause) {
         box.copy(door.pseudo.geometry.boundingBox).applyMatrix4(door.pseudo.matrixWorld);
         if (!box.containsPoint(scope.controls.getObject().position)) {
           door.isPause = false;

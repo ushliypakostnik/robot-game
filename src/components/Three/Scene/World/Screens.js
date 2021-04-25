@@ -46,7 +46,7 @@ function Screens() {
       scope.screens.push({
         id: screenClone.id,
         modalId: room.id,
-        mode: DESIGN.STAFF.mode.idle,
+        mode: DESIGN.ENEMIES.mode.idle,
         pseudo: screenClone,
         room: room.room,
         isOn: true,
@@ -74,7 +74,7 @@ function Screens() {
   };
 
   this.animate = (scope) => {
-    scope.screens.filter(screen => screen.mode === DESIGN.STAFF.mode.active).forEach((screen) => {
+    scope.screens.filter(screen => screen.mode === DESIGN.ENEMIES.mode.active).forEach((screen) => {
       if (!screen.isSoundStart) {
         screen.isSoundStart = true;
         scope.audio.startObjectSound(screen.id, 'screen');

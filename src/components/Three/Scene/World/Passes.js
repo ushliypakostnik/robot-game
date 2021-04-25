@@ -12,15 +12,15 @@ import {
 function Passes() {
   this.init = (scope, metallTexture, pseudoGeometry, pseudoMaterial) => {
     const passGeometry = new Three.BoxBufferGeometry(
-      OBJECTS.PASSES.size,
-      OBJECTS.PASSES.size,
-      OBJECTS.PASSES.size / 5,
+      DESIGN.STAFF.passes.size,
+      DESIGN.STAFF.passes.size,
+      DESIGN.STAFF.passes.size / 5,
     );
     const passMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.grayDark, map: metallTexture });
     const passMesh = new Three.Mesh(passGeometry, passMaterial);
     let passMeshClone;
 
-    const passMarkerGeometry = new Three.CircleBufferGeometry(OBJECTS.PASSES.size / 4, 32);
+    const passMarkerGeometry = new Three.CircleBufferGeometry(DESIGN.STAFF.passes.size / 4, 32);
     const passMarkerDefaultMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white, map: metallTexture });
     const passMarkerRedMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.red, map: metallTexture });
     const passMarkerOrangeMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.orange, map: metallTexture });
@@ -63,7 +63,7 @@ function Passes() {
       passMeshClone.rotateX(Math.PI / 2);
 
       passMarkerMeshClone.rotateX(Math.PI / -2);
-      passMarkerMeshClone.position.y += OBJECTS.PASSES.size / 10 + 0.01;
+      passMarkerMeshClone.position.y += DESIGN.STAFF.passes.size / 10 + 0.01;
 
       passPseudoMeshClone.name = `${OBJECTS.PASSES.name}${OBJECTS.PASSES[scope.l].data[i].pass}`;
       passPseudoMeshClone.visible = false;
@@ -75,7 +75,7 @@ function Passes() {
       passGroup.add(passPseudoMeshClone);
       passGroup.position.set(
         OBJECTS.PASSES[scope.l].data[i].x,
-        OBJECTS.PASSES[scope.l].data[i].y + OBJECTS.PASSES.size / 10,
+        OBJECTS.PASSES[scope.l].data[i].y + DESIGN.STAFF.passes.size / 10,
         OBJECTS.PASSES[scope.l].data[i].z,
       );
       passGroup.rotateY(degreesToRadians(randomInteger(0, 359)));

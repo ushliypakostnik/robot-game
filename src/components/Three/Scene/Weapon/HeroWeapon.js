@@ -95,7 +95,7 @@ function HeroWeapon() {
       scope.boolean = isSphereHeroCollitions(scope, ammo.collider);
 
       // Улетело
-      if (ammo.mesh.position.distanceTo(ammo.start) > DESIGN.WORLD_SIZE[scope.l] || scope.boolean) {
+      if (ammo.mesh.position.distanceTo(ammo.start) > DESIGN.LEVELS.size[scope.l] || scope.boolean) {
         if (scope.boolean) scope.world.explosions.addExplosionToBus(scope, ammo.collider.center, 5, true, ammo.velocity);
         remove(scope, ammo);
       }

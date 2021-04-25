@@ -235,8 +235,8 @@ export default {
       // Туман
       this.scene.fog = new Three.Fog(
         DESIGN.COLORS.white,
-        DESIGN.WORLD_SIZE[this.l] / 50,
-        DESIGN.WORLD_SIZE[this.l] * 1.5,
+        DESIGN.LEVELS.size[this.l] / 50,
+        DESIGN.LEVELS.size[this.l] * 1.5,
       );
 
       // Cameras
@@ -245,7 +245,7 @@ export default {
         DESIGN.CAMERA.fov,
         container.clientWidth / container.clientHeight,
         0.1,
-        DESIGN.WORLD_SIZE[this.l] * 3,
+        DESIGN.LEVELS.size[this.l] * 3,
       );
 
       // Audio listener

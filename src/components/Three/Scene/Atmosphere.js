@@ -45,7 +45,7 @@ function Atmosphere() {
 
     // Sky
     const skyGeometry = new Three.SphereBufferGeometry(
-      DESIGN.WORLD_SIZE[scope.l] * 6 / 4,
+      DESIGN.LEVELS.size[scope.l] * 6 / 4,
       64,
       64,
     );
@@ -83,7 +83,7 @@ function Atmosphere() {
 
   // Обнаружение врагами
   this.checkEnemies = (scope) => {
-    objects = scope.enemies.filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dies && enemy.mode !== DESIGN.STAFF.mode.dead);
+    objects = scope.enemies.filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.dies && enemy.mode !== DESIGN.ENEMIES.mode.dead);
     if (objects.length > 0) {
       isBesideNew = false;
       objects.forEach((enemy) => {
@@ -91,15 +91,15 @@ function Atmosphere() {
 
         // 70 метров - предупреждении что рядом враги или никого!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-          && scope.distance < DESIGN.CHECK * 7
+          && scope.distance < DESIGN.CHECK * 8
           && !isBesideNew) isBesideNew = true;
 
         // 60 метров или преграда - напуганных врагов попускает
         if (isToHeroRayIntersectWorld(scope, enemy.collider)
-            || (scope.distance > DESIGN.CHECK * 6
-                && enemy.mode === DESIGN.STAFF.mode.active)) {
-          if (enemy.mode === DESIGN.STAFF.mode.active) {
-            enemy.mode = DESIGN.STAFF.mode.idle;
+            || (scope.distance > DESIGN.CHECK * 7
+                && enemy.mode === DESIGN.ENEMIES.mode.active)) {
+          if (enemy.mode === DESIGN.ENEMIES.mode.active) {
+            enemy.mode = DESIGN.ENEMIES.mode.idle;
           }
 
           if (enemy.isPlay) {
@@ -109,14 +109,14 @@ function Atmosphere() {
           }
         }
 
-        // если нет преград: 25 метров - если скрытое передвижение, 50 если нет!
+        // если нет преград: 30 метров - если скрытое передвижение, 60 если нет!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-          && ((scope.distance < DESIGN.CHECK * 5
+          && ((scope.distance < DESIGN.CHECK * 6
             && !scope.isHidden
-            && enemy.mode === DESIGN.STAFF.mode.idle)
-            || (scope.distance < DESIGN.CHECK * 2.5
+            && enemy.mode === DESIGN.ENEMIES.mode.idle)
+            || (scope.distance < DESIGN.CHECK * 3
               && scope.isHidden
-              && enemy.mode === DESIGN.STAFF.mode.idle))
+              && enemy.mode === DESIGN.ENEMIES.mode.idle))
         ) enemyToActiveMode(scope, enemy);
       });
 
@@ -131,12 +131,12 @@ function Atmosphere() {
     scope.screens.forEach((screen) => {
       scope.distance = screen.pseudo.position.distanceTo(scope.camera.position);
 
-      // 40 метров - панели выключаются
-      if ((scope.distance > DESIGN.CHECK * 4
-          && screen.mode === DESIGN.STAFF.mode.active)
+      // 50 метров или не в комнате - панели выключаются
+      if ((scope.distance > DESIGN.CHECK * 5
+          && screen.mode === DESIGN.ENEMIES.mode.active)
           || (!scope.world.screens.isHeroInRoomWithScreen(scope, screen)
-          && screen.mode === DESIGN.STAFF.mode.active)) {
-        screen.mode = DESIGN.STAFF.mode.idle;
+          && screen.mode === DESIGN.ENEMIES.mode.active)) {
+        screen.mode = DESIGN.ENEMIES.mode.idle;
         screen.isSoundStart = false;
         screen.isOn = true;
         screen.counter = 0;
@@ -144,16 +144,16 @@ function Atmosphere() {
         scope.audio.stopObjectSound(screen.id, 'screen');
       }
 
-      // 20 метров - если скрытое передвижение, 30 если нет!
-      if ((scope.distance < DESIGN.CHECK * 3
+      // включаются если в комнате и 20 метров - если скрытое передвижение, 40 если нет!
+      if ((scope.distance < DESIGN.CHECK * 4
           && !scope.isHidden
-          && screen.mode === DESIGN.STAFF.mode.idle
+          && screen.mode === DESIGN.ENEMIES.mode.idle
           && scope.world.screens.isHeroInRoomWithScreen(scope, screen))
           || (scope.distance < DESIGN.CHECK * 2
             && scope.isHidden
-            && screen.mode === DESIGN.STAFF.mode.idle
+            && screen.mode === DESIGN.ENEMIES.mode.idle
             && scope.world.screens.isHeroInRoomWithScreen(scope, screen))) {
-        screen.mode = DESIGN.STAFF.mode.active;
+        screen.mode = DESIGN.ENEMIES.mode.active;
         scope.events.messagesByIdDispatchHelper(scope, 3, 'discovered', screen.pseudo.name);
       }
     });

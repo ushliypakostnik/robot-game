@@ -19,7 +19,7 @@ function Leader() {
       color: DESIGN.COLORS.white,
       map: leaderTexture,
     });
-    const leaderGeometry = new Three.PlaneBufferGeometry(OBJECTS.LEADER.size, OBJECTS.LEADER.size);
+    const leaderGeometry = new Three.PlaneBufferGeometry(DESIGN.STAFF.leader.size, DESIGN.STAFF.leader.size);
     const leaderMesh = new Three.Mesh(leaderGeometry, leaderMaterial);
     let leaderMeshClone;
 

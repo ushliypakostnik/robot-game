@@ -43,7 +43,7 @@ export const LANGUAGES = [
 const ammo = 25;
 
 export const DESIGN = {
-  V: '2.578',
+  V: '2.58',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -77,47 +77,46 @@ export const DESIGN = {
   },
   LEVELS: {
     start: 1,
+    size: {
+      level0: 200,
+      level1: 200,
+      level2: 200,
+      level3: 200,
+      level4: 200,
+      level5: 200,
+    },
     place: {
       level1: {
-        minX: -196,
-        maxX: -24,
-        minZ: -196,
-        maxZ: 20,
+        minX: -192,
+        maxX: -28,
+        minZ: -192,
+        maxZ: 16,
       },
       level2: {
-        minX: -196,
-        maxX: -24,
-        minZ: 16,
-        maxZ: 196,
+        minX: -192,
+        maxX: -28,
+        minZ: 20,
+        maxZ: 192,
       },
       level3: {
-        minX: 20,
-        maxX: 196,
-        minZ: 16,
-        maxZ: 196,
+        minX: 24,
+        maxX: 192,
+        minZ: 20,
+        maxZ: 192,
       },
       level4: {
-        minX: 133,
-        maxX: 196,
-        minZ: -70,
-        maxZ: 44,
+        minX: 129,
+        maxX: 192,
+        minZ: -66,
+        maxZ: 40,
       },
       level5: {
-        minX: 20,
-        maxX: 196,
-        minZ: -196,
-        maxZ: -24,
+        minX: 24,
+        maxX: 192,
+        minZ: -192,
+        maxZ: -28,
       },
     },
-  },
-  // размер клетки
-  WORLD_SIZE: {
-    level0: 200,
-    level1: 200,
-    level2: 200,
-    level3: 200,
-    level4: 200,
-    level5: 200,
   },
   CAMERA: {
     fov: 80,
@@ -359,16 +358,30 @@ export const DESIGN = {
     },
   },
   STAFF: {
+    doors: {
+      speed: 15,
+      pause: 3,
+    },
+    leader: {
+      size: 10,
+    },
+    passes: {
+      size: 1,
+    },
+  },
+  ENEMIES: {
     mode: {
       idle: 'idle',
       active: 'active',
       dies: 'dies',
       dead: 'dead',
     },
-  },
-  ENEMIES: {
     spider: {
+      size: 4,
       health: 110,
+      speed: 6,
+      jump: 25,
+      distance: 12, // дистанция ближе которой не двигаются на героя
       decision: {
         enjoy: 60,
         rotate: 25,
@@ -379,7 +392,10 @@ export const DESIGN = {
       },
     },
     drone: {
+      size: 4,
       health: 70,
+      speed: 8,
+      distance: 20, // дистанция ближе которой не двигаются на героя
       decision: {
         enjoy: 50,
         rotate: 25,
@@ -395,20 +411,15 @@ export const DESIGN = {
 export const OBJECTS = {
   DOORS: {
     name: 'door',
-    speed: 15,
-    pause: 3,
   },
   LEADER: {
     name: 'leader',
-    size: 10,
   },
   PASSES: {
     name: 'pass',
-    size: 1,
   },
   SCREENS: {
     name: 'screen',
-    size: 1,
   },
   FLOWERS: {
     name: 'flower',
@@ -418,16 +429,9 @@ export const OBJECTS = {
   },
   SPIDERS: {
     name: 'spider',
-    size: 4,
-    speed: 6,
-    distance: 12, // дистанция ближе которой не двигаются на героя
-    jump: 25,
   },
   DRONES: {
     name: 'drone',
-    size: 4,
-    speed: 8,
-    distance: 20, // дистанция ближе которой не двигаются на героя
   },
 };
 
@@ -576,7 +580,7 @@ export const LOCALES = {
         subheader: 'Location 3',
         modal1: {
           text1: 'Following the doctrine of Dehumanization, the government of the Global Liberal Democracy allowed corporations to replace any part of the user\'s body at their discretion by implanting nanoscale chips into the brain and nervous system. An unchipped real person who does not use a gadget and proprietary software not only turned out to be an outcast doomed to hunger and loneliness, but was completely outlawed, they were hunted until they were quickly finished off. The government valued only the brains of outstanding bloggers - it was cloned, pumped and installed to control large robotic commanders.',
-          text2: 'The war lasted hundreds of years, until one day deep missile silos were opened in Siberia. But they did not release deadly charges, but snow-white interstellar ships, rushing from the dying planet to various unknown points in space. Since then, no signals have come and it is not known whether the last surviving free people achieved their distant goals ...',
+          text2: 'The war lasted for years, until deep missile silos were opened in Siberia. But they did not release deadly charges, but sparkling interstellar ships that rushed the dying planet. Since then, no signals have come, it is unknown that the last surviving free people reached their goals ...',
         },
       },
       level4: {
@@ -737,7 +741,7 @@ export const LOCALES = {
         subheader: 'Локация 3',
         modal1: {
           text1: 'Следуя доктрине Расчеловечивания, правительство Глобальной Либеральной Демократии разрешило корпорациям по своему усмотрению заменять любую часть тела пользователя, вживляя наночипы в мозг и нервную систему. Нечипированный настоящий человек не пользующийся гаджетом и проприетарным ПО не просто оказался обреченным на голод и одиночество изгоем, а был объявлен полностью вне закона, на таких охотились пока быстро всех не перебили. Правительство ценило только мозг выдающихся блогеров - его прокачивали и устанавливали для управления крупными роботами-командирами.',
-          text2: 'Война продолжалась сотни лет, до тех пор, пока однажды на территории Сибири не открылись глубокие ракетные шахты. Но они выпустили не смертоносные заряды, а сверкающие межзвездные корабли, устремившиеся с погибающей планеты в разные, точки космоса. С тех пор не приходило никаких сигналов, неизвестно достигли ли последние выжившие свободные люди в них своих целей...',
+          text2: 'Война продолжалась сотни лет, до тех пор, пока однажды на территории Сибири не открылись глубокие ракетные шахты. Но они выпустили не смертоносные заряды, а сверкающие межзвездные корабли, устремившиеся с погибающей планеты. С тех пор не приходило никаких сигналов, неизвестно достигли ли последние выжившие свободные люди своих целей...',
         },
       },
       level4: {

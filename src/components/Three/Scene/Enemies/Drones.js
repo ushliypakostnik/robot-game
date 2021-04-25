@@ -31,7 +31,7 @@ function Drones() {
     scaleGeometry,
     scaleMaterial,
   ) => {
-    height = OBJECTS.DRONES.size;
+    height = DESIGN.ENEMIES.drone.size;
 
     const pseudoGeometry = new Three.BoxBufferGeometry(
       height / 1.25,
@@ -103,7 +103,7 @@ function Drones() {
             collider: new Three.Sphere(droneClone.position, height / 2),
             scale: scaleClone,
             name: OBJECTS.DRONES.name,
-            ...setNewEnemy('DRONES'),
+            ...setNewEnemy(OBJECTS.DRONES.name),
           });
 
           scope.scene.add(droneClone);

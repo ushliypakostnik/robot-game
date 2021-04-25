@@ -97,7 +97,7 @@ function Enemies() {
 
   // Умер
   const dead = (scope, enemy) => {
-    enemy.mode = DESIGN.STAFF.mode.dead;
+    enemy.mode = DESIGN.ENEMIES.mode.dead;
 
     enemy.mesh.rotateX(scope.delta * Math.random() * 3 * plusOrMinus());
     enemy.mesh.rotateY(scope.delta * Math.random() * 3 * plusOrMinus());
@@ -115,10 +115,10 @@ function Enemies() {
         enemy.velocity.addScaledVector(scope.result.normal, -scope.result.normal.dot(enemy.velocity));
       } else {
         // Подбитый враг становится совсем мертвым после падения на пол
-        if (enemy.mode === DESIGN.STAFF.mode.dies) dead(scope, enemy);
+        if (enemy.mode === DESIGN.ENEMIES.mode.dies) dead(scope, enemy);
 
         if (enemy.isOnJump) enemy.isOnJump = false;
-        if (enemy.mode === DESIGN.STAFF.mode.active && !enemy.isPlay) {
+        if (enemy.mode === DESIGN.ENEMIES.mode.active && !enemy.isPlay) {
           enemy.isPlay = true;
           scope.audio.startObjectSound(enemy.id, 'mechanism');
         }
@@ -159,7 +159,7 @@ function Enemies() {
 
   // Шкалы здоровья
   this.setScales = (scope) => {
-    scope.enemies.filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dead).forEach((enemy) => {
+    scope.enemies.filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.dead).forEach((enemy) => {
       enemy.scale.setRotationFromMatrix(scope.camera.matrix);
     });
   };
@@ -167,7 +167,7 @@ function Enemies() {
   // Либо убит, либо умирает
   this.toDead = (scope, enemy) => {
     if (enemy.isOnFloor) dead(scope, enemy);
-    else enemy.mode = DESIGN.STAFF.mode.dies;
+    else enemy.mode = DESIGN.ENEMIES.mode.dies;
 
     scope.events.messagesByIdDispatchHelper(scope, 3, 'destroyed', enemy.mesh.name);
 
@@ -251,7 +251,7 @@ function Enemies() {
       enemy.enjoyTime = 0;
       enemy.isEnjoy = false;
 
-      if (enemy.mode === DESIGN.STAFF.mode.active
+      if (enemy.mode === DESIGN.ENEMIES.mode.active
         && enemy.name !== OBJECTS.DRONES.name
         && !enemy.isPlay) {
         enemy.isPlay = true;
@@ -265,7 +265,7 @@ function Enemies() {
     enemy.velocity.y = enemy.jump;
     enemy.isOnJump = true;
 
-    if (enemy.mode === DESIGN.STAFF.mode.active
+    if (enemy.mode === DESIGN.ENEMIES.mode.active
       && enemy.isPlay) {
       enemy.isPlay = false;
       scope.audio.pauseObjectSound(enemy.id, 'mechanism');
@@ -307,15 +307,15 @@ function Enemies() {
       else {
         setDistanceAndDirectionToHero(scope, enemy);
 
-        if ((enemy.mode === DESIGN.STAFF.mode.active
+        if ((enemy.mode === DESIGN.ENEMIES.mode.active
             && enemy.distanceToHero > enemy.distance)
-            || enemy.mode === DESIGN.STAFF.mode.idle) {
+            || enemy.mode === DESIGN.ENEMIES.mode.idle) {
 
           // Решение на прыжок
-          if ((enemy.mode === DESIGN.STAFF.mode.active
+          if ((enemy.mode === DESIGN.ENEMIES.mode.active
               && !enemy.isOnJump
               && enemy.distanceToHero > enemy.distance * 1.5)
-              || (enemy.mode === DESIGN.STAFF.mode.idle
+              || (enemy.mode === DESIGN.ENEMIES.mode.idle
               && !enemy.isOnJump)) {
             scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.jump) === 1;
             if (scope.decision) jump(scope, enemy);
@@ -327,9 +327,9 @@ function Enemies() {
       }
     } else {
       // Летающие юниты
-      if ((enemy.mode === DESIGN.STAFF.mode.active
+      if ((enemy.mode === DESIGN.ENEMIES.mode.active
           && distance2D(enemy.collider.center.x, enemy.collider.center.z, scope.camera.position.x, scope.camera.position.z) > enemy.distance)
-          || enemy.mode === DESIGN.STAFF.mode.idle) {
+          || enemy.mode === DESIGN.ENEMIES.mode.idle) {
         speed(scope, enemy);
         forward(scope, enemy);
       }
@@ -362,7 +362,7 @@ function Enemies() {
     else {
       // Двигается только один NPS
       if (!idleClock.running) {
-        scope.array = scope.enemies.filter(enemy => enemy.mode === DESIGN.STAFF.mode.idle);
+        scope.array = scope.enemies.filter(enemy => enemy.mode === DESIGN.ENEMIES.mode.idle);
         scope.number = randomInteger(0, scope.array.length - 1);
         if (scope.number) {
           idleClock.start();
@@ -425,17 +425,17 @@ function Enemies() {
   };
 
   this.animate = (scope) => {
-    scope.enemies.filter(enemy => enemy.mode !== DESIGN.STAFF.mode.dead).forEach((enemy) => {
+    scope.enemies.filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.dead).forEach((enemy) => {
       switch (enemy.mode) {
-        case DESIGN.STAFF.mode.idle:
+        case DESIGN.ENEMIES.mode.idle:
           idle(scope, enemy);
           break;
 
-        case DESIGN.STAFF.mode.active:
+        case DESIGN.ENEMIES.mode.active:
           active(scope, enemy);
           break;
 
-        case DESIGN.STAFF.mode.dies:
+        case DESIGN.ENEMIES.mode.dies:
           gravity(scope, enemy);
           break;
       }

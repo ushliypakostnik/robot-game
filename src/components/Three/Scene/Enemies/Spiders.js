@@ -31,7 +31,7 @@ function Spiders() {
     scaleGeometry,
     scaleMaterial,
   ) => {
-    height = OBJECTS.SPIDERS.size;
+    height = DESIGN.ENEMIES.spider.size;
 
     const pseudoGeometry = new Three.BoxBufferGeometry(
       height / 1.25,
@@ -103,7 +103,7 @@ function Spiders() {
             collider: new Three.Sphere(spiderClone.position, height / 2),
             scale: scaleClone,
             name: OBJECTS.SPIDERS.name,
-            ...setNewEnemy('SPIDERS'),
+            ...setNewEnemy(OBJECTS.SPIDERS.name),
           });
 
           scope.scene.add(spiderClone);

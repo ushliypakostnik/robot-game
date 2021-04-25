@@ -14,7 +14,7 @@ export default {
 
       this.setLevel({ level: 1, levelFrom: 0 });
 
-      window.location.reload();
+      window.location.reload(true);
     },
 
     reloadToStart(isWin) {
@@ -23,7 +23,7 @@ export default {
 
       this.setLevel({ level: this.level, levelFrom: this.level });
 
-      window.location.reload();
+      window.location.reload(true);
       /* setTimeout(() => {
         window.location.reload();
       }, 3000); */
@@ -34,7 +34,7 @@ export default {
 
       this.setLevel({ level: DESIGN.LEVELS.start, levelFrom: DESIGN.LEVELS.start });
 
-      window.location.reload();
+      window.location.reload(true);
     },
 
     levelReload(level, levelFrom) {
@@ -43,7 +43,7 @@ export default {
 
       this.setLevel({ level, levelFrom });
 
-      window.location.reload();
+      window.location.reload(true);
     },
   },
 };

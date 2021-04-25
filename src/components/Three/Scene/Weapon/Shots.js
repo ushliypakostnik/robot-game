@@ -73,7 +73,7 @@ function Shots() {
     bus.forEach((record) => {
       if (record.gravity === 0) {
         if (!record.isFlying && record.mesh.position.distanceTo(record.start) > 6) {
-          record.gravity = -0.1 * Math.random() - 0.1;
+          record.gravity = -0.05 * Math.random() - 0.05;
         }
 
         if (record.isFlying && record.mesh.position.distanceTo(record.start) > 4) {
@@ -101,7 +101,7 @@ function Shots() {
 
       // Улетело
       if ((scope.boolean
-          && (record.collider.center.distanceTo(record.start) > DESIGN.WORLD_SIZE[scope.l] / 2
+          && (record.collider.center.distanceTo(record.start) > DESIGN.LEVELS.size[scope.l] / 2
           || record.mesh.position.distanceTo(record.start) > 5))
           || record.mesh.position.y < 0) {
         scope.world.explosions.addExplosionToBus(scope, record.collider.center, 5, false, velocity);
