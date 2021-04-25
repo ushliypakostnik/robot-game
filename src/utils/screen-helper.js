@@ -14,8 +14,8 @@ const ScreenHelper = (() => {
   const isBro = () => {
     const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
     const isYandex = navigator.userAgent.search(/YaBrowser/) > 0;
-    // const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-    return isChrome || isYandex;
+    const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    return isChrome || isYandex || isFirefox;
   };
 
   return {
