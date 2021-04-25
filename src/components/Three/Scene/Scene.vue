@@ -17,7 +17,7 @@ import { PointerLockControls } from '@/components/Three/Modules/Controls/Pointer
 import { Octree } from '../Modules/Math/Octree';
 
 // Stats
-import Stats from '@/components/Three/Modules/Utils/Stats';
+// import Stats from '@/components/Three/Modules/Utils/Stats';
 
 // Config
 import { DESIGN } from '@/utils/constants';
@@ -318,8 +318,8 @@ export default {
       };
 
       // Stats
-      this.stats = new Stats();
-      container.appendChild(this.stats.dom);
+      // this.stats = new Stats();
+      // container.appendChild(this.stats.dom);
 
       // First render
       this.render();
@@ -507,7 +507,7 @@ export default {
 
       if (!this.isPause) this.render();
 
-      this.stats.update();
+      // this.stats.update();
 
       requestAnimationFrame(this.animate);
     },
