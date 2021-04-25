@@ -201,7 +201,7 @@ export const DESIGN = {
           },
           x: -90,
           y: 0,
-          z: 19,
+          z: 21,
         },
       },
       level2: {
