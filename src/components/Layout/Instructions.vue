@@ -5,7 +5,8 @@
   >
     <swiper-slide>
       <div class="instructions">
-        <h1>{{ $t('layout.title') }} {{ version }}</h1>
+        <!-- <h1>{{ $t('layout.title') }} {{ version }}</h1>-->
+        <h1>{{ $t('layout.title') }}</h1>
         <h3>{{ $t(`texts.level${level}.header`) }}</h3>
         <h5>{{ $t(`texts.level${level}.subheader`) }}</h5>
         <div class="switch__wrapper">
