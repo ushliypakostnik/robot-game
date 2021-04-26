@@ -98,6 +98,14 @@ function World() {
       },
     );
 
+    const metallRodsTexture2 = new Three.TextureLoader().load(
+      './images/textures/metall2.jpg',
+      () => {
+        scope.render();
+        loaderDispatchHelper(scope.$store, 'isMetall4Loaded');
+      },
+    );
+
     const sandTexture = new Three.TextureLoader().load(
       './images/textures/sand.jpg',
       () => {
@@ -221,8 +229,14 @@ function World() {
               child.material = glassTransparentLargeMaterial;
             } else if (child.name.includes('rod')) {
               child.material = metallLightMaterial;
-              child.material.map = metallRodsTexture;
-              child.material.map.repeat.set(2, 2);
+
+              if (child.name.includes('V2')) {
+                child.material.map = metallRodsTexture2;
+                child.material.map.repeat.set(2, 2);
+              } else {
+                child.material.map = metallRodsTexture;
+                child.material.map.repeat.set(0.05, 0.05);
+              }
             } else if (child.name.includes('comp')) {
               child.material = metallDarkMaterial;
               child.material.map = metallTexture;

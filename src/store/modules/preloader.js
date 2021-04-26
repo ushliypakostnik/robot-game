@@ -8,6 +8,7 @@ const initialState = {
   isMetall1Loaded: false,
   isMetall2Loaded: false,
   isMetall3Loaded: false,
+  isMetall4Loaded: false,
   isLeaderLoaded: false,
   isSandLoaded: false,
   isFireLoaded: false,

@@ -5,7 +5,6 @@
   >
     <div class="ui__background" />
 
-
     <div class="ui__optical-preload" />
     <div class="ui__optical"
       v-if="isOptical"
