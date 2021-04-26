@@ -353,12 +353,21 @@ export default {
             else storage.saveHero(this, true);
           } else if (localStorage.getItem(LOCALSTORAGE.ROBOTID)) {
             event.preventDefault();
-            this.saveUser({
-              scope: this,
-              isF5: true,
-              level: this.level,
-              levelFrom: this.levelFrom,
-            });
+            if (this.isGameOver) {
+              this.updateUser({
+                scope: this,
+                isFirst: false,
+                level: this.level,
+                levelFrom: this.levelFrom,
+              });
+            } else {
+              this.saveUser({
+                scope: this,
+                isF5: true,
+                level: this.level,
+                levelFrom: this.levelFrom,
+              });
+            }
           }
           break;
 
