@@ -133,7 +133,6 @@ const actions = {
     commit('setIsFetching', true);
     API.saveUser(user).then((res) => {
       localStorage.setItem(LOCALSTORAGE.ROBOTID, res.data.robotID);
-      commit('setIsFetching', false);
       window.location.reload(true);
     });
   },
@@ -178,7 +177,6 @@ const actions = {
     commit('setIsFetching', true);
     API.saveUser(user).then((res) => {
       localStorage.setItem(LOCALSTORAGE.ROBOTID, res.data.robotID);
-      commit('setIsFetching', false);
       window.location.reload(true);
     });
   },
