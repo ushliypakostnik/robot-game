@@ -5,6 +5,7 @@ import { DESIGN } from '@/utils/constants';
 import {
   loaderDispatchHelper,
   isSphereHeroCollitions,
+  isSphereCollitionsWithEnemy,
 } from '@/utils/utilities';
 
 function HeroWeapon() {
@@ -96,7 +97,10 @@ function HeroWeapon() {
 
       // Улетело
       if (ammo.mesh.position.distanceTo(ammo.start) > DESIGN.LEVELS.size[scope.l] || scope.boolean) {
-        if (scope.boolean) scope.world.explosions.addExplosionToBus(scope, ammo.collider.center, 5, true, ammo.velocity);
+        if (scope.boolean) {
+          scope.boolean = isSphereCollitionsWithEnemy(scope, ammo.collider);
+          scope.world.explosions.addExplosionToBus(scope, ammo.collider.center, 5, scope.boolean, ammo.velocity);
+        }
         remove(scope, ammo);
       }
     });

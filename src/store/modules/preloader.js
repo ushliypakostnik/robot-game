@@ -32,6 +32,7 @@ const initialState = {
   isStepsLoaded: false,
   isDamageLoaded: false,
   isHitLoaded: false,
+  isHit2Loaded: false,
   isJumpStartLoaded: false,
   isJumpEndLoaded: false,
   isShotLoaded: false,

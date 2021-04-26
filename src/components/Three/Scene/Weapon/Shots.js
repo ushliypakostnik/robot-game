@@ -5,6 +5,7 @@ import { DESIGN } from '@/utils/constants';
 import {
   loaderDispatchHelper,
   isSphereCollitions,
+  isSphereCollitionsWithEnemy,
 } from '@/utils/utilities';
 
 function Shots() {

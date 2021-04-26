@@ -69,7 +69,7 @@ function AudioBus() {
     });
   };
 
-  this.playAudioAndRemoveObject = (scope, object, buffer, name, volume) => {
+  this.playAudioOnObject = (scope, object, buffer, name, volume, isRemove) => {
     record = new Three.PositionalAudio(scope.listener);
 
     record.setBuffer(buffer);
@@ -86,7 +86,8 @@ function AudioBus() {
     record.onEnded = () => {
       if (record && record.isPlaying) record.stop();
       removeAudioFromBus(scope, object.id, name);
-      scope.scene.remove(object);
+
+      if (isRemove) scope.scene.remove(object);
     };
   };
 

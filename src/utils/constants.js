@@ -148,6 +148,7 @@ export const DESIGN = {
     doors: 0.9,
     screen: 0.3,
     shot: 0.7,
+    hit: 0.7,
     explosion: 1,
     mechanism: 0.4,
     fly: 0.8,

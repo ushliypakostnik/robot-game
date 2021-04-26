@@ -18,6 +18,7 @@ function Explosions() {
 
   const audioLoader = new Three.AudioLoader();
   let boom;
+  let hit;
 
   this.init = (
     scope,
@@ -31,22 +32,36 @@ function Explosions() {
       loaderDispatchHelper(scope.$store, 'isExplosionLoaded');
       boom = buffer;
     });
+
+    audioLoader.load('./audio/hit.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isHit2Loaded');
+      hit = buffer;
+    });
   };
 
-  this.addExplosionToBus = (scope, position, size, isHero, velocity) => {
+  this.addExplosionToBus = (
+    scope,
+    position,
+    size,
+    isEnemy,
+    velocity,
+  ) => {
+
+    console.log(isEnemy);
 
     explosionClone = explosion.clone();
 
     explosionClone.position.copy(position);
 
-    scope.audio.playAudioAndRemoveObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion);
+    scope.audio.playAudioOnObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion, true);
+
+    if (isEnemy) scope.audio.playAudioOnObject(scope, explosionClone, hit, 'hit', DESIGN.VOLUME.hit, false);
 
     ++this.id;
     bus.push({
       id: this.id,
       mesh: explosionClone,
       size,
-      isHero,
       velocity,
       scale: 1,
       isOff: false,

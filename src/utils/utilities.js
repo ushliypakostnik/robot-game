@@ -52,6 +52,11 @@ export const getNotPartOfName = (name, part) => {
   return name.slice(name.indexOf(part) + part.length);
 };
 
+export const isSphereCollitionsWithEnemy = (scope, сollider) => {
+  if (scope.octreeEnemies.sphereIntersect(сollider)) return true;
+  return false;
+};
+
 export const isSphereCollitions = (scope, сollider) => {
   scope.result = scope.octree.sphereIntersect(сollider);
   scope.resultDoors = scope.octreeDoors.sphereIntersect(сollider);
