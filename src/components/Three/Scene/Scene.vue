@@ -193,7 +193,6 @@ export default {
       message: 'layout/message',
 
       isWin: 'layout/isWin',
-      isGameOver: 'layout/isGameOver',
 
       directionX: 'hero/directionX',
       directionY: 'hero/directionY',
