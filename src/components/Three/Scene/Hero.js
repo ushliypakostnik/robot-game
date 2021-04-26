@@ -5,6 +5,7 @@ import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 import { Capsule } from '../Modules/Math/Capsule';
 
 import {
+  isBackend,
   LOCALSTORAGE,
   DESIGN,
   OBJECTS
@@ -140,6 +141,10 @@ function Hero() {
       setWeaponData(scope);
       this.checkWeapon(scope);
     }
+  };
+
+  this.getHeroDirection = () => {
+    return playerDirection;
   };
 
   this.init = (
@@ -289,7 +294,8 @@ function Hero() {
       );
     }
 
-    playerDirection.copy(scope.directionStore);
+    playerDirection.copy(new Three.Vector3(scope.directionX, scope.directionY, scope.directionZ));
+    scope.camera.lookAt(playerDirection.multiplyScalar(1000));
 
     playerVelocity = new Three.Vector3();
     weaponVelocity = new Three.Vector3();
@@ -308,10 +314,6 @@ function Hero() {
     setWeaponData(scope);
 
     this.animate(scope);
-  };
-
-  this.getHeroDirection = () => {
-    return playerDirection;
   };
 
   this.setHidden = (scope, isHidden) => {
@@ -562,7 +564,7 @@ function Hero() {
             // Effect
             if (scope.object.name.includes(OBJECTS.PASSES.name)) {
               name = getNotPartOfName(scope.object.name, OBJECTS.PASSES.name);
-              localStorage.setItem(LOCALSTORAGE[`PASS${name.toUpperCase()}`], 1);
+              if (!isBackend) localStorage.setItem(LOCALSTORAGE[`PASS${name.toUpperCase()}`], 1);
               scope.setScale({
                 field: 'passes',
                 value: name,
@@ -606,8 +608,10 @@ function Hero() {
 
             if (scope.keyStates['KeyE']) {
               if (scope.object.name.includes('Prev') || scope.object.name.includes('Next')) {
-                if (scope.object.name.includes('Prev')) scope.levelReload(scope.level - 1, scope.level);
-                else scope.levelReload(scope.level + 1, scope.level);
+                if (!this.isFetching) {
+                  if (scope.object.name.includes('Prev')) scope.levelReload(scope.level - 1, scope.level);
+                  else scope.levelReload(scope.level + 1, scope.level);
+                }
               } else {
                 scope.world.doors.openDoor(scope, scope.object.id);
 

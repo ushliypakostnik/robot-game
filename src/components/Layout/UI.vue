@@ -1,5 +1,8 @@
 <template>
-  <div class="ui">
+  <div
+    v-if="isUser"
+    class="ui"
+  >
     <div class="ui__background" />
 
 

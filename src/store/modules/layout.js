@@ -1,17 +1,24 @@
+import API from '@/utils/api';
+
 /* eslint-disable prefer-destructuring, operator-assignment */
 // eslint-disable-next-line import/no-cycle
 import storage from '@/utils/storage';
 
 // eslint-disable-next-line import/no-cycle
-import { DESIGN, LOCALSTORAGE } from '@/utils/constants';
-
-const autoLevel = Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || null;
-if (!autoLevel) localStorage.setItem(LOCALSTORAGE.LEVEL, DESIGN.LEVELS.start);
+import {
+  isBackend,
+  DESIGN,
+  LOCALSTORAGE,
+} from '@/utils/constants';
 
 const initialState = {
+  isFetching: false,
+  isUser: !isBackend,
+
   language: null,
-  level: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || DESIGN.LEVELS.start,
-  levelFrom: Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) || null,
+
+  level: null,
+  levelFrom: null,
 
   isPause: true,
 
@@ -25,10 +32,22 @@ const initialState = {
   isWin: false,
 };
 
+if (!isBackend) {
+  const autoLevel = Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || null;
+  if (!autoLevel) localStorage.setItem(LOCALSTORAGE.LEVEL, DESIGN.LEVELS.start);
+
+  initialState.level = Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) || DESIGN.LEVELS.start;
+  initialState.levelFrom = Number(localStorage.getItem(LOCALSTORAGE.LEVELFROM)) || null;
+}
+
 const state = initialState;
 
 const getters = {
+  isFetching: state => state.isFetching,
+  isUser: state => state.isUser,
+
   language: state => state.language,
+
   level: state => state.level,
   levelFrom: state => state.levelFrom,
 
@@ -47,7 +66,123 @@ const getters = {
 let messages;
 let index;
 
+let user;
+
+const isLevelStart = (level) => {
+  return !level ? DESIGN.LEVELS.start : level;
+};
+
 const actions = {
+  setUser: ({ commit }) => {
+    commit('setIsFetching', true);
+    API.setUser().then((res) => {
+      localStorage.setItem(LOCALSTORAGE.ROBOTID, res.data.user.id);
+
+      commit('setLevel', {
+        level: isLevelStart(res.data.user.level),
+        levelFrom: res.data.user.levelFrom,
+      });
+      commit('setUser');
+      commit('hero/setUser', res.data.user, { root: true });
+      commit('setIsFetching', false);
+    });
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  saveUser: ({ commit }, {
+    scope,
+    isF5,
+    level,
+    levelFrom,
+  }) => {
+    user = {
+      robotID: localStorage.getItem(LOCALSTORAGE.ROBOTID),
+
+      level,
+      levelFrom,
+
+      health: scope.health,
+      endurance: scope.endurance,
+      ammo: scope.ammo,
+      weight: scope.weight,
+
+      red: scope.red,
+      orange: scope.orange,
+      green: scope.green,
+      purple: scope.purple,
+
+      passes: scope.passes,
+    };
+
+    if (!isF5 && !scope.isWin) {
+      user.directionX = scope.hero.getHeroDirection().x;
+      user.directionY = scope.hero.getHeroDirection().y;
+      user.directionZ = scope.hero.getHeroDirection().z;
+    } else {
+      if (levelFrom > level) {
+        user.directionX = DESIGN.HERO.START[`level${scope.level}`].end.direction.x;
+        user.directionY = DESIGN.HERO.START[`level${scope.level}`].end.direction.y;
+        user.directionZ = DESIGN.HERO.START[`level${scope.level}`].end.direction.z;
+      } else {
+        user.directionX = DESIGN.HERO.START[`level${scope.level}`].start.direction.x;
+        user.directionY = DESIGN.HERO.START[`level${scope.level}`].start.direction.y;
+        user.directionZ = DESIGN.HERO.START[`level${scope.level}`].start.direction.z;
+      }
+    }
+
+    commit('setIsFetching', true);
+    API.saveUser(user).then((res) => {
+      localStorage.setItem(LOCALSTORAGE.ROBOTID, res.data.robotID);
+      commit('setIsFetching', false);
+      window.location.reload(true);
+    });
+  },
+
+  updateUser: ({ commit }, {
+    scope,
+    isFirst,
+    level,
+    levelFrom,
+  }) => {
+    user = {
+      robotID: localStorage.getItem(LOCALSTORAGE.ROBOTID),
+
+      level,
+      levelFrom,
+
+      health: DESIGN.HERO.scales.health.start,
+      endurance: DESIGN.HERO.scales.endurance.start,
+      ammo: DESIGN.HERO.scales.ammo.start,
+      weight: DESIGN.HERO.scales.weight.start,
+
+      red: 0,
+      orange: 0,
+      green: 0,
+      purple: 0,
+    };
+
+    if (isFirst || level === 0) {
+      user.passes = [];
+
+      user.directionX = DESIGN.HERO.START[`level${DESIGN.LEVELS.start}`].start.direction.x;
+      user.directionY = DESIGN.HERO.START[`level${DESIGN.LEVELS.start}`].start.direction.y;
+      user.directionZ = DESIGN.HERO.START[`level${DESIGN.LEVELS.start}`].start.direction.z;
+    } else {
+      user.passes = scope.passes;
+
+      user.directionX = DESIGN.HERO.START[`level${scope.level}`].start.direction.x;
+      user.directionY = DESIGN.HERO.START[`level${scope.level}`].start.direction.y;
+      user.directionZ = DESIGN.HERO.START[`level${scope.level}`].start.direction.z;
+    }
+
+    commit('setIsFetching', true);
+    API.saveUser(user).then((res) => {
+      localStorage.setItem(LOCALSTORAGE.ROBOTID, res.data.robotID);
+      commit('setIsFetching', false);
+      window.location.reload(true);
+    });
+  },
+
   changeLanguage: ({ commit }, language) => {
     commit('changeLanguage', language);
     storage.rememberLanguage(language);
@@ -66,8 +201,9 @@ const actions = {
     commit('addMessage');
   },
 
+  // eslint-disable-next-line object-curly-newline
   showMessage: ({ commit }, { id, view, name, data }) => {
-    commit('showMessage', { id, view, name, data });
+    commit('showMessage', { id, view, name, data }); // eslint-disable-line object-curly-newline
   },
 
   hideMessageByView: ({ commit }, view) => {
@@ -92,6 +228,19 @@ const actions = {
 };
 
 const mutations = {
+  setIsFetching: (state, isFetching) => {
+    state.isFetching = isFetching;
+  },
+
+  setUser: (state) => {
+    state.isUser = true;
+  },
+
+  setLevel: (state, { level, levelFrom }) => {
+    state.level = level;
+    state.levelFrom = levelFrom;
+  },
+
   changeLanguage: (state, language) => {
     state.language = language;
   },

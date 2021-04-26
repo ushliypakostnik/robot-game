@@ -1,11 +1,16 @@
-// const isProd = process.env.NODE_ENV === 'production';
-// const apiUrl = process.env.VUE_APP_API_URL;
-// export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://localhost:8082';
+export const isBackend = true;
+
+const isProd = process.env.NODE_ENV === 'production';
+const apiUrl = process.env.VUE_APP_API_URL;
+export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://localhost:8083';
 
 export const LOCALSTORAGE = {
-  LANGUAGE: 'language',
+  ROBOTID: 'robotID',
+
   LEVEL: 'level',
   LEVELFROM: 'levelFrom',
+
+  LANGUAGE: 'language',
 
   HEALTH: 'health',
   ENDURANCE: 'endurance',
@@ -111,7 +116,7 @@ export const DESIGN = {
         maxZ: 40,
       },
       level5: {
-        minX: 24,
+        minX: -16,
         maxX: 192,
         minZ: -192,
         maxZ: -28,
@@ -156,8 +161,8 @@ export const DESIGN = {
   WEAPON: {
     speed: 2.5,
     damage: {
-      shot: 15,
-      explosion: 10,
+      shot: 12.5,
+      explosion: 7.5,
     },
   },
   SCALES: {
@@ -214,7 +219,7 @@ export const DESIGN = {
           },
           x: -90,
           y: 0,
-          z: 25,
+          z: 26,
         },
         end: {
           direction: {

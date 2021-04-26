@@ -1,4 +1,7 @@
-import { DESIGN, LOCALSTORAGE } from '@/utils/constants';
+import {
+  isBackend,
+  DESIGN,
+  LOCALSTORAGE } from '@/utils/constants';
 
 const passes = ['red', 'orange', 'green', 'purple', 'blue'];
 
@@ -16,17 +19,17 @@ const getPassesFromStorage = () => {
 
 const initialState = {
   // scales
-  health: Number(localStorage.getItem(LOCALSTORAGE.HEALTH)) || DESIGN.HERO.scales.health.start,
-  endurance: Number(localStorage.getItem(LOCALSTORAGE.ENDURANCE)) || DESIGN.HERO.scales.endurance.start,
-  ammo: Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === 0 ? 1000 : Number(localStorage.getItem(LOCALSTORAGE.AMMO)) || DESIGN.HERO.scales.ammo.start,
-  weight: Number(localStorage.getItem(LOCALSTORAGE.WEIGHT)) || DESIGN.HERO.scales.weight.start,
+  health: null,
+  endurance: null,
+  ammo: null,
+  weight: null,
 
-  red: Number(localStorage.getItem(LOCALSTORAGE.RED)) || 0,
-  orange: Number(localStorage.getItem(LOCALSTORAGE.ORANGE)) || 0,
-  green: Number(localStorage.getItem(LOCALSTORAGE.GREEN)) || 0,
-  purple: Number(localStorage.getItem(LOCALSTORAGE.PURPLE)) || 0,
+  red: null,
+  orange: null,
+  green: null,
+  purple: null,
 
-  passes: getPassesFromStorage(),
+  passes: [],
 
   isHeroOnUpgrade: false,
   isHeroOnDamage: false,
@@ -42,10 +45,28 @@ const initialState = {
   isTimeMachine: false,
   isGain: false,
 
-  directionX: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONX)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.x,
-  directionY: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONY)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.y,
-  directionZ: Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONZ)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.z,
+  directionX: null,
+  directionY: null,
+  directionZ: null,
 };
+
+if (!isBackend) {
+  initialState.health = Number(localStorage.getItem(LOCALSTORAGE.HEALTH)) || DESIGN.HERO.scales.health.start;
+  initialState.endurance = Number(localStorage.getItem(LOCALSTORAGE.ENDURANCE)) || DESIGN.HERO.scales.endurance.start;
+  initialState.ammo = Number(localStorage.getItem(LOCALSTORAGE.LEVEL)) === 0 ? 1000 : Number(localStorage.getItem(LOCALSTORAGE.AMMO)) || DESIGN.HERO.scales.ammo.start;
+  initialState.weight = Number(localStorage.getItem(LOCALSTORAGE.WEIGHT)) || DESIGN.HERO.scales.weight.start;
+
+  initialState.red = Number(localStorage.getItem(LOCALSTORAGE.RED)) || 0;
+  initialState.orange = Number(localStorage.getItem(LOCALSTORAGE.ORANGE)) || 0;
+  initialState.green = Number(localStorage.getItem(LOCALSTORAGE.GREEN)) || 0;
+  initialState.purple = Number(localStorage.getItem(LOCALSTORAGE.PURPLE)) || 0;
+
+  initialState.passes = getPassesFromStorage();
+
+  initialState.directionX = Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONX)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.x;
+  initialState.directionY = Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONY)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.y;
+  initialState.directionZ = Number(localStorage.getItem(LOCALSTORAGE.DIRECTIONZ)) || DESIGN.HERO.START[`level${Number(localStorage.getItem(LOCALSTORAGE.LEVEL))}`].start.direction.z;
+}
 
 const state = initialState;
 
@@ -100,6 +121,10 @@ const actions = {
   setScale: ({ commit }, payload) => {
     commit('setScale', payload);
   },
+
+  setUser: ({ commit }, payload) => {
+    commit('setUser', payload);
+  },
 };
 
 const mutations = {
@@ -117,6 +142,24 @@ const mutations = {
       // eslint-disable-next-line operator-assignment
       state[payload.field] = state[payload.field] + payload.value;
     } else state[payload.field] = payload.value;
+  },
+
+  setUser: (state, payload) => {
+    state.health = payload.health ? payload.health : DESIGN.HERO.scales.health.start;
+    state.endurance = payload.endurance ? payload.endurance : DESIGN.HERO.scales.endurance.start;
+    state.ammo = payload.ammo ? payload.ammo : DESIGN.HERO.scales.ammo.start;
+    state.weight = payload.weight ? payload.weight : DESIGN.HERO.scales.weight.start;
+
+    state.red = payload.red ? payload.red : 0;
+    state.orange = payload.orange ? payload.orange : 0;
+    state.green = payload.green ? payload.green : 0;
+    state.purple = payload.purple ? payload.purple : 0;
+
+    state.passes = payload.passes;
+
+    state.directionX = payload.directionX ? payload.directionX : DESIGN.HERO.START.level1.start.direction.x;
+    state.directionY = payload.directionY ? payload.directionY : DESIGN.HERO.START.level1.start.direction.y;
+    state.directionZ = payload.directionZ ? payload.directionZ : DESIGN.HERO.START.level1.start.direction.z;
   },
 };
 

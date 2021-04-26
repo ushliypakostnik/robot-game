@@ -26,6 +26,10 @@ export default {
       isGain: 'hero/isGain',
 
       isOptical: 'hero/isOptical',
+
+      directionX: 'hero/directionX',
+      directionY: 'hero/directionY',
+      directionZ: 'hero/directionZ',
     }),
   },
 };

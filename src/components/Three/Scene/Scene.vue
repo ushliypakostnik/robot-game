@@ -20,7 +20,11 @@ import { Octree } from '../Modules/Math/Octree';
 // import Stats from '@/components/Three/Modules/Utils/Stats';
 
 // Config
-import { DESIGN } from '@/utils/constants';
+import {
+  isBackend,
+  LOCALSTORAGE,
+  DESIGN
+} from '@/utils/constants';
 
 // Utils
 import storage from '@/utils/storage';
@@ -122,6 +126,13 @@ export default {
     };
   },
 
+  created() {
+    this.$eventHub.$on('lock', this.lock);
+    this.$eventHub.$on('unlock', this.unlock);
+
+    if (!this.isUser) this.setUser();
+  },
+
   mounted() {
     this.octree = new Octree();
     this.octreeDoors = new Octree();
@@ -131,7 +142,7 @@ export default {
     this.position = new Three.Vector3();
     this.direction = new Three.Vector3();
     this.directionOnHero = new Three.Vector3();
-    this.directionStore = new Three.Vector3(this.directionX, this.directionY, this.directionZ);
+    this.directionStore = new Three.Vector3();
     this.y = new Three.Vector3(0, 1, 0);
     this.yN = new Three.Vector3(0, -1, 0);
     this.group = new Three.Group();
@@ -149,13 +160,10 @@ export default {
 
     this.listener = new Three.AudioListener();
 
-    this.init();
-    this.animate();
-  },
-
-  created() {
-    this.$eventHub.$on('lock', this.lock);
-    this.$eventHub.$on('unlock', this.unlock);
+    if (!isBackend) {
+      this.init();
+      this.animate();
+    }
   },
 
   beforeDestroy() {
@@ -172,6 +180,8 @@ export default {
   computed: {
     ...mapGetters({
       isGameLoaded: 'preloader/isGameLoaded',
+
+      isFetching: 'layout/isFetching',
 
       level: 'layout/level',
       levelFrom: 'layout/levelFrom',
@@ -269,8 +279,6 @@ export default {
         this.togglePause(false);
       });
 
-      this.camera.lookAt(this.directionStore.multiplyScalar(1000));
-
       this.scene.add(this.controls.getObject());
 
       this.scene.add(this.camera);
@@ -339,7 +347,16 @@ export default {
 
       switch (event.keyCode) {
         case 116: // F5
-          storage.saveHero(this, true);
+          if (!isBackend) storage.saveHero(this, true);
+          else if (localStorage.getItem(LOCALSTORAGE.ROBOTID)) {
+            event.preventDefault();
+            this.saveUser({
+              scope: this,
+              isF5: true,
+              level: this.level,
+              levelFrom: this.levelFrom,
+            });
+          }
           break;
 
         case 16: // Shift
@@ -497,15 +514,17 @@ export default {
     animate() {
       this.delta = this.clock.getDelta();
 
-      if (!this.isPause && !this.isGameOver) {
+      if (!this.isPause
+          && !this.isGameOver
+          && !this.isFetching) {
         // Modules
         this.events.animate(this);
 
         this.hero.animate(this);
         this.world.animate(this);
-      }
 
-      if (!this.isPause) this.render();
+        this.render();
+      }
 
       // this.stats.update();
 
@@ -526,6 +545,13 @@ export default {
   },
 
   watch: {
+    isUser(value) {
+      if (value) {
+        this.init();
+        this.animate();
+      }
+    },
+
     isPause(value) {
       this.audio.toggle();
       if (!value && this.isOptical) {

@@ -222,7 +222,7 @@ function World() {
             } else if (child.name.includes('rod')) {
               child.material = metallLightMaterial;
               child.material.map = metallRodsTexture;
-              child.material.map.repeat.set(0.05, 0.05);
+              child.material.map.repeat.set(2, 2);
             } else if (child.name.includes('comp')) {
               child.material = metallDarkMaterial;
               child.material.map = metallTexture;
