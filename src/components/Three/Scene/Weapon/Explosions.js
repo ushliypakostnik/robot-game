@@ -34,26 +34,25 @@ function Explosions() {
   };
 
   this.addExplosionToBus = (scope, position, size, isHero, velocity) => {
-    if (position.y > -1.5 * size) {
-      explosionClone = explosion.clone();
 
-      explosionClone.position.copy(position);
+    explosionClone = explosion.clone();
 
-      scope.audio.playAudioAndRemoveObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion);
+    explosionClone.position.copy(position);
 
-      ++this.id;
-      bus.push({
-        id: this.id,
-        mesh: explosionClone,
-        size,
-        isHero,
-        velocity,
-        scale: 1,
-        isOff: false,
-      });
+    scope.audio.playAudioAndRemoveObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion);
 
-      scope.scene.add(explosionClone);
-    }
+    ++this.id;
+    bus.push({
+      id: this.id,
+      mesh: explosionClone,
+      size,
+      isHero,
+      velocity,
+      scale: 1,
+      isOff: false,
+    });
+
+    scope.scene.add(explosionClone);
   };
 
   this.removeExplosionFromBus = (scope, id) => {

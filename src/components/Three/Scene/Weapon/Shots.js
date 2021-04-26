@@ -97,12 +97,13 @@ function Shots() {
       }
 
       // Улетело
-      if ((scope.boolean
-          && (record.collider.center.distanceTo(record.start) > DESIGN.LEVELS.size[scope.l] / 2
-          || record.mesh.position.distanceTo(record.start) > 5))
+      if (record.collider.center.distanceTo(record.start) > 7) {
+        if (scope.boolean
+          || record.collider.center.distanceTo(record.start) > DESIGN.LEVELS.size[scope.l] / 2
           || record.mesh.position.y < 0) {
-        scope.world.explosions.addExplosionToBus(scope, record.collider.center, 5, false, velocity);
-        removeShotFromBus(scope, record.id);
+          if (scope.boolean) scope.world.explosions.addExplosionToBus(scope, record.collider.center, 5, false, velocity);
+          removeShotFromBus(scope, record.id);
+        }
       }
     });
   };

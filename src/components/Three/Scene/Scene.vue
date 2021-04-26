@@ -183,6 +183,8 @@ export default {
 
       isFetching: 'layout/isFetching',
 
+      isGameOver: 'layout/isGameOver',
+
       level: 'layout/level',
       levelFrom: 'layout/levelFrom',
 
@@ -346,8 +348,10 @@ export default {
 
       switch (event.keyCode) {
         case 116: // F5
-          if (!isBackend) storage.saveHero(this, true);
-          else if (localStorage.getItem(LOCALSTORAGE.ROBOTID)) {
+          if (!isBackend) {
+            if (this.isGameOver) storage.updateHero(this.level, false);
+            else storage.saveHero(this, true);
+          } else if (localStorage.getItem(LOCALSTORAGE.ROBOTID)) {
             event.preventDefault();
             this.saveUser({
               scope: this,
