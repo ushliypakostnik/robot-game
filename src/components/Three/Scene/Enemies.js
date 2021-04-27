@@ -191,7 +191,7 @@ function Enemies() {
         enemy.collider.center.y - enemy.height / 2,
         enemy.collider.center.z,
       ),
-      10,
+      15,
     );
     enemy.scale.visible = false;
     enemy.mesh.traverse((child) => {
