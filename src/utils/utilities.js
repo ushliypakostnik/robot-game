@@ -75,73 +75,34 @@ export const isSphereHeroCollitions = (scope, сollider) => {
 
 // let arrowHelper;
 
+const fixNot = (value) => {
+  if (!value) return Number.MAX_SAFE_INTEGER;
+  return value;
+};
+
 export const isEnemyCanShot = (scope, enemy) => {
   // get ray
   scope.direction.copy(enemy.mesh.getWorldDirection(scope.direction).normalize());
   scope.ray = new Three.Ray(enemy.collider.center, scope.direction);
 
+  scope.result = scope.octree.rayIntersect(scope.ray);
+  scope.resultDoors = scope.octreeDoors.rayIntersect(scope.ray);
+
+  // arrowHelper = new Three.ArrowHelper(scope.direction, enemy.collider.center, 10, 0xffffff);
+  // scope.scene.add(arrowHelper);
+
   if (enemy.name !== OBJECTS.DRONES.name) {
-    scope.result = scope.octree.rayIntersect(scope.ray);
-    scope.resultDoors = scope.octreeDoors.rayIntersect(scope.ray);
     scope.resultEnemies = scope.octreeEnemies.rayIntersect(scope.ray);
 
-    // arrowHelper = new Three.ArrowHelper(scope.direction, enemy.collider.center, 10, 0xffffff);
-    // scope.scene.add(arrowHelper);
-
     if (scope.result || scope.resultDoors || scope.resultEnemies) {
-      if (scope.result && scope.resultDoors && scope.resultEnemies) {
-        scope.number = Math.min(scope.result.distance, scope.resultDoors.distance);
-        scope.number = Math.min(scope.number, scope.resultEnemies.distance);
-      } else if (scope.result && !scope.resultDoors && scope.resultEnemies) {
-        scope.number = Math.min(scope.result.distance, scope.resultEnemies.distance);
-      } else if (scope.result && scope.resultDoors && !scope.resultEnemies) {
-        scope.number = Math.min(scope.result.distance, scope.resultDoors.distance);
-      } else if (!scope.result && scope.resultDoors && scope.resultEnemies) {
-        scope.number = Math.min(scope.resultDoors.distance, scope.resultEnemies.distance);
-      } else if (scope.result && !scope.resultDoors && !scope.resultEnemies) {
-        scope.number = scope.result.distance;
-      } else if (!scope.result && scope.resultDoors && !scope.resultEnemies) {
-        scope.number = scope.resultDoors.distance;
-      } else scope.number = scope.resultEnemies.distance;
-
+      scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance), fixNot(scope.resultEnemies.distance));
       return scope.number > 10;
     }
   } else {
-    scope.result = scope.octree.rayIntersect(scope.ray);
-    scope.resultDoors = scope.octreeDoors.rayIntersect(scope.ray);
-
-    // arrowHelper = new Three.ArrowHelper(scope.direction, enemy.collider.center, 20, 0xffffff);
-    // scope.scene.add(arrowHelper);
-
     if (scope.result || scope.resultDoors) {
-      if (scope.result && scope.resultDoors) {
-        scope.number = Math.min(scope.result.distance, scope.resultDoors.distance);
-      } else if (scope.result && !scope.resultDoors) {
-        scope.number = scope.result.distance;
-      } else scope.number = scope.resultDoors.distance;
-
+      scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance));
       return scope.number > 10;
     }
-  }
-  return true;
-};
-
-export const isEnemyCanFlyDown = (scope, enemy) => {
-  scope.ray = new Three.Ray(enemy.collider.center, scope.yN);
-
-  scope.result = scope.octree.rayIntersect(scope.ray);
-  scope.resultEnemies = scope.octreeEnemies.rayIntersect(scope.ray);
-
-  // arrowHelper = new Three.ArrowHelper(scope.yN, enemy.collider.center, 6, 0xffffff);
-  // scope.scene.add(arrowHelper);
-
-  if (scope.result || scope.resultEnemies) {
-    if (scope.result && scope.resultEnemies) {
-      scope.number = Math.min(scope.result.distance, scope.resultEnemies.distance);
-    } else if (scope.result && !scope.resultEnemies) {
-      scope.number = scope.result.distance;
-    } else scope.number = scope.resultEnemies.distance;
-    return scope.number > 6;
   }
   return true;
 };
@@ -158,17 +119,45 @@ export const isToHeroRayIntersectWorld = (scope, collider) => {
   // scope.scene.add(arrowHelper);
 
   if (scope.result || scope.resultDoors) {
-    if (scope.result && scope.resultDoors) {
-      scope.number = Math.min(scope.result.distance, scope.resultDoors.distance);
-    } else if (scope.result && !scope.resultDoors) {
-      scope.number = scope.result.distance;
-    } else scope.number = scope.resultDoors.distance;
+    scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance));
 
     scope.dictance = scope.camera.position.distanceTo(collider.center);
 
     return scope.number < scope.dictance;
   }
   return false;
+};
+
+export const isEnemyCanFlyDown = (scope, enemy) => {
+  scope.ray = new Three.Ray(enemy.collider.center, scope.yN);
+
+  scope.result = scope.octree.rayIntersect(scope.ray);
+  scope.resultEnemies = scope.octreeEnemies.rayIntersect(scope.ray);
+
+  // arrowHelper = new Three.ArrowHelper(scope.yN, enemy.collider.center, 6, 0xffffff);
+  // scope.scene.add(arrowHelper);
+
+  if (scope.result || scope.resultEnemies) {
+    scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultEnemies.distance));
+    return scope.number > 6;
+  }
+  return true;
+};
+
+export const isEnemyCanMoveForward = (scope, enemy) => {
+  scope.ray = new Three.Ray(enemy.collider.center, enemy.mesh.getWorldDirection(scope.direction).normalize());
+
+  scope.result = scope.octree.rayIntersect(scope.ray);
+  scope.resultEnemies = scope.octreeEnemies.rayIntersect(scope.ray);
+
+  // arrowHelper = new Three.ArrowHelper(scope.direction, enemy.collider.center, 6, 0xffffff);
+  // scope.scene.add(arrowHelper);
+
+  if (scope.result || scope.resultDoors || scope.resultEnemies) {
+    scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance), fixNot(scope.resultEnemies.distance));
+    return scope.number > 6;
+  }
+  return true;
 };
 
 export const updateEnemiesOctree = (scope) => {

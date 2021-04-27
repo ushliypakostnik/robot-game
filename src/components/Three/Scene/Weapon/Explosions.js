@@ -105,6 +105,7 @@ function Explosions() {
           scope.cooeficient = scope.isGain ? 2 : 1;
           enemy.health -= DESIGN.HERO.weapon.damage[scope.difficulty] * scope.cooeficient;
           enemy.scale.scale.set(enemy.health / DESIGN.ENEMIES[enemy.name].health, 1, enemy.health / DESIGN.ENEMIES[enemy.name].health);
+          // console.log('Damage: ', DESIGN.HERO.weapon.damage[scope.difficulty] * scope.cooeficient);
 
           if (enemy.health <= 0) scope.world.enemies.toDead(scope, enemy);
           else scope.world.enemies.onShot(scope, enemy, record.velocity);

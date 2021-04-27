@@ -11,6 +11,7 @@ import {
   distance2D,
   isEnemyCanShot,
   isEnemyCanFlyDown,
+  isEnemyCanMoveForward,
 } from "@/utils/utilities";
 
 import Spiders from './Enemies/Spiders';
@@ -316,17 +317,19 @@ function Enemies() {
             && enemy.distanceToHero > enemy.distance)
             || enemy.mode === DESIGN.ENEMIES.mode.idle) {
 
-          // Решение на прыжок
-          if ((enemy.mode === DESIGN.ENEMIES.mode.active
+          if (isEnemyCanMoveForward(scope, enemy)) {
+            // Решение на прыжок
+            if ((enemy.mode === DESIGN.ENEMIES.mode.active
               && !enemy.isOnJump
               && enemy.distanceToHero > enemy.distance * 1.5)
               || (enemy.mode === DESIGN.ENEMIES.mode.idle
-              && !enemy.isOnJump)) {
-            scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.jump) === 1;
-            if (scope.decision) jump(scope, enemy);
-            else speed(scope, enemy);
+                && !enemy.isOnJump)) {
+              scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.jump) === 1;
+              if (scope.decision) jump(scope, enemy);
+              else speed(scope, enemy);
+            }
+            forward(scope, enemy);
           }
-          forward(scope, enemy);
         }
         enemy.velocity.addScaledVector(enemy.velocity, scope.damping);
       }

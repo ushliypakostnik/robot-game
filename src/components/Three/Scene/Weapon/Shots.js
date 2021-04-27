@@ -89,8 +89,6 @@ function Shots() {
 
       scope.boolean = isSphereCollitions(scope, record.collider);
 
-      console.log(scope.difficulty, DESIGN.WEAPON.damage.shot[scope.difficulty]);
-
       // Урон персонажу
       if (record.mesh.position.distanceTo(scope.camera.position) < DESIGN.HERO.HEIGHT && !scope.isNotDamaged) {
         scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.shot[scope.difficulty] * (-1 / record.mesh.position.distanceTo(scope.camera.position)));
