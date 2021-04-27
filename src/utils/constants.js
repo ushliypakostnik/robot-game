@@ -170,13 +170,13 @@ export const DESIGN = {
     speed: 2.5,
     damage: {
       shot: {
-        civil: 10,
-        anarchist: 12.5,
+        civil: 5,
+        anarchist: 10,
         communist: 15,
       },
       explosion: {
-        civil: 5,
-        anarchist: 7.5,
+        civil: 2.5,
+        anarchist: 5,
         communist: 10,
       },
     },
