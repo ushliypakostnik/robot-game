@@ -172,6 +172,8 @@ function Enemies() {
     enemy.mode = DESIGN.ENEMIES.mode.dies;
 
     enemy.velocity.add(new Three.Vector3((Math.random() + 0.5) * 25, (Math.random() + 0.5) * 25, (Math.random() + 0.5) * 25));
+    enemy.randomX = plusOrMinus();
+    enemy.randomZ = plusOrMinus();
 
     scope.events.messagesByIdDispatchHelper(scope, 3, 'destroyed', enemy.mesh.name);
 
@@ -365,9 +367,9 @@ function Enemies() {
     position(scope, enemy);
 
     if (enemy.mode === DESIGN.ENEMIES.mode.dies) {
-      enemy.mesh.rotateX(scope.delta * Math.random());
+      enemy.mesh.rotateX(scope.delta * Math.random() * enemy.randomX);
       enemy.mesh.rotateY(scope.delta * Math.random());
-      enemy.mesh.rotateZ(scope.delta * Math.random());
+      enemy.mesh.rotateZ(scope.delta * Math.random() * enemy.randomZ);
     }
   };
 
