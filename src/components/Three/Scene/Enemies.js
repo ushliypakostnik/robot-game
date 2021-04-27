@@ -338,8 +338,10 @@ function Enemies() {
       if ((enemy.mode === DESIGN.ENEMIES.mode.active
           && distance2D(enemy.collider.center.x, enemy.collider.center.z, scope.camera.position.x, scope.camera.position.z) > enemy.distance)
           || enemy.mode === DESIGN.ENEMIES.mode.idle) {
-        speed(scope, enemy);
-        forward(scope, enemy);
+        if (isEnemyCanMoveForward(scope, enemy)) {
+          speed(scope, enemy);
+          forward(scope, enemy);
+        }
       }
 
       // Решение на изменение высоты
