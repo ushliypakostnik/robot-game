@@ -105,10 +105,6 @@ function Enemies() {
   // Умер
   const dead = (scope, enemy) => {
     enemy.mode = DESIGN.ENEMIES.mode.dead;
-
-    enemy.mesh.rotateX(scope.delta * Math.random() * 3 * plusOrMinus());
-    enemy.mesh.rotateY(scope.delta * Math.random() * 3 * plusOrMinus());
-    enemy.mesh.rotateZ(scope.delta * Math.random() * 3 * plusOrMinus());
   };
 
   // Столкновения
@@ -173,8 +169,9 @@ function Enemies() {
 
   // Либо убит, либо умирает
   this.toDead = (scope, enemy) => {
-    if (enemy.isOnFloor) dead(scope, enemy);
-    else enemy.mode = DESIGN.ENEMIES.mode.dies;
+    enemy.mode = DESIGN.ENEMIES.mode.dies;
+
+    enemy.velocity.add(new Three.Vector3((Math.random() + 0.5) * 25, (Math.random() + 0.5) * 25, (Math.random() + 0.5) * 25));
 
     scope.events.messagesByIdDispatchHelper(scope, 3, 'destroyed', enemy.mesh.name);
 
@@ -217,10 +214,12 @@ function Enemies() {
 
   // Позиция
   const position = (scope, enemy) => {
-    if (enemy.collider.center.x < DESIGN.LEVELS.place[scope.l].minX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].minX;
-    if (enemy.collider.center.x > DESIGN.LEVELS.place[scope.l].maxX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].maxX;
-    if (enemy.collider.center.z < DESIGN.LEVELS.place[scope.l].minZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].minZ;
-    if (enemy.collider.center.z > DESIGN.LEVELS.place[scope.l].maxZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].maxZ;
+    if (enemy.mode !== DESIGN.ENEMIES.mode.dies) {
+      if (enemy.collider.center.x < DESIGN.LEVELS.place[scope.l].minX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].minX;
+      if (enemy.collider.center.x > DESIGN.LEVELS.place[scope.l].maxX) enemy.collider.center.x = DESIGN.LEVELS.place[scope.l].maxX;
+      if (enemy.collider.center.z < DESIGN.LEVELS.place[scope.l].minZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].minZ;
+      if (enemy.collider.center.z > DESIGN.LEVELS.place[scope.l].maxZ) enemy.collider.center.z = DESIGN.LEVELS.place[scope.l].maxZ;
+    }
 
     enemy.collider.translate(enemy.velocity.clone().multiplyScalar(scope.delta));
 
@@ -364,6 +363,12 @@ function Enemies() {
     enemy.velocity.y -= DESIGN.GRAVITY * scope.delta;
     enemy.velocity.addScaledVector(enemy.velocity, scope.damping);
     position(scope, enemy);
+
+    if (enemy.mode === DESIGN.ENEMIES.mode.dies) {
+      enemy.mesh.rotateX(scope.delta * Math.random());
+      enemy.mesh.rotateY(scope.delta * Math.random());
+      enemy.mesh.rotateZ(scope.delta * Math.random());
+    }
   };
 
   // Cпокойный режим
