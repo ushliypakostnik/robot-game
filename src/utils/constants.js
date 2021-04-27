@@ -310,9 +310,9 @@ export const DESIGN = {
       quantity: 20,
       speed: 75,
       damage: {
-        civil: 0.8,
+        civil: 0.9,
         anarchist: 0.6,
-        communist: 0.4,
+        communist: 0.3,
       },
     },
     recoil: {
@@ -415,7 +415,11 @@ export const DESIGN = {
       decision: {
         enjoy: 60,
         rotate: 25,
-        shot: 25,
+        shot: {
+          civil: 40,
+          anarchist: 30,
+          communist: 25,
+        },
         jump: 50,
         speed: 20,
         bend: 30,
@@ -429,7 +433,11 @@ export const DESIGN = {
       decision: {
         enjoy: 50,
         rotate: 25,
-        shot: 30,
+        shot: {
+          civil: 50,
+          anarchist: 40,
+          communist: 30,
+        },
         fly: 40,
         speed: 20,
         bend: 25,

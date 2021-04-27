@@ -421,7 +421,7 @@ function Enemies() {
     if (enemy.isEnjoy
         && radiansToDegrees(scope.angle) < 100 && radiansToDegrees(scope.angle) > 80) {
       // Решение на выстрел (если отдыхает)
-      scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot) === 1;
+      scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot[scope.difficulty]) === 1;
       if (scope.decision) {
         if (isEnemyCanShot(scope, enemy)) {
           scope.boolean = enemy.name === OBJECTS.DRONES.name;
