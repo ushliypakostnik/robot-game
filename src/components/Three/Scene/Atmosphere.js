@@ -24,6 +24,8 @@ function Atmosphere() {
   let isBeside = false;
   let isBesideNew;
 
+  this.enemyCheckDistance = null;
+
   this.init = (scope) => {
     // Wind
     audioLoader.load('./audio/wind.mp3', (buffer) => {
@@ -79,6 +81,24 @@ function Atmosphere() {
 
     x = scope.camera.position.x;
     z = scope.camera.position.y;
+
+    this.setCheck(scope.difficulty);
+  };
+
+  this.setCheck = (difficulty) => {
+    switch (difficulty) {
+      case DESIGN.DIFFICULTY.civil:
+        this.enemyCheckDistance = DESIGN.CHECK * 0.8;
+        break;
+
+      case DESIGN.DIFFICULTY.anarchist:
+        this.enemyCheckDistance = DESIGN.CHECK;
+        break;
+
+      case DESIGN.DIFFICULTY.communist:
+        this.enemyCheckDistance = DESIGN.CHECK * 1.2;
+        break;
+    }
   };
 
   // Обнаружение врагами
@@ -89,14 +109,14 @@ function Atmosphere() {
       objects.forEach((enemy) => {
         scope.distance = enemy.mesh.position.distanceTo(scope.camera.position);
 
-        // 70 метров - предупреждении что рядом враги или никого!
+        // 70 метров (на анархисте) - предупреждении что рядом враги или никого!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-          && scope.distance < DESIGN.CHECK * 8
+          && scope.distance < this.enemyCheckDistance * 8
           && !isBesideNew) isBesideNew = true;
 
-        // 60 метров или преграда - напуганных врагов попускает
+        // 60 метров (на анархисте) или преграда - напуганных врагов попускает
         if (isToHeroRayIntersectWorld(scope, enemy.collider)
-            || (scope.distance > DESIGN.CHECK * 7
+            || (scope.distance > this.enemyCheckDistance * 7
                 && enemy.mode === DESIGN.ENEMIES.mode.active)) {
           if (enemy.mode === DESIGN.ENEMIES.mode.active) {
             enemy.mode = DESIGN.ENEMIES.mode.idle;
@@ -109,12 +129,12 @@ function Atmosphere() {
           }
         }
 
-        // если нет преград: 30 метров - если скрытое передвижение, 60 если нет!
+        // если нет преград: 30 (на анархисте) метров - если скрытое передвижение, 60 (на анархисте) если нет!
         if (!isToHeroRayIntersectWorld(scope, enemy.collider)
-          && ((scope.distance < DESIGN.CHECK * 6
+          && ((scope.distance < this.enemyCheckDistance * 6
             && !scope.isHidden
             && enemy.mode === DESIGN.ENEMIES.mode.idle)
-            || (scope.distance < DESIGN.CHECK * 3
+            || (scope.distance < this.enemyCheckDistance * 3
               && scope.isHidden
               && enemy.mode === DESIGN.ENEMIES.mode.idle))
         ) enemyToActiveMode(scope, enemy);

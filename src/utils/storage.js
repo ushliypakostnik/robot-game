@@ -7,6 +7,10 @@ export default ({
     i18n.i18next.changeLanguage(language);
   },
 
+  rememberDifficulty: (difficulty) => {
+    localStorage.setItem(LOCALSTORAGE.DIFFICULTY, difficulty);
+  },
+
   rememberLevel: (level, levelFrom) => {
     localStorage.setItem(LOCALSTORAGE.LEVEL, level);
     localStorage.setItem(LOCALSTORAGE.LEVELFROM, levelFrom);

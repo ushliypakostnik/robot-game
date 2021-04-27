@@ -31,6 +31,8 @@ export const LOCALSTORAGE = {
   DIRECTIONX: 'directionX',
   DIRECTIONY: 'directionY',
   DIRECTIONZ: 'directionZ',
+
+  DIFFICULTY: 'difficulty',
 };
 
 /* export const SESSIONSTORAGE = {
@@ -144,7 +146,7 @@ export const DESIGN = {
       shot: 0.4,
       zero: 0.9,
     },
-    wind: 0.2,
+    wind: 0.3,
     doors: 0.9,
     screen: 0.3,
     shot: 0.7,
@@ -154,6 +156,11 @@ export const DESIGN = {
     fly: 0.8,
     dead: 0.6,
   },
+  DIFFICULTY: {
+    civil: 'civil',
+    anarchist: 'anarchist',
+    communist: 'communist',
+  },
   GRAVITY: 40,
   MESSAGES_TIMEOUT: 3000,
   ANIMATION_TIMEOUT: 300,
@@ -162,8 +169,16 @@ export const DESIGN = {
   WEAPON: {
     speed: 2.5,
     damage: {
-      shot: 12.5,
-      explosion: 7.5,
+      shot: {
+        civil: 10,
+        anarchist: 12.5,
+        communist: 15,
+      },
+      explosion: {
+        civil: 5,
+        anarchist: 7.5,
+        communist: 10,
+      },
     },
   },
   SCALES: {
@@ -293,8 +308,12 @@ export const DESIGN = {
     weapon: {
       radius: 0.5,
       quantity: 20,
-      damage: 0.6,
       speed: 75,
+      damage: {
+        civil: 0.8,
+        anarchist: 0.6,
+        communist: 0.4,
+      },
     },
     recoil: {
       player: 30,
@@ -338,10 +357,14 @@ export const DESIGN = {
   },
   EFFECTS: {
     time: { // длительность спецэффектов от цветов
-      health: 15,
-      endurance: 15,
-      machine: 15,
-      gain: 15,
+      civil: 25,
+      anarchist: 20,
+      communist: 15,
+
+      // health: 15,
+      // endurance: 15,
+      // machine: 15,
+      // gain: 15,
     },
     red: {
       health: 30,
@@ -450,7 +473,7 @@ export const LOCALES = {
       startbutton: 'Play',
       attention: 'Attention!!! It is recommended to play on computers with a powerful video card.',
       gadgetsgate: 'You need a PC keyboard to play',
-      chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
+      chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser (Firefox not recommended)',
       gameover: 'GAME OVER',
       win: `MISSION<br />COMPLETED`,
       gameovebuttonStart: 'Start location',
@@ -477,6 +500,17 @@ export const LOCALES = {
 
       rules: 'Rules',
       weight: 'Backpack capacity: ',
+
+      settings: 'Settings',
+      difficulty: {
+        title: 'Difficulty level',
+        [DESIGN.DIFFICULTY.civil]: 'Civil',
+        [DESIGN.DIFFICULTY.anarchist]: 'Anarchist',
+        [DESIGN.DIFFICULTY.communist]: 'Communist',
+      },
+      difficultytext: 'Duration of effects from flowers: ',
+      difficultytext2: 'seconds',
+      difficultytext3: `In addition, the distance at which enemies react<br />(use stealthy movement),<br />as well as the power of explosions and weapons,<br />depends on the level of difficulty`,
     },
     messages: {
       message1: {
@@ -486,12 +520,12 @@ export const LOCALES = {
         recovered: 'The robot can run again',
         hiddenMoveEnabled: 'The robot moves in stealth mode',
         hiddenMoveDisabled: 'Stealth mode disabled',
-        startNoDamaged: `The robot is invulnerable for ${DESIGN.EFFECTS.time.health} seconds!`,
-        startNoTired: `The robot will not get tired of running ${DESIGN.EFFECTS.time.endurance} seconds!`,
+        startNoDamaged: 'The robot became invulnerable for some time!',
+        startNoTired: 'The robot will not get tired of running for some time!',
         endNoDamaged: 'The invulnerability effeect is over',
         endNoTired: 'The robot gets tired of running again',
-        startTimeMachine: `The robot used a portable time machine!<br />He has ${DESIGN.EFFECTS.time.machine} seconds.`,
-        startGain: `The robot threw itself a purple gain!<br />The power of the weapon has increased by ${DESIGN.EFFECTS.time.gain} seconds!`,
+        startTimeMachine: 'The robot used a portable time machine!',
+        startGain: `The robot threw itself a purple gain!<br />The power of the weapon has increased for some time!`,
         endTimeMachine: 'Time acceleration effect is over!',
         endGain: 'The effect of the pumped wine cannon is over!',
         pick: 'The robot picked up: ',
@@ -532,19 +566,19 @@ export const LOCALES = {
         name: ' flower',
         red: {
           name: 'red',
-          text: `: gives up to ${DESIGN.EFFECTS.red.health}% health<br />and ${DESIGN.EFFECTS.time.health} seconds the robot is invulnerable.<br />Weight: ${DESIGN.EFFECTS.red.weight}`,
+          text: `: gives up to ${DESIGN.EFFECTS.red.health}% health<br />and for some time the robot is invulnerable..<br />Weight: ${DESIGN.EFFECTS.red.weight}`,
         },
         orange: {
           name: 'orange',
-          text: `: gives up to ${DESIGN.EFFECTS.orange.health}% health,<br />and increases jump height. ${DESIGN.EFFECTS.time.endurance} seconds<br />the robot does not get tired of running.<br />Weight: ${DESIGN.EFFECTS.orange.weight}`,
+          text: `: gives up to ${DESIGN.EFFECTS.orange.health}% health,<br />and increases jump height. For some time<br />the robot does not get tired of running.<br />Weight: ${DESIGN.EFFECTS.orange.weight}`,
         },
         green: {
           name: 'green',
-          text: `: grants up to ${DESIGN.EFFECTS.green.health}% health<br />and activates the Portable Time Machine<br />for ${DESIGN.EFFECTS.time.machine} seconds.<br />Weight: ${DESIGN.EFFECTS.green.weight}`,
+          text: `: grants up to ${DESIGN.EFFECTS.green.health}% health<br />and activates the Portable Time Machine.<br />Weight: ${DESIGN.EFFECTS.green.weight}`,
         },
         purple: {
           name: 'purple',
-          text: `: Gives up to ${DESIGN.EFFECTS.purple.health}% health<br />and increases damage power for ${DESIGN.EFFECTS.time.gain} seconds.<br />Weight: ${DESIGN.EFFECTS.purple.weight}`,
+          text: `: Gives up to ${DESIGN.EFFECTS.purple.health}% health<br />and increases damage power for some time.<br />Weight: ${DESIGN.EFFECTS.purple.weight}`,
         },
       },
       bottle: {
@@ -611,7 +645,7 @@ export const LOCALES = {
       startbutton: 'Играть',
       attention: 'Внимание!!! Рекомендуется играть на компьютерах с производительной видеокартой.',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
-      chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',
+      chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс), Firefox не рекомендуется',
       gameover: 'КОНЕЦ ИГРЫ',
       win: `МИССИЯ<br />ВЫПОЛНЕННА`,
       gameovebuttonStart: 'С локации',
@@ -638,6 +672,17 @@ export const LOCALES = {
 
       rules: 'Правила',
       weight: 'Вместимость рюкзака: ',
+
+      settings: 'Настройки',
+      difficulty: {
+        title: 'Уровень сложности',
+        [DESIGN.DIFFICULTY.civil]: 'Обыватель',
+        [DESIGN.DIFFICULTY.anarchist]: 'Анархист',
+        [DESIGN.DIFFICULTY.communist]: 'Коммунист',
+      },
+      difficultytext: 'Время действия эффектов от цветов: ',
+      difficultytext2: 'cекунд',
+      difficultytext3: `Кроме этого, от уровня сложности<br />зависит расстояние на котором реагируют враги<br />(используйте скрытное передвижение),<br />а также мощность взрывов и оружия`,
     },
     messages: {
       message1: {
@@ -647,12 +692,12 @@ export const LOCALES = {
         recovered: 'Робот снова может бегать',
         hiddenMoveEnabled: 'Робот двигается в скрытном режиме',
         hiddenMoveDisabled: 'Скрытный режим отключен',
-        startNoDamaged: `Робот получил неуязвимость на ${DESIGN.EFFECTS.time.health} секунд!`,
-        startNoTired: `Робот не будет уставать от бега ${DESIGN.EFFECTS.time.endurance} секунд!`,
+        startNoDamaged: 'Робот получил неуязвимость на некоторое время!',
+        startNoTired: 'Робот не будет уставать от бега некоторое время!',
         endNoDamaged: 'Эффект неуязвимости закончился',
         endNoTired: 'Робот снова устает от бега',
-        startTimeMachine: `Робот включил портативную машину времени!<br />У него есть ${DESIGN.EFFECTS.time.machine} секунд.`,
-        startGain: `Робот задвинулся пурпурным драйвом!<br />Сила оружия выросла на ${DESIGN.EFFECTS.time.gain} секунд!`,
+        startTimeMachine: 'Робот включил портативную машину времени!',
+        startGain: `Робот задвинулся пурпурным драйвом!<br />Сила оружия выросла на некоторое время!`,
         endTimeMachine: 'Эффект ускорения времени закончился!',
         endGain: 'Эффект прокаченного виномета закончился!',
         pick: 'Робот подобрал: ',
@@ -693,19 +738,19 @@ export const LOCALES = {
         name: ' цветок',
         red: {
           name: 'красный',
-          text: `: дает до  ${DESIGN.EFFECTS.red.health}% здоровья<br />и ${DESIGN.EFFECTS.time.health} cекунд робот неуязвим.<br />Вес предмета: ${DESIGN.EFFECTS.red.weight}`,
+          text: `: дает до  ${DESIGN.EFFECTS.red.health}% здоровья<br />и некоторое время робот неуязвим.<br />Вес предмета: ${DESIGN.EFFECTS.red.weight}`,
         },
         orange: {
           name: 'оранжевый',
-          text: `: дает до ${DESIGN.EFFECTS.orange.health}% здоровья,<br />и увеличивает высоту прыжка.<br .>${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега.<br />Вес предмета: ${DESIGN.EFFECTS.orange.weight}`,
+          text: `: дает до ${DESIGN.EFFECTS.orange.health}% здоровья,<br />и увеличивает высоту прыжка.<br .>Некоторое время робот не устает от бега.<br />Вес предмета: ${DESIGN.EFFECTS.orange.weight}`,
         },
         green: {
           name: 'зеленый',
-          text: `: дает до ${DESIGN.EFFECTS.green.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.machine} секунд включает портативную машину времени.<br />Вес предмета: ${DESIGN.EFFECTS.green.weight}`,
+          text: `: дает до ${DESIGN.EFFECTS.green.health}% здоровья<br />и на некоторое время включает<br />портативную машину времени.<br />Вес предмета: ${DESIGN.EFFECTS.green.weight}`,
         },
         purple: {
           name: 'фиолетовый',
-          text: `: дает до ${DESIGN.EFFECTS.purple.health}% здоровья<br />и на ${DESIGN.EFFECTS.time.gain} секунд увеличивает силу урона.<br />Вес предмета: ${DESIGN.EFFECTS.purple.weight}`,
+          text: `: дает до ${DESIGN.EFFECTS.purple.health}% здоровья<br />и на некоторое время увеличивает силу урона.<br />Вес предмета: ${DESIGN.EFFECTS.purple.weight}`,
         },
       },
       bottle: {

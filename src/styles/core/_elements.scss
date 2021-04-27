@@ -14,11 +14,10 @@
 }
 
 .switch {
-  max-width: auto;
   display: flex;
   flex-direction: row;
   border: $border-width solid $colors__border;
-  margin-bottom: $gutter;
+  margin-bottom: $gutter / 2;
 
   &__item {
     text-align: center;

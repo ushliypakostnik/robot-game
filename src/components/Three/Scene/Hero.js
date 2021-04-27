@@ -644,7 +644,7 @@ function Hero() {
 
       notDamageTime += notDamageClock.getDelta();
 
-      if (notDamageTime > DESIGN.EFFECTS.time.health) {
+      if (notDamageTime > DESIGN.EFFECTS.time[scope.difficulty]) {
         notDamageClock.stop();
         notDamageTime = 0;
         scope.setScale({
@@ -661,7 +661,7 @@ function Hero() {
 
       timeMachineTime += timeMachineClock.getDelta();
 
-      if (timeMachineTime > DESIGN.EFFECTS.time.machine) {
+      if (timeMachineTime > DESIGN.EFFECTS.time[scope.difficulty]) {
         timeMachineClock.stop();
         timeMachineTime = 0;
         scope.setScale({
@@ -678,7 +678,7 @@ function Hero() {
 
       gainTime += gainClock.getDelta();
 
-      if (gainTime > DESIGN.EFFECTS.time.gain) {
+      if (gainTime > DESIGN.EFFECTS.time[scope.difficulty]) {
         gainClock.stop();
         gainTime = 0;
         scope.setScale({
@@ -720,7 +720,7 @@ function Hero() {
 
       if (!scope.isPause) notTiredTime += notTiredClock.getDelta();
 
-      if (notTiredTime > DESIGN.EFFECTS.time.endurance) {
+      if (notTiredTime > DESIGN.EFFECTS.time[scope.difficulty]) {
         notTiredClock.stop();
         notTiredTime = 0;
         scope.setScale({

@@ -141,8 +141,7 @@ function AudioBus() {
       if (!record.audio.isPlaying) {
         setSpeed(record.audio);
         record.audio.play();
-      }
-      else {
+      } else {
         record.audio.stop();
         record.audio.play();
       }

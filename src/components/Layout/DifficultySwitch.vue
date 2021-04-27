@@ -2,15 +2,15 @@
   <ul class="switch">
     <li
       class="switch__item"
-      :class="value === language && 'switch__item--active'"
-      v-for="value in languages"
+      :class="value === difficulty && 'switch__item--active'"
+      v-for="value in levels"
       v-bind:key="value"
     >
-      <a v-if="value !== language"
+      <a v-if="value !== difficulty"
         href="#"
-        @click.prevent="changeLanguage(value)"
-      >{{ value }}</a>
-      <span v-else>{{ value }}</span>
+        @click.prevent="setDifficulty(value)"
+      >{{ $t(`layout.difficulty.${value}`) }}</a>
+      <span v-else>{{ $t(`layout.difficulty.${value}`) }}</span>
     </li>
   </ul>
 </template>
@@ -18,33 +18,25 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import { LANGUAGES } from '@/utils/constants';
+import { DESIGN } from '@/utils/constants';
 
 export default {
-  name: 'LangSwitch',
+  name: 'DifficultySwitch',
 
   computed: {
     ...mapGetters({
-      language: 'layout/language',
+      difficulty: 'layout/difficulty',
     }),
 
-    languages() {
-      const languages = LANGUAGES.map((language) => {
-        return language.name;
-      });
-      return languages;
+    levels() {
+      return Object.values(DESIGN.DIFFICULTY);
     },
   },
 
   methods: {
     ...mapActions({
-      changeLanguage: 'layout/changeLanguage',
+      setDifficulty: 'layout/setDifficulty',
     }),
-
-    changeLanguage(language) {
-      this.$i18n.i18next.changeLanguage(language);
-      this.$store.dispatch('layout/changeLanguage', language);
-    },
   },
 };
 </script>

@@ -90,6 +90,21 @@
       </div>
     </swiper-slide>
 
+    <swiper-slide>
+      <div class="instructions">
+        <h3>{{ $t('layout.settings') }}</h3>
+        <h4 v-html="$t('layout.difficulty.title')" />
+        <div class="switch__wrapper">
+          <DifficultySwitch />
+        </div>
+        <h5 class="small">{{ $t('layout.difficultytext') }}{{ time }} {{ $t('layout.difficultytext2') }}</h5>
+        <h5
+          class="small"
+          v-html="$t('layout.difficultytext3')"
+        />
+      </div>
+    </swiper-slide>
+
     <div class="swiper-button-prev" slot="button-prev"></div>
     <div class="swiper-button-next" slot="button-next"></div>
 </swiper>
@@ -103,6 +118,7 @@ import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper';
 import { DESIGN } from '@/utils/constants';
 
 import LangSwitch from '@/components/Layout/LangSwitch.vue';
+import DifficultySwitch from '@/components/Layout/DifficultySwitch.vue';
 
 import 'swiper/css/swiper.css';
 
@@ -110,9 +126,10 @@ export default {
   name: 'Instructions',
 
   components: {
-    LangSwitch,
     Swiper,
     SwiperSlide,
+    LangSwitch,
+    DifficultySwitch,
   },
 
   directives: {
@@ -132,6 +149,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      difficulty: 'layout/difficulty',
       level: 'layout/level',
     }),
 
@@ -141,6 +159,10 @@ export default {
 
     maxWeight() {
       return DESIGN.HERO.MAXWEIGHT;
+    },
+
+    time() {
+      return DESIGN.EFFECTS.time[this.difficulty];
     },
   },
 };
@@ -230,5 +252,10 @@ h3 {
 
 h5 {
   margin-bottom: $gutter;
+
+  &.small {
+    margin-top: $gutter / 4;
+    margin-bottom: $gutter / 4;
+  }
 }
 </style>

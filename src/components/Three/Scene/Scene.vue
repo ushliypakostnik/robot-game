@@ -183,7 +183,7 @@ export default {
 
       isFetching: 'layout/isFetching',
 
-      isGameOver: 'layout/isGameOver',
+      difficulty: 'layout/difficulty',
 
       level: 'layout/level',
       levelFrom: 'layout/levelFrom',
@@ -195,6 +195,7 @@ export default {
       message: 'layout/message',
 
       isWin: 'layout/isWin',
+      isGameOver: 'layout/isGameOver',
 
       directionX: 'hero/directionX',
       directionY: 'hero/directionY',
@@ -580,6 +581,10 @@ export default {
       if (value) this.camera.fov = DESIGN.CAMERA.fov / 4;
       else this.camera.fov = DESIGN.CAMERA.fov;
       this.camera.updateProjectionMatrix();
+    },
+
+    difficulty(value) {
+      this.world.atmosphere.setCheck(value);
     },
 
     isHeroTired(value) {

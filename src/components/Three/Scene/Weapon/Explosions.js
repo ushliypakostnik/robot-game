@@ -46,9 +46,6 @@ function Explosions() {
     isEnemy,
     velocity,
   ) => {
-
-    console.log(isEnemy);
-
     explosionClone = explosion.clone();
 
     explosionClone.position.copy(position);
@@ -96,7 +93,7 @@ function Explosions() {
       // Урон персонажу
       if (!scope.isNotDamaged
           && record.mesh.position.distanceTo(scope.camera.position) < DESIGN.HERO.HEIGHT + record.size) {
-        scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 10);
+        scope.events.heroOnHitDispatchHelper(scope, DESIGN.WEAPON.damage.explosion[scope.difficulty] * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 10);
         // console.log('Damage: ', DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 10);
       }
 
@@ -106,7 +103,7 @@ function Explosions() {
         .filter(enemy => record.mesh.position.distanceTo(enemy.collider.center) < enemy.height + record.size)
         .forEach((enemy) => {
           scope.cooeficient = scope.isGain ? 2 : 1;
-          enemy.health -= DESIGN.HERO.weapon.damage * scope.cooeficient;
+          enemy.health -= DESIGN.HERO.weapon.damage[scope.difficulty] * scope.cooeficient;
           enemy.scale.scale.set(enemy.health / DESIGN.ENEMIES[enemy.name].health, 1, enemy.health / DESIGN.ENEMIES[enemy.name].health);
 
           if (enemy.health <= 0) scope.world.enemies.toDead(scope, enemy);

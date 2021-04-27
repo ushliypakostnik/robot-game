@@ -11,11 +11,16 @@ import {
   LOCALSTORAGE,
 } from '@/utils/constants';
 
+const autoDifficulty = localStorage.getItem(LOCALSTORAGE.DIFFICULTY) || null;
+if (!autoDifficulty) localStorage.setItem(LOCALSTORAGE.DIFFICULTY, DESIGN.DIFFICULTY.anarchist);
+
 const initialState = {
   isFetching: false,
   isUser: !isBackend,
 
   language: null,
+
+  difficulty: localStorage.getItem(LOCALSTORAGE.DIFFICULTY),
 
   level: null,
   levelFrom: null,
@@ -47,6 +52,8 @@ const getters = {
   isUser: state => state.isUser,
 
   language: state => state.language,
+
+  difficulty: state => state.difficulty,
 
   level: state => state.level,
   levelFrom: state => state.levelFrom,
@@ -186,6 +193,11 @@ const actions = {
     storage.rememberLanguage(language);
   },
 
+  setDifficulty: ({ commit }, difficulty) => {
+    commit('setDifficulty', difficulty);
+    storage.rememberDifficulty(difficulty);
+  },
+
   // eslint-disable-next-line no-unused-vars
   setLevel: ({ commit }, { level, levelFrom }) => {
     storage.rememberLevel(level, levelFrom);
@@ -232,6 +244,10 @@ const mutations = {
 
   setUser: (state) => {
     state.isUser = true;
+  },
+
+  setDifficulty: (state, difficulty) => {
+    state.difficulty = difficulty;
   },
 
   setLevel: (state, { level, levelFrom }) => {
