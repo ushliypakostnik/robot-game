@@ -23,7 +23,7 @@ function Enemies() {
   this.spiders = null;
   this.drones = null;
 
-  let result;
+  let result = new Three.Vector3();
 
   let deadMaterial;
   let dead2material;
@@ -135,7 +135,7 @@ function Enemies() {
       enemy.collider.translate(scope.resultDoors.normal.multiplyScalar(scope.resultDoors.depth));
     }
 
-    // Делаем октодерево из всех NPS без этого, если давно не делали
+    // Делаем октодерево из всех врагов без этого, если давно не делали
     if (scope.enemies.length > 1
       && !enemy.updateClock.running) {
       if (!enemy.updateClock.running) enemy.updateClock.start();
@@ -230,7 +230,9 @@ function Enemies() {
     scope.number = enemy.collider.center.y > 0 ? enemy.collider.center.y : 0;
 
     enemy.mesh.position.set(enemy.collider.center.x, scope.number, enemy.collider.center.z);
-    enemy.pseudo.position.set(enemy.mesh.position.x, scope.number - enemy.height / 4, enemy.mesh.position.z);
+    if (enemy.mode !== DESIGN.ENEMIES.mode.dies) {
+      enemy.pseudo.position.set(enemy.mesh.position.x, scope.number - 1, enemy.mesh.position.z);
+    } else enemy.pseudo.position.set(enemy.mesh.position.x, scope.number, enemy.mesh.position.z);
     enemy.pseudoLarge.position.set(enemy.mesh.position.x, scope.number, enemy.mesh.position.z);
     enemy.scale.position.set(enemy.mesh.position.x, scope.number + enemy.height / 2, enemy.mesh.position.z);
   };
@@ -367,9 +369,20 @@ function Enemies() {
     position(scope, enemy);
 
     if (enemy.mode === DESIGN.ENEMIES.mode.dies) {
-      enemy.mesh.rotateX(scope.delta * Math.random() * enemy.randomX);
-      enemy.mesh.rotateY(scope.delta * Math.random());
-      enemy.mesh.rotateZ(scope.delta * Math.random() * enemy.randomZ);
+      scope.number = scope.delta * Math.random() * enemy.randomX;
+      enemy.mesh.rotateX(scope.number);
+      enemy.pseudo.rotateX(scope.number);
+      enemy.pseudoLarge.rotateX(scope.number);
+
+      scope.number = scope.delta * Math.random();
+      enemy.mesh.rotateY(scope.number);
+      enemy.pseudo.rotateY(scope.number);
+      enemy.pseudoLarge.rotateY(scope.number);
+
+      scope.number = scope.delta * Math.random() * enemy.randomZ;
+      enemy.mesh.rotateZ(scope.number);
+      enemy.pseudo.rotateZ(scope.number);
+      enemy.pseudoLarge.rotateZ(scope.number);
     }
   };
 
@@ -377,7 +390,7 @@ function Enemies() {
   const idle = (scope, enemy) => {
     if (enemy.isOnJump) gravity(scope, enemy);
     else {
-      // Двигается только один NPS
+      // Двигается только один враг
       if (!idleClock.running) {
         scope.array = scope.enemies.filter(enemy => enemy.mode === DESIGN.ENEMIES.mode.idle);
         scope.number = randomInteger(0, scope.array.length - 1);

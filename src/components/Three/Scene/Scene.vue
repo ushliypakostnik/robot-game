@@ -63,9 +63,9 @@ export default {
 
       // hero
 
-      directionStore: null,
       keyStates: {},
       isRun: false,
+      isShift: false,
       isHidden: false,
       isToruch: true,
 
@@ -105,6 +105,7 @@ export default {
       resultDoors: null,
       resultEnemies: null,
       group: null,
+      box: null,
 
       y: null,
       yN: null,
@@ -142,10 +143,11 @@ export default {
     this.position = new Three.Vector3();
     this.direction = new Three.Vector3();
     this.directionOnHero = new Three.Vector3();
-    this.directionStore = new Three.Vector3();
     this.y = new Three.Vector3(0, 1, 0);
     this.yN = new Three.Vector3(0, -1, 0);
     this.group = new Three.Group();
+    this.box = new Three.Box3();
+
 
     this.ray = new Three.Ray(
       new Three.Vector3(),
@@ -270,15 +272,12 @@ export default {
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
 
       this.controls.addEventListener('unlock', () => {
-        if (!this.isGameOver) {
-          this.directionStore = this.camera.getWorldDirection(this.direction);
-          this.togglePause(true);
-        }
+        if (!this.isGameOver) this.togglePause(true);
       });
 
       this.controls.addEventListener('lock', () => {
+        if (!this.isGameOver) this.togglePause(false);
         if (this.isModal) this.setModal({ isModal: false, modalId: null });
-        this.togglePause(false);
       });
 
       this.scene.add(this.controls.getObject());
@@ -372,11 +371,13 @@ export default {
           }
           break;
 
+        /* eslint-disable dot-notation */
         case 16: // Shift
           if (!this.isPause
               && !this.isRun
               && !this.isHidden
-              && !this.isHeroTired) this.isRun = true;
+              && !this.isHeroTired
+              && this.keyStates['KeyW']) this.isRun = true;
           break;
 
         case 49: // 1

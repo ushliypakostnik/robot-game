@@ -3,6 +3,7 @@ import { DESIGN } from '@/utils/constants';
 function EventsBus() {
   let bus = [];
   this.id = 0;
+  let id;
   let pause;
 
   this.addEventsToBus = (delay, data, callback) => {
@@ -22,7 +23,7 @@ function EventsBus() {
   };
 
   this.messagesByIdDispatchHelper = (scope, view, name, data, delay) => {
-    const id = scope.message + 1;
+    id = scope.message + 1;
     scope.addMessage(id);
     pause = delay || DESIGN.MESSAGES_TIMEOUT / 1000;
 

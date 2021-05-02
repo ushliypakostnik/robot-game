@@ -80,6 +80,27 @@ const fixNot = (value) => {
   return value;
 };
 
+export const isToHeroRayIntersectWorld = (scope, collider) => {
+  // get ray
+  scope.direction.subVectors(collider.center, scope.camera.position).negate().normalize();
+  scope.ray = new Three.Ray(collider.center, scope.direction);
+
+  scope.result = scope.octree.rayIntersect(scope.ray);
+  scope.resultDoors = scope.octreeDoors.rayIntersect(scope.ray);
+
+  // arrowHelper = new Three.ArrowHelper(scope.direction, сollider.center, scope.resultEnemies.distance, 0xffffff);
+  // scope.scene.add(arrowHelper);
+
+  if (scope.result || scope.resultDoors) {
+    scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance));
+
+    scope.dictance = scope.camera.position.distanceTo(collider.center);
+
+    return scope.number < scope.dictance;
+  }
+  return false;
+};
+
 export const isEnemyCanShot = (scope, enemy) => {
   // get ray
   scope.direction.copy(enemy.mesh.getWorldDirection(scope.direction).normalize());
@@ -107,27 +128,6 @@ export const isEnemyCanShot = (scope, enemy) => {
   return true;
 };
 
-export const isToHeroRayIntersectWorld = (scope, collider) => {
-  // get ray
-  scope.direction.subVectors(collider.center, scope.camera.position).negate().normalize();
-  scope.ray = new Three.Ray(collider.center, scope.direction);
-
-  scope.result = scope.octree.rayIntersect(scope.ray);
-  scope.resultDoors = scope.octreeDoors.rayIntersect(scope.ray);
-
-  // arrowHelper = new Three.ArrowHelper(scope.direction, сollider.center, scope.resultEnemies.distance, 0xffffff);
-  // scope.scene.add(arrowHelper);
-
-  if (scope.result || scope.resultDoors) {
-    scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance));
-
-    scope.dictance = scope.camera.position.distanceTo(collider.center);
-
-    return scope.number < scope.dictance;
-  }
-  return false;
-};
-
 export const isEnemyCanFlyDown = (scope, enemy) => {
   scope.ray = new Three.Ray(enemy.collider.center, scope.yN);
 
@@ -148,6 +148,7 @@ export const isEnemyCanMoveForward = (scope, enemy) => {
   scope.ray = new Three.Ray(enemy.collider.center, enemy.mesh.getWorldDirection(scope.direction).normalize());
 
   scope.result = scope.octree.rayIntersect(scope.ray);
+  scope.resultDoors = scope.octreeDoors.rayIntersect(scope.ray);
   scope.resultEnemies = scope.octreeEnemies.rayIntersect(scope.ray);
 
   // arrowHelper = new Three.ArrowHelper(scope.direction, enemy.collider.center, 6, 0xffffff);

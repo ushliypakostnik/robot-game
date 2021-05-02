@@ -1,90 +1,76 @@
-import * as Three from 'three';
-
-import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
-
-import { OBJECTS } from '@/utils/constants';
-
-import { loaderDispatchHelper } from '@/utils/utilities';
-
-function Thing() {
-  let thingClone;
-  let thingGroup;
-  let thingPseudo;
-  let thingPseudoClone;
-
-  this.init = (
-    scope,
-    pseudoGeometry,
-    pseudoMaterial,
-  ) => {
-    thingPseudo = new Three.Mesh(pseudoGeometry, pseudoMaterial);
-
-    new GLTFLoader().load(
-      './images/models/Objects/Thing.glb',
-      (thing) => {
-        loaderDispatchHelper(scope.$store, 'isThingLoaded'); // загружена модель
-
-        for (let i = 0; i < OBJECTS.THINGS[scope.l].data.length; i++) {
-          // eslint-disable-next-line no-loop-func
-          thing.scene.traverse((child) => {
-            // ... - тут "покраска" материалами частей вещи
-          });
-
-          // Клонируем объект и псевдо
-          thingClone = thing.scene.clone();
-          thingPseudoClone = thingPseudo.clone();
-
-          // Псевдо нужно дать правильное имя чтобы мы могли различать его при кастинге
-          thingPseudoClone.name = OBJECTS.THINGS.name;
-          thingPseudoClone.position.y += 1.5; // корректируем немного позицию по высоте
-          thingPseudoClone.visible = false; // выключаем рендер
-
-          thingPseudoClone.updateMatrix(); // обновляем
-          thingPseudoClone.matrixAutoUpdate = false; // запрещаем автообновление
-
-          // Делаем из обхекта и псевдо удобную группу
-          thingGroup = new Three.Group();
-          thingGroup.add(thingClone);
-          thingGroup.add(thingPseudoClone);
-
-          // Выставляем координаты из собранных из модели уровня данных
-          thingGroup.position.set(
-            OBJECTS.THINGS[scope.l].data[i].x,
-            OBJECTS.THINGS[scope.l].data[i].y,
-            OBJECTS.THINGS[scope.l].data[i].z,
-          );
-
-          // Записываем в "рабочие объеты" - по ним будем кастить и прочее
-          scope.things.push({
-            id: thingPseudoClone.id,
-            group: thingGroup,
-          });
-          scope.objects.push(thingPseudoClone);
-
-          scope.scene.add(thingGroup); // добавляем на сцену
-        }
-        loaderDispatchHelper(scope.$store, 'isThingsBuilt'); // построено
-      },
-    );
-  };
-}
-
-export default Thing;
+// В @/utils/constatnts.js:
+export const DESIGN = {
+  OCTREE_UPDATE_TIMEOUT: 0.5,
+  // ...
+};
 
 
-// Raycasting
+// В @/utils/utilities.js:
+// Обновить персональное октодерево врагов для одного врага
+import * as Three from "three";
+import { Octree } from "../components/Three/Modules/Math/Octree";
 
-// Forward ray
-scope.direction = scope.camera.getWorldDirection(scope.direction);
-scope.raycaster.set(scope.camera.getWorldPosition(scope.position), scope.direction);
-scope.intersections = scope.raycaster.intersectObjects(scope.objects);
-scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < DESIGN.HERO.CAST : false;
+export const updateEnemiesPersonalOctree = (scope, id) => {
+  scope.group = new Three.Group();
+  scope.enemies.filter(obj => obj.id !== id).forEach((enemy) => {
+    scope.group.add(enemy.pseudoLarge);
+  });
+  scope.octreeEnemies = new Octree();
+  scope.octreeEnemies.fromGraphNode(scope.group);
+  scope.scene.add(scope.group);
+};
 
-if (scope.onForward) {
-  scope.object = scope.intersections[0].object;
 
-  // Кастим предмет THINGS
-  if (scope.object.name.includes(OBJECTS.THINGS.name)) {
-    // ...
+// В @/components/Three/Scene/Enemies.js:
+import { DESIGN } from '@/utils/constants';
+let result = new Three.Vector3();
+
+// Столкновения врагов
+const enemyCollitions = (scope, enemy) => {
+  // Столкновения c миром - полом, стенами, стеклами и трубами
+  scope.result = scope.octree.sphereIntersect(enemy.collider);
+  enemy.isOnFloor = false;
+
+  if (scope.result) {
+    enemy.isOnFloor = scope.result.normal.y > 0;
+    // На полу?
+    if (!enemy.isOnFloor) {
+      enemy.velocity.addScaledVector(scope.result.normal, -scope.result.normal.dot(enemy.velocity));
+    } else {
+      // Подбитый враг становится совсем мертвым после падения на пол и тд
+      // ...
+    }
+
+    enemy.collider.translate(scope.result.normal.multiplyScalar(scope.result.depth));
   }
-}
+
+  // Столкновения c дверями
+  scope.resultDoors = scope.octreeDoors.sphereIntersect(enemy.collider);
+  if (scope.resultDoors) {
+    enemy.collider.translate(scope.resultDoors.normal.multiplyScalar(scope.resultDoors.depth));
+  }
+
+  // Делаем октодерево из всех врагов без этого, если давно не делали
+  if (scope.enemies.length > 1
+    && !enemy.updateClock.running) {
+    if (!enemy.updateClock.running) enemy.updateClock.start();
+
+    updateEnemiesPersonalOctree(scope, enemy.id);
+
+    scope.resultEnemies = scope.octreeEnemies.sphereIntersect(enemy.collider);
+    if (scope.resultEnemies) {
+      result = scope.resultEnemies.normal.multiplyScalar(scope.resultEnemies.depth);
+      result.y = 0;
+      enemy.collider.translate(result);
+    }
+  }
+
+  if (enemy.updateClock.running) {
+    enemy.updateTime += enemy.updateClock.getDelta();
+
+    if (enemy.updateTime > DESIGN.OCTREE_UPDATE_TIMEOUT && enemy.updateClock.running) {
+      enemy.updateClock.stop();
+      enemy.updateTime = 0;
+    }
+  }
+};

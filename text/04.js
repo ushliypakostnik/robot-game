@@ -1,77 +1,65 @@
 /* eslint-disable dot-notation,no-unused-vars */
 import * as Three from "three";
 
-import {
-  DESIGN,
-  // ...
-} from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
-import {
-  loaderDispatchHelper,
-  // ...
-} from '@/utils/utilities';
+import { loaderDispatchHelper } from '@/utils/utilities';
 
-function Hero() {
+function Module() {
   const audioLoader = new Three.AudioLoader();
-  let steps;
   // ...
+
+  let material = null;
+  const geometry = new Three.SphereBufferGeometry(0.5, 8, 8);
+  let explosion;
+  let explosionClone;
+
+  let boom;
 
   this.init = (
     scope,
+    fireMaterial,
     // ...
   ) => {
-    audioLoader.load('./audio/steps.mp3', (buffer) => {
-      steps = scope.audio.addAudioToHero(scope, buffer, 'steps', DESIGN.VOLUME.hero.step, false);
-      loaderDispatchHelper(scope.$store, 'isStepsLoaded');
+    // Звук наземных врагов - загружаем в инициализации на объекты через шину
+    audioLoader.load('./audio/mechanism.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isMechanismLoaded');
+
+      scope.array = scope.enemies.filter(enemy => enemy.name !== OBJECTS.DRONES.name);
+
+      scope.audio.addAudioToObjects(scope, scope.array, buffer, 'mesh', 'mechanism', DESIGN.VOLUME.mechanism, true);
     });
-  };
 
-  this.setHidden = (scope, isHidden) => {
-    if (isHidden) {
-      // ...
-      steps.setPlaybackRate(0.5);
-    } else {
-      // ...
-      steps.setPlaybackRate(1);
-    }
-  };
+    // Звук взрыва - тоесть "добавляемой и уничтожаемой" сущности - загружаем и записываем в переменную
+    material = fireMaterial;
 
-  this.setRun = (scope, isRun) => {
-    if (isRun && scope.keyStates['KeyW']) {
-      steps.setVolume(DESIGN.VOLUME.hero.run);
-      steps.setPlaybackRate(2);
-    } else {
-      steps.setVolume(DESIGN.VOLUME.hero.step);
-      steps.setPlaybackRate(1);
-    }
+    explosion = new Three.Mesh(geometry, material);
+
+    audioLoader.load('./audio/explosion.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isExplosionLoaded');
+      boom = buffer;
+    });
   };
 
   // ...
 
-  this.animate = (scope) => {
-    if (scope.playerOnFloor) {
-      if (!scope.isPause) {
-        // ...
+  // ... где-то в логике врагов:
+  this.moduleFunction = (scope, enemy) => {
+    scope.audio.startObjectSound(enemy.id, 'mechanism');
+    // ...
+    scope.audio.stopObjectSound(enemy.id, 'mechanism');
+    // ...
+  };
 
-        // Steps sound
-        if (steps) {
-          if (scope.keyStates['KeyW']
-            || scope.keyStates['KeyS']
-            || scope.keyStates['KeyA']
-            || scope.keyStates['KeyD']) {
-            if (!steps.isPlaying) {
-              speed = scope.isHidden ? 0.5 : scope.isRun ? 2 : 1;
-              steps.setPlaybackRate(speed);
-              steps.play();
-            }
-          }
-        }
-      } else {
-        if (steps && steps.isPlaying) steps.pause();
-
-        // ...
-      }
-    }
+  // При добавлении взрыва на шину взрывов:
+  this.addExplosionToBus = (
+    scope,
+    // ...
+  ) => {
+    explosionClone = explosion.clone();
+    // ..
+    scope.audio.playAudioOnObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion);
+    // ..
   };
 }
 

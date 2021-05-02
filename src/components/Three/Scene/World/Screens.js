@@ -13,7 +13,6 @@ function Screens() {
   const audioLoader = new Three.AudioLoader();
 
   let room;
-  let box;
 
   this.init = (
     scope,
@@ -25,8 +24,6 @@ function Screens() {
 
     const screen = new Three.Mesh(screensGeometry, material);
     let screenClone;
-
-    box = new Three.Box3();
 
     for (let i = 0; i < OBJECTS.SCREENS[scope.l].data.length; i++) {
       screenClone = screen.clone();
@@ -68,8 +65,8 @@ function Screens() {
   };
 
   this.isHeroInRoomWithScreen = (scope, screen) => {
-    box.copy(screen.room.geometry.boundingBox).applyMatrix4(screen.room.matrixWorld);
-    if (box.containsPoint(scope.camera.position)) return true;
+    scope.box.copy(screen.room.geometry.boundingBox).applyMatrix4(screen.room.matrixWorld);
+    if (scope.box.containsPoint(scope.camera.position)) return true;
     return false;
   };
 

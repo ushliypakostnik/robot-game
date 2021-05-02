@@ -161,7 +161,6 @@ function Hero() {
 
     audioLoader.load('./audio/steps.mp3', (buffer) => {
       steps = scope.audio.addAudioToHero(scope, buffer, 'steps', DESIGN.VOLUME.hero.step, false);
-      steps.onEnded = () => steps.stop();
       loaderDispatchHelper(scope.$store, 'isStepsLoaded');
     });
 
@@ -736,6 +735,12 @@ function Hero() {
         if (scope.keyStates['KeyW']) {
           speed = scope.isHidden ? DESIGN.HERO.SPEED / 2 : scope.isRun ? DESIGN.HERO.SPEED * 2 : DESIGN.HERO.SPEED;
           playerVelocity.add(getForwardVector(scope).multiplyScalar(speed * scope.delta));
+
+          if ((scope.keyStates['ShiftLeft']
+              || scope.keyStates['ShiftRight'])
+              && !scope.isHidden
+              && !scope.isHeroTired
+              && !scope.isRun) scope.isRun = true;
         }
 
         if (scope.keyStates['KeyS']) {

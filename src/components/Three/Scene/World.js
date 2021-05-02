@@ -283,7 +283,7 @@ function World() {
               } else if (child.name.includes('X')) {
                 if (child.name.includes('R')) rotate = 0;
                 else rotate = Math.PI;
-              };
+              }
 
               OBJECTS.SCREENS[scope.l].data.push({
                 modalId: Number(child.name.substring(6, 7)),

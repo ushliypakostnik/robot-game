@@ -1,76 +1,103 @@
 // В @/utils/constatnts.js:
 export const DESIGN = {
-  OCTREE_UPDATE_TIMEOUT: 0.5,
+  DIFFICULTY: {
+    civil: 'civil',
+    anarchist: 'anarchist',
+    communist: 'communist',
+  },
+  ENEMIES: {
+    mode: {
+      idle: 'idle',
+      active: 'active',
+      dies: 'dies',
+      dead: 'dead',
+    },
+    spider: {
+      // ...
+      decision: {
+        enjoy: 60,
+        rotate: 25,
+        shot: {
+          civil: 40,
+          anarchist: 30,
+          communist: 25,
+        },
+        jump: 50,
+        speed: 20,
+        bend: 30,
+      },
+    },
+    drone: {
+      // ...
+      decision: {
+        enjoy: 50,
+        rotate: 25,
+        shot: {
+          civil: 50,
+          anarchist: 40,
+          communist: 30,
+        },
+        fly: 40,
+        speed: 20,
+        bend: 25,
+      },
+    },
+  },
   // ...
 };
 
-
-// В @/utils/utilities.js:
-// Обновить персональное октодерево врагов для одного врага
-import * as Three from "three";
-import { Octree } from "../components/Three/Modules/Math/Octree";
-
-export const updateEnemiesPersonalOctree = (scope, id) => {
-  scope.group = new Three.Group();
-  scope.enemies.filter(obj => obj.id !== id).forEach((enemy) => {
-    scope.group.add(enemy.pseudoLarge);
-  });
-  scope.octreeEnemies = new Octree();
-  scope.octreeEnemies.fromGraphNode(scope.group);
-  scope.scene.add(scope.group);
-};
-
-
 // В @/components/Three/Scene/Enemies.js:
 import { DESIGN } from '@/utils/constants';
-let result = new Three.Vector3();
 
-// Столкновения врагов
-const enemyCollitions = (scope, enemy) => {
-  // Столкновения c миром - полом, стенами, стеклами и трубами
-  scope.result = scope.octree.sphereIntersect(enemy.collider);
-  enemy.isOnFloor = false;
+import {
+  randomInteger,
+  isEnemyCanShot,
+  // ...
+} from "@/utils/utilities";
 
-  if (scope.result) {
-    enemy.isOnFloor = scope.result.normal.y > 0;
-    // На полу?
-    if (!enemy.isOnFloor) {
-      enemy.velocity.addScaledVector(scope.result.normal, -scope.result.normal.dot(enemy.velocity));
-    } else {
-      // Подбитый враг становится совсем мертвым после падения на пол и тд
-      // ...
+function Enemies() {
+  // ...
+
+
+  const idle = (scope, enemy) => {
+    // ...
+  };
+
+  const active = (scope, enemy) => {
+    // ...
+
+    // Где-то в логике агрессивного режима: hешение на выстрел (если отдыхает)
+    scope.decision = randomInteger(1, DESIGN.ENEMIES[enemy.name].decision.shot[scope.difficulty]) === 1;
+    if (scope.decision) {
+      if (isEnemyCanShot(scope, enemy)) {
+        scope.boolean = enemy.name === OBJECTS.DRONES.name;
+        scope.world.shots.addShotToBus(scope, enemy.mesh.position, scope.direction, scope.boolean);
+        scope.audio.replayObjectSound(enemy.id, 'shot');
+      }
     }
+  };
 
-    enemy.collider.translate(scope.result.normal.multiplyScalar(scope.result.depth));
-  }
+  const gravity = (scope, enemy) => {
+    // ...
+  };
 
-  // Столкновения c дверями
-  scope.resultDoors = scope.octreeDoors.sphereIntersect(enemy.collider);
-  if (scope.resultDoors) {
-    enemy.collider.translate(scope.resultDoors.normal.multiplyScalar(scope.resultDoors.depth));
-  }
+  this.animate = (scope) => {
+    scope.enemies.filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.dead).forEach((enemy) => {
+      switch (enemy.mode) {
+        case DESIGN.ENEMIES.mode.idle:
+          idle(scope, enemy);
+          break;
 
-  // Делаем октодерево из всех врагов без этого, если давно не делали
-  if (scope.enemies.length > 1
-    && !enemy.updateClock.running) {
-    if (!enemy.updateClock.running) enemy.updateClock.start();
+        case DESIGN.ENEMIES.mode.active:
+          active(scope, enemy);
+          break;
 
-    updateEnemiesPersonalOctree(scope, enemy.id);
+        case DESIGN.ENEMIES.mode.dies:
+          gravity(scope, enemy);
+          break;
+      }
+    });
+  };
+}
 
-    scope.resultEnemies = scope.octreeEnemies.sphereIntersect(enemy.collider);
-    if (scope.resultEnemies) {
-      result = scope.resultEnemies.normal.multiplyScalar(scope.resultEnemies.depth);
-      result.y = 0;
-      enemy.collider.translate(result);
-    }
-  }
-
-  if (enemy.updateClock.running) {
-    enemy.updateTime += enemy.updateClock.getDelta();
-
-    if (enemy.updateTime > DESIGN.OCTREE_UPDATE_TIMEOUT && enemy.updateClock.running) {
-      enemy.updateClock.stop();
-      enemy.updateTime = 0;
-    }
-  }
-};
+export default Enemies;

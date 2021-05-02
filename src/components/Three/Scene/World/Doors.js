@@ -10,10 +10,7 @@ import { loaderDispatchHelper } from '@/utils/utilities';
 function Doors() {
   const audioLoader = new Three.AudioLoader();
 
-  let group;
   let door;
-  let box;
-  let direction;
 
   this.init = (scope) => {
     const doorsMarkerTexture = new Three.TextureLoader().load(
@@ -42,8 +39,6 @@ function Doors() {
     let doorsPseudoGeometry;
     const doorsPseudoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.white });
     let doorPseudoMesh;
-
-    box = new Three.Box3();
 
     scope.doors = [];
     for (let i = 0; i < OBJECTS.DOORS[scope.l].data.length; i++) {
@@ -90,7 +85,7 @@ function Doors() {
       doorsPseudoGeometry = new Three.BoxBufferGeometry(
         OBJECTS.DOORS[scope.l].data[i].width,
         OBJECTS.DOORS[scope.l].data[i].height,
-        3,
+        DESIGN.HERO.HEIGHT,
       );
       doorPseudoMesh = new Three.Mesh(doorsPseudoGeometry, doorsPseudoMaterial);
 
@@ -165,17 +160,17 @@ function Doors() {
       door.time += scope.delta;
 
       if (door.isStart) {
-        if (door.direction === 'up') direction = 1;
-        if (door.direction === 'down') direction = -1;
+        if (door.direction === 'up') scope.number = 1;
+        if (door.direction === 'down') scope.number = -1;
       } else if (door.isEnd) {
-        if (door.direction === 'up') direction = -1;
-        if (door.direction === 'down') direction = 1;
+        if (door.direction === 'up') scope.number = -1;
+        if (door.direction === 'down') scope.number = 1;
       }
 
       if (door.isStart || door.isEnd) {
-        door.mesh.position.y += direction * scope.delta * DESIGN.STAFF.doors.speed;
-        door.marker1.position.y += direction * scope.delta * DESIGN.STAFF.doors.speed;
-        door.marker2.position.y += direction * scope.delta * DESIGN.STAFF.doors.speed;
+        door.mesh.position.y += scope.number * scope.delta * DESIGN.STAFF.doors.speed;
+        door.marker1.position.y += scope.number * scope.delta * DESIGN.STAFF.doors.speed;
+        door.marker2.position.y += scope.number * scope.delta * DESIGN.STAFF.doors.speed;
         door.distance += scope.delta * DESIGN.STAFF.doors.speed;
       }
 
@@ -196,8 +191,8 @@ function Doors() {
       }
 
       if (door.isPause && door.time > DESIGN.STAFF.doors.pause) {
-        box.copy(door.pseudo.geometry.boundingBox).applyMatrix4(door.pseudo.matrixWorld);
-        if (!box.containsPoint(scope.controls.getObject().position)) {
+        scope.box.copy(door.pseudo.geometry.boundingBox).applyMatrix4(door.pseudo.matrixWorld);
+        if (!scope.box.containsPoint(scope.controls.getObject().position)) {
           door.isPause = false;
           door.isEnd = true;
           scope.audio.startObjectSound(door.id, 'door');
@@ -205,8 +200,8 @@ function Doors() {
       }
 
       if (door.isEnd) {
-        box.copy(door.pseudo.geometry.boundingBox).applyMatrix4(door.pseudo.matrixWorld);
-        if (box.containsPoint(scope.controls.getObject().position)) {
+        scope.box.copy(door.pseudo.geometry.boundingBox).applyMatrix4(door.pseudo.matrixWorld);
+        if (scope.box.containsPoint(scope.controls.getObject().position)) {
           door.isStart = true;
           door.isEnd = false;
           door.distance = door.height - door.distance;

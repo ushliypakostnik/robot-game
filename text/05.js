@@ -1,30 +1,30 @@
 /* eslint-disable no-unused-vars */
 import * as Three from 'three';
 
-import { DESIGN } from '@/utils/constants';
+import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Module() {
-  let variable; // локальная переменная - когда очень удобна или необходима при инициализации или во всей логике
-  // ...
-
   this.init = (
     scope,
-    texture1,
-    material1,
     // ...
   ) => {
-    // variable = ...
-    // ...
-  };
+    const sandTexture = new Three.TextureLoader().load(
+      './images/textures/sand.jpg',
+      () => {
+        scope.render(); // нужно вызвать рендер если объекты использующию эту текстуру заметны "на первом экране"
+        loaderDispatchHelper(scope.$store, 'isSandLoaded');
+      },
+    );
 
-  this.animate = (scope) => {
-    // А вот тут и в остальной логике стараемся использовать уже только переменные Scene.vue:
-    scope.moduleObjectsSore.filter(object => object.mode === DESIGN.ENEMIES.mode.active).forEach((object) => {
-      // scope.number = ...
-      // scope.direction = new Three.Vector3(...);
-      // ...
-    });
   };
 }
 
 export default Module;
+
+// В @/utils/utilities.js:
+
+export const loaderDispatchHelper = (store, field) => {
+  store.dispatch('preloader/preloadOrBuilt', field).then(() => {
+    store.dispatch('preloader/isAllLoadedAndBuilt');
+  }).catch((error) => { console.log(error); });
+};

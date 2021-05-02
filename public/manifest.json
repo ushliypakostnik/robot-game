@@ -1,0 +1,10 @@
+{
+  "manifest_version": 2,
+  "name": "three-vue-start",
+  "version": "0.1",
+  "short_name": "three-vue-start",
+  "start_url": "/?utm_source=homescreen",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#ffffff"
+}

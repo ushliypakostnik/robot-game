@@ -50,9 +50,9 @@ function Explosions() {
 
     explosionClone.position.copy(position);
 
-    scope.audio.playAudioOnObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion, true);
+    scope.audio.playAudioOnObject(scope, explosionClone, boom, 'boom', DESIGN.VOLUME.explosion);
 
-    if (isEnemy) scope.audio.playAudioOnObject(scope, explosionClone, hit, 'hit', DESIGN.VOLUME.hit, false);
+    if (isEnemy) scope.audio.playAudioOnObject(scope, explosionClone, hit, 'hit', DESIGN.VOLUME.hit);
 
     ++this.id;
     bus.push({
@@ -97,7 +97,7 @@ function Explosions() {
         // console.log('Damage: ', DESIGN.WEAPON.damage.explosion * (-1 / record.mesh.position.distanceTo(scope.camera.position)) * record.size / 10);
       }
 
-      // Урон NPS
+      // Урон врагам
       scope.enemies
         .filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.dies && enemy.mode !== DESIGN.ENEMIES.mode.dead)
         .filter(enemy => record.mesh.position.distanceTo(enemy.collider.center) < enemy.height + record.size)

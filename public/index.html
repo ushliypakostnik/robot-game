@@ -17,11 +17,6 @@
     <link type="image/png" sizes="96x96" rel="icon" href="<%= BASE_URL %>favicon-96x96.png">
     <link type="image/png" sizes="120x120" rel="icon" href="<%= BASE_URL %>favicon-120x120.png">
 
-    <!-- Tell the browser it's a PWA -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <!-- Make sure theme-color is defined -->
-    <meta name="theme-color" content="#ffffff">
-
     <style type="text/css">
       /* Import font */
       @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -29,13 +24,15 @@
       html {
         height: 100%;
       }
+
       body {
         height: 100%;
         margin: 0;
         padding: 0;
         font-family: sans-serif;
       }
-      #legacy {
+
+      #loading {
         height: 100%;
         padding-top: 15%;
         background-color: #000000;
@@ -43,15 +40,17 @@
         text-align: center;
         font-size: large;
       }
+
       @supports (height: 100vh) {
         html,
         body,
-        #legacy {
+        #loading {
           height: 100vh;
         }
       }
+
       @supports (display: flex) {
-        #legacy {
+        #loading {
           padding-top: 0;
           display: flex;
           flex-direction: column;
@@ -65,7 +64,7 @@
       <strong>We're sorry but vue-test doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app">
-        <div id="legacy">Loading...</div>
+        <div id="loading">Loading...</div>
     </div>
   </body>
 </html>

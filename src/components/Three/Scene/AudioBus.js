@@ -69,7 +69,7 @@ function AudioBus() {
     });
   };
 
-  this.playAudioOnObject = (scope, object, buffer, name, volume, isRemove) => {
+  this.playAudioOnObject = (scope, object, buffer, name, volume) => {
     record = new Three.PositionalAudio(scope.listener);
 
     record.setBuffer(buffer);
@@ -86,8 +86,6 @@ function AudioBus() {
     record.onEnded = () => {
       if (record && record.isPlaying) record.stop();
       removeAudioFromBus(scope, object.id, name);
-
-      if (isRemove) scope.scene.remove(object);
     };
   };
 
@@ -138,8 +136,8 @@ function AudioBus() {
   this.replayObjectSound = (id, name) => {
     record = getRecordByIdAndName(id, name);
     if (record && record.audio) {
+      setSpeed(record.audio);
       if (!record.audio.isPlaying) {
-        setSpeed(record.audio);
         record.audio.play();
       } else {
         record.audio.stop();
@@ -151,11 +149,11 @@ function AudioBus() {
   this.toggleTime = () => {
     isTime = !isTime;
     if (isTime) {
-      bus.filter(record => record.id !== heroSound.id).forEach((record) => {
+      bus.filter(record => record.id !== heroSound.id && record.audio.isPlaying).forEach((record) => {
         record.audio.setPlaybackRate(0.5);
       });
     } else {
-      bus.filter(record => record.id !== heroSound.id).forEach((record) => {
+      bus.filter(record => record.id !== heroSound.id && record.audio.isPlaying).forEach((record) => {
         record.audio.setPlaybackRate(1);
       });
     }
