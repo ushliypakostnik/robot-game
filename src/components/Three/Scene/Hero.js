@@ -32,7 +32,7 @@ function Hero() {
   let speed;
 
   let damageClock;
-  let damageTime = 0;
+  let damageTime = 0; // eslint-disable-line no-unused-vars // глюк какой-то?
 
   let enduranceClock;
   let enduranceTime = 0;
@@ -545,7 +545,7 @@ function Hero() {
             || scope.object.name.includes(OBJECTS.BOTTLES.name))
             && scope.weight + DESIGN.EFFECTS[name].weight <= DESIGN.HERO.MAXWEIGHT)
             || scope.object.name.includes(OBJECTS.PASSES.name)) {
-            const {group} = object;
+            const { group } = object;
 
             scope.hideMessageByView(2);
 
@@ -790,6 +790,11 @@ function Hero() {
     playerCollider.translate(playerVelocity.clone().multiplyScalar(scope.delta));
 
     playerCollitions(scope);
+
+    if (playerCollider.start.y < 0) {
+      playerCollider.start.y = 0;
+      playerCollider.end.y = DESIGN.HERO.HEIGHT / 2;
+    }
 
     if (!scope.camera.position.equals(playerCollider.end)) {
       scope.camera.position.copy(playerCollider.end);
