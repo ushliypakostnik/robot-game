@@ -810,7 +810,7 @@ function Hero() {
         if (!updateClock.running) updateClock.start();
       }
 
-      // Не делаем этого еще полторы секунды
+      // Не делаем этого еще половину секунды
       updateTime += updateClock.getDelta();
       if (updateTime > DESIGN.OCTREE_UPDATE_TIMEOUT && updateClock.running) {
         updateClock.stop();
