@@ -171,7 +171,11 @@ function Enemies() {
   this.toDead = (scope, enemy) => {
     enemy.mode = DESIGN.ENEMIES.mode.dies;
 
-    enemy.velocity.add(new Three.Vector3((Math.random() + 0.5) * 25, (Math.random() + 0.5) * 25, (Math.random() + 0.5) * 25));
+    enemy.velocity.add(new Three.Vector3(
+      (Math.random() + 0.5) * 25,
+      (Math.random() + 0.5) * 25,
+      (Math.random() + 0.5) * 25),
+    );
     enemy.randomX = plusOrMinus();
     enemy.randomZ = plusOrMinus();
 

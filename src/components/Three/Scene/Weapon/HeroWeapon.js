@@ -47,13 +47,9 @@ function HeroWeapon() {
     ammoIndex = 0;
   };
 
-  const update = (ammo) => {
-    ammo.removed = false;
-  };
-
   this.shot = (scope) => {
     ammo = ammos[ammoIndex];
-    update(ammo);
+    ammo.removed = false;
 
     if (scope.isOptical) weapon = scope.weaponOptical;
     else weapon = scope.weapon; // eslint-disable-line prefer-destructuring

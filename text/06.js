@@ -73,19 +73,34 @@ function Thing() {
 export default Thing;
 
 
-// Raycasting
+// В @/components/Three/Scene/Hero.js:
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
-// Forward ray
-scope.direction = scope.camera.getWorldDirection(scope.direction);
-scope.raycaster.set(scope.camera.getWorldPosition(scope.position), scope.direction);
-scope.intersections = scope.raycaster.intersectObjects(scope.objects);
-scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < DESIGN.HERO.CAST : false;
+function Hero() {
+  // ...
 
-if (scope.onForward) {
-  scope.object = scope.intersections[0].object;
-
-  // Кастим предмет THINGS
-  if (scope.object.name.includes(OBJECTS.THINGS.name)) {
+  this.animate = (scope) => {
     // ...
-  }
+
+    // Raycasting
+
+    // Forward ray
+    scope.direction = scope.camera.getWorldDirection(scope.direction);
+    scope.raycaster.set(scope.camera.getWorldPosition(scope.position), scope.direction);
+    scope.intersections = scope.raycaster.intersectObjects(scope.objects);
+    scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < DESIGN.HERO.CAST : false;
+
+    if (scope.onForward) {
+      scope.object = scope.intersections[0].object;
+
+      // Кастим предмет THINGS
+      if (scope.object.name.includes(OBJECTS.THINGS.name)) {
+        // ...
+      }
+    }
+
+    // ...
+  };
 }
+
+export default Hero;

@@ -83,7 +83,11 @@ function Drones() {
             OBJECTS.DRONES[scope.l].data[i].y + height,
             OBJECTS.DRONES[scope.l].data[i].z,
           );
-          scaleClone.scale.set(DESIGN.ENEMIES[OBJECTS.DRONES.name].health / 100, 1, DESIGN.ENEMIES[OBJECTS.DRONES.name].health / 100);
+          scaleClone.scale.set(
+            DESIGN.ENEMIES[OBJECTS.DRONES.name].health / 100,
+            1,
+            DESIGN.ENEMIES[OBJECTS.DRONES.name].health / 100,
+          );
 
           pseudoClone.position.copy(droneClone.position);
           pseudoClone.visible = false;

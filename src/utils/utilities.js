@@ -81,7 +81,6 @@ const fixNot = (value) => {
 };
 
 export const isToHeroRayIntersectWorld = (scope, collider) => {
-  // get ray
   scope.direction.subVectors(collider.center, scope.camera.position).negate().normalize();
   scope.ray = new Three.Ray(collider.center, scope.direction);
 
@@ -102,7 +101,6 @@ export const isToHeroRayIntersectWorld = (scope, collider) => {
 };
 
 export const isEnemyCanShot = (scope, enemy) => {
-  // get ray
   scope.direction.copy(enemy.mesh.getWorldDirection(scope.direction).normalize());
   scope.ray = new Three.Ray(enemy.collider.center, scope.direction);
 
