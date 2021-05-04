@@ -14,7 +14,7 @@ COPY --from=sass-build-stage /node-sass/vendor/linux_musl-x64-88/binding.node /n
 
 ENV SASS_BINARY_PATH=/node-sass/vendor/linux_musl-x64-88/binding.node
 
-WORKDIR /projects/github/robot-game
+WORKDIR /opt/app
 
 COPY . .
 
@@ -26,7 +26,7 @@ RUN npm install \
 FROM nginx:stable-alpine as production-stage
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build-stage /projects/github/robot-game/dist /usr/share/nginx/html
+COPY --from=build-stage /opt/app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
