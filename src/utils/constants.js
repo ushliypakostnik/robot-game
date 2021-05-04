@@ -1,8 +1,8 @@
-export const isBackend = false;
+export const isBackend = true;
 
 const isProd = process.env.NODE_ENV === 'production';
 const apiUrl = process.env.VUE_APP_API_URL;
-export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://localhost:8083';
+export const API_URL = isProd ? apiUrl || 'https://api.robot-game.ru' : apiUrl || 'http://localhost:8083';
 
 export const LOCALSTORAGE = {
   ROBOTID: 'robotID',
