@@ -28,8 +28,6 @@ FROM nginx:stable-alpine as production-stage
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build-stage /opt/app/dist /usr/share/nginx/html
 
-EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
 # Сборка образа
 # sudo docker build -t robot-game .
