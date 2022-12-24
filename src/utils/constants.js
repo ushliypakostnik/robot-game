@@ -1,4 +1,4 @@
-export const isBackend = true;
+export const isBackend = false;
 
 const isProd = process.env.NODE_ENV === 'production';
 const apiUrl = process.env.VUE_APP_API_URL;

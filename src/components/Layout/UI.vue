@@ -83,7 +83,7 @@
       <div
         :key="index"
         class="ui__message-wrapper"
-        v-for="message, index in messages"
+        v-for="(message, index) in messages"
       >
         <!-- Нумерованные "исчезающие" сообщения  -->
         <div
@@ -93,7 +93,7 @@
           {{message[0]}}: <span v-html="$t(`messages.message${message[1]}.${message[2]}`)" />
           <span v-if="message[3]">
             {{ getObjectName(message[3]) }}
-            <span v-if="getObjectType(message[3]) !== 'bottle'">{{ getObjectTypeName(message[3]) }}</span>
+            <span v-if="getObjectType(message[3]) != 'bottle'">{{ getObjectTypeName(message[3]) }}</span>
           </span>
         </div>
 

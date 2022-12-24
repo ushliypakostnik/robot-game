@@ -1,6 +1,6 @@
-import * as Three from "three";
+import * as Three from 'three';
 
-import { Octree } from "../components/Three/Modules/Math/Octree";
+import { Octree } from '../components/Three/Modules/Math/Octree';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
@@ -35,7 +35,7 @@ export const degreesToRadians = (degrees) => {
 };
 
 export const radiansToDegrees = (radians) => {
-  return radians * (180/ Math.PI);
+  return radians * (180 / Math.PI);
 };
 
 export const randomPointInCircle = (radius, x, y) => {
@@ -117,11 +117,9 @@ export const isEnemyCanShot = (scope, enemy) => {
       scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance), fixNot(scope.resultEnemies.distance));
       return scope.number > 10;
     }
-  } else {
-    if (scope.result || scope.resultDoors) {
-      scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance));
-      return scope.number > 10;
-    }
+  } else if (scope.result || scope.resultDoors) {
+    scope.number = Math.min(fixNot(scope.result.distance), fixNot(scope.resultDoors.distance));
+    return scope.number > 10;
   }
   return true;
 };

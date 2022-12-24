@@ -23,16 +23,15 @@ function EventsBus() {
   };
 
   this.messagesByIdDispatchHelper = (scope, view, name, data, delay) => {
-    id = scope.message + 1;
+    id = scope.message;
     scope.addMessage(id);
     pause = delay || DESIGN.MESSAGES_TIMEOUT / 1000;
 
     // eslint-disable-next-line object-curly-newline
-    scope.$store.dispatch('layout/showMessage', { id, view, name, data }).then(() => {
-      this.addEventsToBus(pause, id, (data) => {
-        scope.$store.dispatch('layout/hideMessageById', data);
-      });
-    }).catch((error) => { console.log(error); });
+    scope.$store.dispatch('layout/showMessage', { id, view, name, data });
+    this.addEventsToBus(pause, id, (data) => {
+      scope.$store.dispatch('layout/hideMessageById', data);
+    });
   };
 
   this.heroOnHitDispatchHelper = (scope, value, delay) => {

@@ -31,7 +31,7 @@ const initialState = {
   modalId: null,
 
   messages: [],
-  message: 0,
+  message: 1,
 
   isGameOver: false,
   isWin: false,
