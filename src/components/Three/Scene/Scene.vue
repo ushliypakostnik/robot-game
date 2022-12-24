@@ -131,7 +131,7 @@ export default {
     this.$eventHub.$on('lock', this.lock);
     this.$eventHub.$on('unlock', this.unlock);
 
-    if (!this.isUser) this.setUser();
+    if (!this.isUser && isBackend) this.setUser();
   },
 
   mounted() {
